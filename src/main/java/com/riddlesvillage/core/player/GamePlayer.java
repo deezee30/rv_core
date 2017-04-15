@@ -80,7 +80,7 @@ public class GamePlayer {
     }
 
     public String getIpAddress() {
-        return ipAddress;
+        return ipAddress ;
     }
 
     public List<String> getIpAddressHistory() {
