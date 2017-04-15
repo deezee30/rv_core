@@ -1,0 +1,8 @@
+name: Core
+version: ${project.version}
+main: com.starforcemc.core.RiddlesVillageCore
+authors: [matt11matthew]
+prefix: Core
+author: matt11matthew
+commands:
+  stats:
