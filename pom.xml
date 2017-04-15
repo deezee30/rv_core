@@ -48,8 +48,7 @@
                                     <include></include>
                                 </includes>
                             </artifactSet>
-                            <finalName>StarForceCore</finalName>
-                            <outputFile>C:\Users\matt1\Desktop\Show\StarWars\plugins\StarForceCore.jar</outputFile>
+                            <finalName>Core</finalName>
                         </configuration>
                     </execution>
                 </executions>
