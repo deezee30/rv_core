@@ -48,7 +48,7 @@
                                     <include></include>
                                 </includes>
                             </artifactSet>
-                            <finalName>Core</finalName>
+                            <finalName>RiddlesVillageCore</finalName>
                         </configuration>
                     </execution>
                 </executions>

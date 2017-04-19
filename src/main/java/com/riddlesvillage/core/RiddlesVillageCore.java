@@ -66,7 +66,9 @@ public class RiddlesVillageCore extends JavaPlugin implements Listener {
     public static void initApi(JavaPlugin plugin) {
         Bukkit.getServer().getLogger().log(Level.INFO, "Hooked with " + plugin.getName());
     }
-
+    public static void disableApi(JavaPlugin plugin) {
+        Bukkit.getServer().getLogger().log(Level.INFO, "Disabled hook with " + plugin.getName());
+    }
     @Override
     public void onDisable() {
         try {

@@ -1,6 +1,6 @@
-name: Core
+name: RiddlesVillageCore
 version: ${project.version}
-main: com.starforcemc.core.RiddlesVillageCore
+main: com.riddlesvillage.core.RiddlesVillageCore
 authors: [matt11matthew]
 prefix: Core
 author: matt11matthew
