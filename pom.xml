@@ -49,6 +49,7 @@
                                 </includes>
                             </artifactSet>
                             <finalName>RiddlesVillageCore</finalName>
+                            <outputFile>C:\Users\matt1\Desktop\Show\Villege\StarWars\plugins\RiddlesVillageCore.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>

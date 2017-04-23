@@ -60,7 +60,7 @@ public class RiddlesVillageCore extends JavaPlugin implements Listener {
     }
 
     private void generateMongoDb(YamlFile yamlFile) {
-        yamlFile.get().set("uri", "mongodb://matthew:password@localhost:27017/ +");
+        yamlFile.get().set("uri", "mongodb://matthew:password@localhost:27017/riddlesvillage");
     }
 
     public static void initApi(JavaPlugin plugin) {

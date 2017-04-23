@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Created by matt1 on 3/22/2017.
  */
-public class FileConfig implements Loadable, FileOperations, Config, INew {
+public class FileConfig implements Loadable<FileConfig>, FileOperations, Config, INew {
 
     private File file;
     private ConfigType configType;

@@ -1,15 +1,20 @@
 package com.riddlesvillage.core.api.file;
 
-import com.riddlesvillage.core.api.file.config.FileConfig;
-
 import java.io.IOException;
 
 /**
  * Created by matt1 on 3/22/2017.
  */
-public interface Loadable {
+public interface Loadable<L> {
 
-    FileConfig load(String name, String path);
+    default L load(String name, String path) {
+        return null;
+    }
 
-    void unload() throws IOException;
+    default L load() {
+        return null;
+    }
+
+    default void unload() throws IOException {
+    }
 }
