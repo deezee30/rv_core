@@ -1,6 +1,7 @@
 package com.riddlesvillage.core.player;
 
 import com.riddlesvillage.core.RiddlesVillageCore;
+import com.riddlesvillage.core.api.CoreProfile;
 import com.riddlesvillage.core.api.file.yaml.YamlFile;
 import com.riddlesvillage.core.api.file.yaml.YamlFileImpl;
 import com.riddlesvillage.core.api.file.yaml.YamlLoadException;
@@ -8,26 +9,25 @@ import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.EnumData;
 import com.riddlesvillage.core.database.data.EnumOperators;
 import com.riddlesvillage.core.player.rank.Rank;
-import org.bukkit.Bukkit;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
 
-public class GamePlayer {
+public final class GamePlayer implements CoreProfile, Serializable {
 
-    private UUID uniqueId;
+    private Player player;
     private String server;
     private long firstJoin;
     private long lastLogin;
     private boolean online;
     private long lastLogout;
     private long playTime;
-    private UUID uuid;
-    private String username;
     private String ipAddress;
     private List<String> ipAddressHistory;
     private List<String> usernameHistory;
@@ -35,25 +35,26 @@ public class GamePlayer {
     private boolean isNew;
     private boolean playing;
 
-    public GamePlayer(Player player) {
-        this.uuid = player.getUniqueId();
-        this.username = player.getName();
-        this.playing = (Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, this.uuid);
-        this.usernameHistory = (List<String>) DatabaseAPI.getInstance().getData(EnumData.USERNAME_HISTORY, this.uuid);
-        if (!usernameHistory.contains(username)) {
-            usernameHistory.add(username);
+    GamePlayer(Player player) {
+        this.player = player;
+        UUID id = player.getUniqueId();
+        String name = player.getName();
+
+        playing = (Boolean) DatabaseAPI.getInstance().getData(EnumData.IS_PLAYING, id);
+        usernameHistory = (List<String>) DatabaseAPI.getInstance().getData(EnumData.USERNAME_HISTORY, id);
+        if (!usernameHistory.contains(name)) {
+            usernameHistory.add(name);
         }
-        this.isNew = false;//(boolean) api.getData(EnumData.IS_NEW, uuid);
-        this.ipAddress = (String) DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS, uuid);
+        isNew = false;//(boolean) api.getData(EnumData.IS_NEW, uuid);
+        ipAddress = (String) DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS, id);
         if (!player.getAddress().getHostName().replace("/", "").equals(ipAddress)) {
-            this.ipAddress =player.getAddress().getHostName().replace("/", "");
+            ipAddress = player.getAddress().getHostName().replace("/", "");
         }
-        this.ipAddressHistory = (List<String>) DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS_HISTORY, this.uuid);
+        ipAddressHistory = (List<String>) DatabaseAPI.getInstance().getData(EnumData.IP_ADDRESS_HISTORY, id);
         if (!ipAddressHistory.contains(player.getAddress().getHostName().replace("/", ""))) {
             ipAddressHistory.add(player.getAddress().getHostName().replace("/", ""));
         }
-        this.rank = Rank.valueOf(((String)DatabaseAPI.getInstance().getData(EnumData.RANK, uuid)).toUpperCase());
-        PlayerHandler.getHandler().GAMEPLAYERS.put(username, this);
+        rank = Rank.valueOf(((String) DatabaseAPI.getInstance().getData(EnumData.RANK, id)).toUpperCase());
         // Bukkit.getScheduler().scheduleAsyncRepeatingTask(MysticalWars.getInstance(), this::task, 1000L, 1000L);
     }
 
@@ -62,21 +63,33 @@ public class GamePlayer {
     }
 
     public void save() {
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IP_ADDRESS_HISTORY, ipAddressHistory, true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME_HISTORY, usernameHistory, true);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rank.toString().toLowerCase(), true);
+        UUID id = getUuid();
+        DatabaseAPI.getInstance().update(id, EnumOperators.$SET, EnumData.IP_ADDRESS_HISTORY, ipAddressHistory, true);
+        DatabaseAPI.getInstance().update(id, EnumOperators.$SET, EnumData.USERNAME_HISTORY, usernameHistory, true);
+        DatabaseAPI.getInstance().update(id, EnumOperators.$SET, EnumData.RANK, rank.toString().toLowerCase(), true);
     }
 
     public Player getPlayer() {
-        return Bukkit.getPlayer(uuid);
+        return player;
+    }
+
+    @Override
+    public String getName() {
+        return player.getName();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return player.getDisplayName();
     }
 
     public UUID getUuid() {
-        return uuid;
+        return player.getUniqueId();
     }
 
-    public String getUsername() {
-        return username;
+    @Override
+    public boolean hasPlayed() {
+        return !isNew;
     }
 
     public String getIpAddress() {
@@ -95,12 +108,8 @@ public class GamePlayer {
         return rank;
     }
 
-    public static boolean isAdmin(Player player) {
-        GamePlayer gamePlayer = PlayerHandler.getHandler().GAMEPLAYERS.get(player.getName());
-        if (gamePlayer == null) {
-            return false;
-        }
-        return (gamePlayer.getRank().getId() >= Rank.LEAD_DEVELOPER.getId());
+    public boolean isAdmin() {
+        return rank.getId() >= Rank.LEAD_DEVELOPER.getId();
     }
 
     public void lang(String key, String defaultLanguage, String... replace) {
@@ -114,7 +123,7 @@ public class GamePlayer {
                     e.printStackTrace();
                 }
             }
-            String message = net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', fileConfig.get().getString(key));
+            String message = ChatColor.translateAlternateColorCodes('&', fileConfig.get().getString(key));
             for (int i = 0; i < replace.length;i++) {
                 message = message.replaceAll("\\{" + i + "}", replace[i]);
             }

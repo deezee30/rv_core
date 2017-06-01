@@ -1,9 +1,5 @@
 package com.riddlesvillage.core.player.rank;
 
-import com.riddlesvillage.core.player.GamePlayer;
-import com.riddlesvillage.core.player.PlayerHandler;
-import org.bukkit.entity.Player;
-
 /**
  * Created by matt1 on 3/6/2017.
  */
@@ -28,15 +24,6 @@ public enum Rank {
         this.color = color;
         this.tabName = tabName;
     }
-
-    public static boolean isAdmin(Player player) {
-        GamePlayer gamePlayer =  PlayerHandler.getHandler().GAMEPLAYERS.get(player.getName());
-        if (gamePlayer  != null) {
-            return gamePlayer.getRank().getId() >= ADMIN.getId();
-        }
-        return false;
-    }
-
 
     public String getColor() {
         return color;

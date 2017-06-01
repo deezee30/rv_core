@@ -1,15 +1,16 @@
 package com.riddlesvillage.core;
 
 import com.riddlesvillage.core.api.file.config.FileConfig;
+import com.riddlesvillage.core.api.file.yaml.YamlFile;
 import com.riddlesvillage.core.api.file.yaml.YamlFileImpl;
+import com.riddlesvillage.core.api.file.yaml.YamlLoadException;
 import com.riddlesvillage.core.api.mechanic.MechanicManager;
+import com.riddlesvillage.core.bungee.Messenger;
 import com.riddlesvillage.core.commands.CommandStats;
 import com.riddlesvillage.core.database.DatabaseAPI;
-import com.riddlesvillage.core.player.PlayerHandler;
-import com.riddlesvillage.core.api.file.yaml.YamlFile;
-import com.riddlesvillage.core.api.file.yaml.YamlLoadException;
-import com.riddlesvillage.core.bungee.Messenger;
 import com.riddlesvillage.core.database.DatabaseInstance;
+import com.riddlesvillage.core.player.GamePlayerManager;
+import com.riddlesvillage.core.player.PlayerHandler;
 import com.riddlesvillage.core.player.events.PlayerJumpEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -55,7 +56,8 @@ public class RiddlesVillageCore extends JavaPlugin implements Listener {
 
     private void registerMechanics() {
         MechanicManager manager = MechanicManager.getInstance();
-        manager.registerMechanic(new PlayerHandler());
+        manager.registerMechanic(PlayerHandler.getHandler());
+        manager.registerMechanic(GamePlayerManager.get());
         manager.registerMechanics(this);
     }
 
@@ -74,9 +76,7 @@ public class RiddlesVillageCore extends JavaPlugin implements Listener {
         try {
             YamlFile yamlConfig = new YamlFileImpl().load(new File(getDataFolder() + "/", "mongodb.yml"));
             yamlConfig.save();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (YamlLoadException e) {
+        } catch (IOException | YamlLoadException e) {
             e.printStackTrace();
         }
     }

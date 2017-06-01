@@ -27,18 +27,16 @@ public class Cache {
 	 * @param p
 	 */
 	public Cache(Boolean autoCache, Integer autoCacheHeartBeat, Plugin p) {
-		if (autoCache.booleanValue()) {
-			Bukkit.getScheduler().runTaskTimerAsynchronously(p, new Runnable() {
-				public void run() {
-					for (String s : allServers) {
-						RiddlesVillageCore.getCore().getMessenger().getAllServers();
-						RiddlesVillageCore.getCore().getMessenger().getAllPlayersOnServer(s);
-						RiddlesVillageCore.getCore().getMessenger().getServerCount(s);
-					}
-					RiddlesVillageCore.getCore().getMessenger().getAllPlayers();
-					RiddlesVillageCore.getCore().getMessenger().getServerCount("ALL");
+		if (autoCache) {
+			Bukkit.getScheduler().runTaskTimerAsynchronously(p, () -> {
+				for (String s : allServers) {
+					RiddlesVillageCore.getCore().getMessenger().getAllServers();
+					RiddlesVillageCore.getCore().getMessenger().getAllPlayersOnServer(s);
+					RiddlesVillageCore.getCore().getMessenger().getServerCount(s);
 				}
-			}, autoCacheHeartBeat.intValue(), autoCacheHeartBeat.intValue());
+				RiddlesVillageCore.getCore().getMessenger().getAllPlayers();
+				RiddlesVillageCore.getCore().getMessenger().getServerCount("ALL");
+			}, autoCacheHeartBeat, autoCacheHeartBeat);
 		}
 	}
 }

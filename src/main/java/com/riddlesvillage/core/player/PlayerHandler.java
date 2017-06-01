@@ -3,12 +3,12 @@ package com.riddlesvillage.core.player;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOneModel;
-import com.riddlesvillage.core.database.DatabaseAPI;
-import com.riddlesvillage.core.database.data.EnumData;
-import com.riddlesvillage.core.database.data.EnumOperators;
 import com.riddlesvillage.core.api.mechanic.GameMechanic;
 import com.riddlesvillage.core.api.scoreboard.PlayerScoreboard;
 import com.riddlesvillage.core.api.scoreboard.ScoreBoardManager;
+import com.riddlesvillage.core.database.DatabaseAPI;
+import com.riddlesvillage.core.database.data.EnumData;
+import com.riddlesvillage.core.database.data.EnumOperators;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bukkit.Bukkit;
@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -28,32 +27,23 @@ import java.util.logging.Logger;
 /**
  * Created by matt1 on 3/22/2017.
  */
-public class PlayerHandler extends GameMechanic {
+public final class PlayerHandler extends GameMechanic {
 
-    private static PlayerHandler handler;
-    public HashMap<String, GamePlayer> GAMEPLAYERS;
+    private static final PlayerHandler HANDLER = new PlayerHandler();
+    private static final GamePlayerManager MANAGER = GamePlayerManager.get();
 
     public static PlayerHandler getHandler() {
-        if (handler == null) {
-            handler = new PlayerHandler();
-        }
-        return handler;
+        return HANDLER;
     }
 
-    public PlayerHandler() {
-        handler = this;
-        this.GAMEPLAYERS = new HashMap<>();
-    }
+    // disable public instantiation
+    private PlayerHandler() {}
 
     @Override
-    public void onEnable() {
-
-    }
+    public void onEnable() {}
 
     @Override
-    public void onDisable() {
-
-    }
+    public void onDisable() {}
 
     @EventHandler(ignoreCancelled = true)
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
@@ -70,13 +60,13 @@ public class PlayerHandler extends GameMechanic {
     }
 
     public void handleLogin(Player player) {
-        GamePlayer gamePlayer = new GamePlayer(player);
+        MANAGER.add(player);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
-        GamePlayer gamePlayer = GAMEPLAYERS.get(event.getPlayer().getName());
+        GamePlayer gamePlayer = MANAGER.get(event);
         gamePlayer.setNew(false);
         handleLogout(event.getPlayer().getUniqueId(), true, bulkWriteResult -> {
             System.out.println("Player logged out " + event.getPlayer().getUniqueId().toString());
@@ -118,7 +108,7 @@ public class PlayerHandler extends GameMechanic {
         if (player == null) {
             return false;
         }
-        GamePlayer gamePlayer = GAMEPLAYERS.get(player.getName());
+        GamePlayer gamePlayer = MANAGER.get(uuid);
         gamePlayer.save();
         List<UpdateOneModel<Document>> operations = new ArrayList<>();
         Bson searchQuery = Filters.eq("info.uuid", uuid.toString());
@@ -126,8 +116,16 @@ public class PlayerHandler extends GameMechanic {
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.IP_ADDRESS.getKey(), player.getAddress().getHostString().replace("/", "")))));
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.USERNAME.getKey(), player.getName()))));
         operations.add(new UpdateOneModel<>(searchQuery, new Document(EnumOperators.$SET.getUO(), new Document(EnumData.RANK.getKey(), gamePlayer.getRank().toString().toLowerCase()))));
-        GAMEPLAYERS.remove(player.getName());
+        MANAGER.remove(gamePlayer);
         DatabaseAPI.getInstance().bulkUpdate(operations, async, doAfter);
         return true;
+    }
+
+    public static GamePlayer get(String name) {
+        return MANAGER.get(name);
+    }
+
+    public static GamePlayer get(UUID id) {
+        return MANAGER.get(id);
     }
 }

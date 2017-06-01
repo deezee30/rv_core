@@ -109,7 +109,6 @@ public class MenuImpl implements Menu, Listener {
                     return;
                 }
                 menuItem.onClick(player, event.getClick());
-                return;
             }
         }
     }

@@ -1,12 +1,12 @@
 package com.riddlesvillage.core.commands;
 
-import com.riddlesvillage.core.api.menu.Menu;
-import com.riddlesvillage.core.api.menu.item.MenuItemBuilder;
-import com.riddlesvillage.core.player.PlayerHandler;
 import com.riddlesvillage.core.RiddlesVillageCore;
 import com.riddlesvillage.core.api.command.BaseCommand;
+import com.riddlesvillage.core.api.menu.Menu;
 import com.riddlesvillage.core.api.menu.MenuBuilder;
+import com.riddlesvillage.core.api.menu.item.MenuItemBuilder;
 import com.riddlesvillage.core.player.GamePlayer;
+import com.riddlesvillage.core.player.GamePlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,17 +30,17 @@ public class CommandStats extends BaseCommand {
             return true;
         } else {
             String name = args[0];
-            GamePlayer mcPlayer = PlayerHandler.getHandler().GAMEPLAYERS.get(name);
+            GamePlayer mcPlayer = GamePlayerManager.get().get(name);
             if (mcPlayer == null) {
                 return true;
             }
-            openStats(sender, mcPlayer.getUsername());
+            openStats(sender, mcPlayer.getName());
             return true;
         }
     }
 
     private void openStats(Player player, String name) {
-        GamePlayer mcPlayer = PlayerHandler.getHandler().GAMEPLAYERS.get(name);
+        GamePlayer mcPlayer = GamePlayerManager.get().get(name);
         Menu menu = MenuBuilder.fastMenu(name + " Stats", 9, RiddlesVillageCore.getCore());
         List<String> loreList = new ArrayList<>();
         loreList.add(" ");
