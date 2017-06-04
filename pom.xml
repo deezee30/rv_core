@@ -6,10 +6,10 @@
 
     <groupId>com.riddlesvillage</groupId>
     <artifactId>core</artifactId>
-    <version>1.0</version>
+    <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Core</name>
+    <name>RiddlesCore</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -43,13 +43,12 @@
                                     <include>org.slf4j:*</include>
                                     <include>com.zaxxer:*</include>
                                     <include>org.javassist:javassist</include>
-                                    <include>org.mongodb:mongo-java-driver</include>
+                                    <include>org.mongodb:mongodb-driver-async</include>
                                     <include>org.mongodb:bson</include>
-                                    <include></include>
                                 </includes>
                             </artifactSet>
-                            <finalName>RiddlesVillageCore</finalName>
-                            <outputFile>C:\Users\matt1\Desktop\Show\Villege\StarWars\plugins\RiddlesVillageCore.jar</outputFile>
+                            <finalName>RiddlesCore</finalName>
+                            <outputFile>${user.home}/Desktop/RiddlesCore.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
@@ -96,8 +95,9 @@
 
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.2.2</version>
+            <artifactId>mongodb-driver-async</artifactId>
+            <version>3.4.2</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

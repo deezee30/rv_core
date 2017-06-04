@@ -1,7 +1,6 @@
 package com.riddlesvillage.core.database.query;
 
-import com.mongodb.client.MongoCollection;
-import com.riddlesvillage.core.database.data.Query;
+import com.mongodb.async.client.MongoCollection;
 import org.bson.conversions.Bson;
 
 import java.util.function.Consumer;
@@ -16,7 +15,10 @@ public class SingleUpdateQuery<UpdateResult> extends Query<UpdateResult> {
      * @param newDocument     New Document to replace
      * @param doAfterOptional Consumer task to do after query is complete.
      */
-    public SingleUpdateQuery(MongoCollection collection, Bson searchQuery, Bson newDocument, Consumer<UpdateResult> doAfterOptional) {
+    public SingleUpdateQuery(MongoCollection collection,
+                             Bson searchQuery,
+                             Bson newDocument,
+                             Consumer<UpdateResult> doAfterOptional) {
         super(collection, searchQuery, doAfterOptional);
         this.newDocument = newDocument;
     }

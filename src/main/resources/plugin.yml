@@ -1,8 +1,70 @@
-name: RiddlesVillageCore
+##########################################################
+# +----------------------------------------------------+ #
+# |                                                    | #
+# |            RiddlesCore for RiddlesVillage          | #
+# |                                                    | #
+# +----------------------------------------------------+ #
+# | Version . . . . . . . . . . . . . . . . . . .  0.1 | #
+# | Java  . . . . . . . . . . . . . . . . . . . . .  8 | #
+# | JDK . . . . . . . . . . . . . . . . . . . . .  1.8 | #
+# | Line Endings  . . . . . . . . . . . . . . . . Unix | #
+# | Compiler  . . . . . . . . . . . . . . . .  Maven 3 | #
+# +----------------------------------------------------+ #
+# | An engine built for RiddlesVillage used to provide | #
+# | stabilized support for various simple and          | #
+# | difficult tasks.  Efficiency, compatibility and    | #
+# | speed are the three priorities used when working   | #
+# | with Riddles plugins.                              | #
+# +----------------------------------------------------+ #
+##########################################################
+
+name: ${project.name}
 version: ${project.version}
-main: com.riddlesvillage.core.RiddlesVillageCore
-authors: [matt11matthew]
+main: ${project.groupId}.${project.artifactId}.RiddlesCore
+authors: [matt11matthew, Maulss]
 prefix: Core
-author: matt11matthew
+
 commands:
   stats:
+    description: Displays statistics of an implemented statistic holder
+    aliases: [st, player]
+
+  addspawn:
+    description: Adds a custom warp point to be saved in spawns.yml
+    aliases: [addwarp, aw, as]
+
+  tpspawn:
+    description: Teleports to a custom spawn defined in spawns.yml
+    aliases: [warpspawn, ws]
+
+  debug:
+    description: Temporarily toggles debugging until the server restarts
+    aliases: [debugging]
+
+  coins:
+    description: Check and modify any player's coin value from ingame
+    aliases: [c, coins]
+
+  tokens:
+    description: Check and modify any player's token value from ingame
+    aliases: [t, tok, token]
+
+  premium:
+    description: Promotes a certain player to a premium rank
+    aliases: [pr, setpremium]
+
+  god:
+    description: Toggle god mode
+    aliases: [godmode]
+
+  vanish:
+    description: Toggle self visibility
+    aliases: [v, ghost]
+
+  cc:
+    description: Clears chat with an optional message
+    aliases: [clearchat, chatclear]
+
+  rank:
+    description: Modify a player's rank (console only)
+    aliases: [ranks]

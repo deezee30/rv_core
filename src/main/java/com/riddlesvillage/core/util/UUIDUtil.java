@@ -1,12 +1,5 @@
-/*
- * mysqllib
- * 
- * Created on 19 November 2014 at 4:09 PM.
- */
-
 package com.riddlesvillage.core.util;
 
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
@@ -15,7 +8,6 @@ import java.util.UUID;
  * A utility class used for management with {@link UUID}s,
  * specifically converting Strings to UUIDs and backwards.
  *
- * @author Maulss
  * @see    UUID
  */
 public final class UUIDUtil {
@@ -32,7 +24,6 @@ public final class UUIDUtil {
 	 * @return  The String version of {@param id}.
 	 * @see     UUID
 	 */
-	@NotNull
 	public static synchronized String fromUuid(UUID id) {
 		return fromUuid(String.valueOf(id));
 	}
@@ -45,7 +36,6 @@ public final class UUIDUtil {
 	 *
 	 * @return  The String version of {@param id}.
 	 */
-	@NotNull
 	public static synchronized String fromUuid(String id) {
 		return id.replaceAll("-", "");
 	}
@@ -60,7 +50,6 @@ public final class UUIDUtil {
 	 * @return  A new instance of {@link UUID}.
 	 * @see     UUID#fromString(String)
 	 */
-	@NotNull
 	public static synchronized UUID fromString(String id) {
 		return UUID.fromString(id.length() == 32 ?
 				id.substring(0, 8) + "-" +
@@ -116,7 +105,6 @@ public final class UUIDUtil {
 	 * @see     #isUuid(String)
 	 * @see     #fromString(String)
 	 */
-	@NotNull
 	public static synchronized String checkForValidUuid(Object obj) {
 		String str = String.valueOf(obj);
 		return isUuid(str) ? str.length() == 32 ? fromString(str).toString() : str : str;

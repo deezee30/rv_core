@@ -10,7 +10,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.Validate;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
@@ -75,7 +74,6 @@ public class EnhancedMap<K, V> extends LinkedHashMap<K, V> implements JSONAware 
 		return new EnhancedList<>(entrySet()).getRandomElementExcluding(entries);
 	}
 
-	@NotNull
 	public final ImmutableMap<K, V> getImmutableEntries() {
 		return ImmutableMap.copyOf(this);
 	}
@@ -131,7 +129,7 @@ public class EnhancedMap<K, V> extends LinkedHashMap<K, V> implements JSONAware 
 	 * @param 	json The JSON String to parse.
 	 * @return 	The parsed json object in the form of a map.
 	 */
-	public static Map<String, Object> fromJson(@NotNull String json) {
+	public static Map<String, Object> fromJson(String json) {
 		Validate.notNull(json);
 		return new Gson().fromJson(json, new TypeToken<Map<String, Object>>() {
 		}.getType());
@@ -144,7 +142,7 @@ public class EnhancedMap<K, V> extends LinkedHashMap<K, V> implements JSONAware 
 
 	public static <M extends Map<K, V>,
 			K extends Comparable<? super K>,
-			V extends Comparable<? super V>> M sort(@NotNull M map, @NotNull SortType type) {
+			V extends Comparable<? super V>> M sort(M map, SortType type) {
 		Validate.notNull(map);
 		Validate.notNull(type);
 
