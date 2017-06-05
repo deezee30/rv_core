@@ -1,459 +1,115 @@
 package com.riddlesvillage.core.database;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.mongodb.async.SingleResultCallback;
+import com.mongodb.async.client.MongoCollection;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.result.UpdateResult;
-import com.riddlesvillage.core.database.data.EnumData;
-import com.riddlesvillage.core.database.data.EnumOperators;
-import com.riddlesvillage.core.database.data.MongoAccessThread;
+import com.riddlesvillage.core.database.data.DataInfo;
+import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.database.query.BulkWriteQuery;
 import com.riddlesvillage.core.database.query.DocumentSearchQuery;
 import com.riddlesvillage.core.database.query.SingleUpdateQuery;
+import org.apache.commons.lang.Validate;
 import org.bson.Document;
-import org.bukkit.Bukkit;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
-
 
 @SuppressWarnings("unchecked")
 public class DatabaseAPI {
 
-    private static DatabaseAPI instance = null;
-
-    public volatile Map<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
-
-    public volatile Map<UUID, Long> PLAYERS_LOGINS = new ConcurrentHashMap<>();
-
-    private volatile Map<String, String> CACHED_UUIDS = new ConcurrentHashMap<>();
-
-    private Logger log = Logger.getLogger("DatabaseAPI");
-    private final ExecutorService SERVER_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("MONGODB Server Collection Thread").build());
-
-    public static DatabaseAPI getInstance() {
-        if (instance == null) {
-            instance = new DatabaseAPI();
-        }
-        return instance;
-    }
-
-    public void startInitialization() {
-//        Document doc = DatabaseInstance.shardData.find(Filters.eq("shard", shard)).first();
-//        if (doc == null) {
-//            createNewShardCollection(shard);
-//        }
-    }
-
     /**
      * @param operations      Bulk write operations
-     * @param async           Run Async?
-     * @param doAfterOptional an optional parameter allowing you to specify extra actions after the update query is
-     *                        completed. doAfterOptional is executed async or sync based on the previous async parameter.
+     * @param doAfterOptional an optional parameter allowing you to
+     *                        specify extra actions after the update query is
+     *                        completed. doAfterOptional is executed async.
      */
-    public void bulkUpdate(List<UpdateOneModel<Document>> operations, boolean async, Consumer<BulkWriteResult> doAfterOptional) {
-        if (async) {
-            MongoAccessThread.submitQuery(new BulkWriteQuery<>(DatabaseInstance.playerData, operations, doAfterOptional));
-        } else {
-            BulkWriteResult result = DatabaseInstance.playerData.bulkWrite(operations);
-
-            if (doAfterOptional != null)
-                doAfterOptional.accept(result);
-        }
-    }
-    /*
-    if (document == null) return null;
-        String[] key = data.split("\\.");
-        int i =0;
-        for (String s : key) {
-            System.out.println(i + ": " + s + " : " + key[i]);
-            i++;
-        }
-        Document rootDoc = (Document) document.get(key[0]);
-        if (rootDoc == null) return null;
-        System.out.println(rootDoc);
-        Document dataObj = (Document) rootDoc.get(key[1]);
-        if (dataObj == null) return null;
-        System.out.println(dataObj);
-        Object obj = dataObj.get(key[2]);
-        System.out.println(obj);
-        Class<?> clazz = obj.getClass();
-     */
-    public void update(UUID uuid, EnumOperators EO, String variable, Object object, boolean async, boolean updateDatabase, Consumer<UpdateResult> doAfterOptional) {
-        if (PLAYERS.containsKey(uuid)) { // update local data
-            Document localDoc = PLAYERS.get(uuid);
-            String[] key = variable.split("\\.");
-            int i=0;
-            for (String k : key) {
-                System.out.print(i + " "+k);
-                i++;
-            }
-            Document rootDoc = (Document) localDoc.get(key[0]);
-            Document data1 = (Document) rootDoc.get(key[1]);
-            Object data = data1.get(key[2]);
-            switch (EO) {
-                case $SET:
-                    data1.put(key[2], object);
-                    rootDoc.put(key[1], data1);
-                    break;
-                case $INC:
-                    if (data instanceof Integer)
-                        rootDoc.put(key[1], ((Integer) object) + ((Integer) data));
-                    else if (data instanceof Double)
-                        rootDoc.put(key[1], ((Double) object) + ((Double) data));
-                    else if (data instanceof Float)
-                        rootDoc.put(key[1], ((Float) object) + ((Float) data));
-                    else if (data instanceof Long)
-                        rootDoc.put(key[1], ((Long) object) + ((Long) data));
-                    break;
-                case $MUL:
-                    if (data instanceof Integer)
-                        rootDoc.put(key[1], ((Integer) object) * ((Integer) data));
-                    else if (data instanceof Double)
-                        rootDoc.put(key[1], ((Double) object) * ((Double) data));
-                    else if (data instanceof Float)
-                        rootDoc.put(key[1], ((Float) object) * ((Float) data));
-                    else if (data instanceof Long)
-                        rootDoc.put(key[1], ((Long) object) * ((Long) data));
-                    break;
-                case $PUSH:
-                    ((ArrayList) data).add(object);
-                    break;
-                case $PULL:
-                    ((ArrayList) data).remove(object);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (updateDatabase)
-            if (async)
-                MongoAccessThread.submitQuery(new SingleUpdateQuery<>(DatabaseInstance.playerData, Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable, object)), doAfterOptional));
-            else {
-                UpdateResult result = DatabaseInstance.playerData.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable, object)), MongoAccessThread.uo);
-                if (doAfterOptional != null)
-                    doAfterOptional.accept(result);
-
-
-                if (Bukkit.isPrimaryThread()) {
-                    log.warning("[Database] Updating " + uuid.toString() + "'s player data on the main thread");
-
-                }
-            }
-    }
-    /**
-     * Updates a players information in Mongo and returns the updated result.
-     *
-     * @param uuid
-     * @param EO
-     * @param variable
-     * @param object
-     * @param async
-     * @param doAfterOptional an optional parameter allowing you to specify extra actions after the update query is
-     *                        completed. doAfterOptional is executed async or sync based on the previous async parameter.
-     * @since 1.0
-     */
-    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean async, boolean updateDatabase, Consumer<UpdateResult> doAfterOptional) {
-        if (PLAYERS.containsKey(uuid)) { // update local data
-            Document localDoc = PLAYERS.get(uuid);
-            String[] key = variable.getKey().split("\\.");
-            Document rootDoc = (Document) localDoc.get(key[0]);
-            Object data = rootDoc.get(key[1]);
-            switch (EO) {
-                case $SET:
-                    rootDoc.put(key[1], object);
-                    break;
-                case $INC:
-                    if (data instanceof Integer)
-                        rootDoc.put(key[1], ((Integer) object) + ((Integer) data));
-                    else if (data instanceof Double)
-                        rootDoc.put(key[1], ((Double) object) + ((Double) data));
-                    else if (data instanceof Float)
-                        rootDoc.put(key[1], ((Float) object) + ((Float) data));
-                    else if (data instanceof Long)
-                        rootDoc.put(key[1], ((Long) object) + ((Long) data));
-                    break;
-                case $MUL:
-                    if (data instanceof Integer)
-                        rootDoc.put(key[1], ((Integer) object) * ((Integer) data));
-                    else if (data instanceof Double)
-                        rootDoc.put(key[1], ((Double) object) * ((Double) data));
-                    else if (data instanceof Float)
-                        rootDoc.put(key[1], ((Float) object) * ((Float) data));
-                    else if (data instanceof Long)
-                        rootDoc.put(key[1], ((Long) object) * ((Long) data));
-                    break;
-                case $PUSH:
-                    ((ArrayList) data).add(object);
-                    break;
-                case $PULL:
-                    ((ArrayList) data).remove(object);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (updateDatabase)
-            if (async)
-                MongoAccessThread.submitQuery(new SingleUpdateQuery<>(DatabaseInstance.playerData, Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), doAfterOptional));
-            else {
-                UpdateResult result = DatabaseInstance.playerData.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)), MongoAccessThread.uo);
-                if (doAfterOptional != null)
-                    doAfterOptional.accept(result);
-
-
-                if (Bukkit.isPrimaryThread()) {
-                    log.warning("[Database] Updating " + uuid.toString() + "'s player data on the main thread");
-
-                }
-            }
+    public static void bulkUpdate(List<UpdateOneModel<Document>> operations,
+                                  Consumer<BulkWriteResult> doAfterOptional) {
+        MongoAccessThread.submitQuery(new BulkWriteQuery<>(
+                Database.getMainCollection(), operations, doAfterOptional));
     }
 
-    /**
-     * {@link #update(UUID, EnumOperators, EnumData, Object, boolean, boolean, Consumer)}
-     */
-    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean async) {
-        update(uuid, EO, variable, object, async, true, null);
+    public static void update(MongoCollection<Document> collection,
+                       UUID uuid,
+                       DataOperator operator,
+                       StatType variable,
+                       Object object,
+                       Consumer<UpdateResult> doAfterOptional) {
+        MongoAccessThread.submitQuery(new SingleUpdateQuery<>(
+                collection,
+                Filters.eq("uuid", uuid.toString()),
+                new Document(operator.getOperator(),
+                        new Document(variable.getStat(), object)),
+                doAfterOptional
+        ));
     }
 
-    /**
-     * {@link #update(UUID, EnumOperators, EnumData, Object, boolean, boolean, Consumer)}
-     */
-    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean async, Consumer<UpdateResult> doAfterOptional) {
-        update(uuid, EO, variable, object, async, true, doAfterOptional);
-    }
-
-    /**
-     * {@link #update(UUID, EnumOperators, EnumData, Object, boolean, boolean, Consumer)}
-     */
-    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean async, boolean updateDatabase) {
-        update(uuid, EO, variable, object, async, updateDatabase, null);
-    }
-
-    public Object getData(String data, UUID uuid) {
-        Document doc;
-
-        // GRABBED CACHED DOCUMENT
-        if (PLAYERS.containsKey(uuid)) doc = PLAYERS.get(uuid);
-        else {
-            long currentTime = 0;
-            // we should never be getting offline data sync.
-            if (Bukkit.isPrimaryThread()) {
-                log.info("[Database] Requested for " + uuid + "'s document from the database on the main thread.");
-            }
-            doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
-        }
-
-        return getData(data, doc);
-    }
     /**
      * Safely Returns the object that's requested
      * based on UUID.
      *
-     * @param data Data type
      * @param uuid UUID
+     * @param data Data type
      * @return Requested data
      */
-    public Object getData(EnumData data, UUID uuid) {
-        Document doc;
+    public static Object getData(UUID uuid, StatType data) {
+        AtomicReference<Document> doc = new AtomicReference<>(null);
 
-        // GRABBED CACHED DOCUMENT
-        if (PLAYERS.containsKey(uuid)) doc = PLAYERS.get(uuid);
-        else {
-            long currentTime = 0;
-            // we should never be getting offline data sync.
+        Database.getMainCollection()
+                .find(Filters.eq("uuid", uuid.toString()))
+                .first((result, t) -> doc.set(result));
 
-            if (Bukkit.isPrimaryThread()) {
-                log.info("[Database] Requested for " + uuid + "'s document from the database on the main thread.");
-            }
-            doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
-        }
-
-        return getData(data, doc);
+        return getData(doc.get(), data);
     }
 
     /**
      * Safely Returns the object that's requested
      * based on UUID.
      *
-     * @param data     Data type
      * @param document User's document
+     * @param data     Data type
      * @return Requested data
      */
-    public Object getData(EnumData data, Document document) {
-        if (document == null) return null;
-        String[] key = data.getKey().split("\\.");
-        Document rootDoc = (Document) document.get(key[0]);
-        if (rootDoc == null) return null;
-
-        Object dataObj = rootDoc.get(key[1]);
-
-        if (dataObj == null) return null;
-        Class<?> clazz = dataObj.getClass();
-
-        return rootDoc.get(key[1], clazz);
+    public static Object getData(Document document, StatType data) {
+        return document.get(data.getStat());
     }
 
-    public Object getData(String data, Document document) {
-        if (document == null) return null;
-        String[] key = data.split("\\.");
-        Document rootDoc = (Document) document.get(key[0]);
-        if (rootDoc == null) return null;
-        Document dataObj = (Document) rootDoc.get(key[1]);
-        if (dataObj == null) return null;
-        Object obj = dataObj.get(key[2]);
-        Class<?> clazz = obj.getClass();
-        return dataObj.get(key[2], clazz);
+    public static <Obj> Obj getData(Document document, StatType data, Class<Obj> clazz) {
+        return clazz.cast(document.get(data.getStat()));
     }
 
-    /**
-     * Retrieve's user's document asynchronously
-     *
-     * @param ipAddress User's IP address
-     * @param doAfter   Executed after document is retrieved
-     */
-    public void retrieveDocumentFromAddress(String ipAddress, Consumer<Document> doAfter) {
-        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(DatabaseInstance.playerData, Filters.eq("info.ipAddress", ipAddress), doAfter));
+    public static void retrieveCoreDataFromUuid(UUID uuid, Consumer<Document> doAfter) {
+        retrieveDocument(Database.getMainCollection(), DataInfo.UUID, uuid, doAfter);
     }
 
-    /**
-     * Retrieve's user's document asynchronously
-     *
-     * @param uuid    User's UUID
-     * @param doAfter Executed after document is retrieved
-     */
-       public void retrieveDocumentFromUUID(UUID uuid, Consumer<Document> doAfter) {
-           MongoAccessThread.submitQuery(new DocumentSearchQuery<>(DatabaseInstance.playerData, Filters.eq("info.uuid", uuid.toString()), doAfter));
-       }
-
-    /**
-     * Retrieve's user's document asynchronously
-     *
-     * @param username User's username
-     * @param doAfter  Executed after document is retrieved
-     */
-    public void retrieveDocumentFromUsername(String username, Consumer<Document> doAfter) {
-        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(DatabaseInstance.playerData, Filters.eq("info.username", username.toLowerCase()), doAfter));
+    public static void retrieveCoreDataFromName(String username, Consumer<Document> doAfter) {
+        retrieveDocument(Database.getMainCollection(), DataInfo.NAME, username, doAfter);
     }
 
+    public static void retrieveDocument(MongoCollection<Document> collection,
+                                 StatType stat,
+                                 Object value,
+                                 Consumer<Document> doAfter) {
+        Validate.notNull(collection);
+        Validate.notNull(stat);
 
-    /**
-     * Is fired to grab a player from Mongo
-     * if they don't exist. Fire addNewPlayer() creation.
-     *
-     * @param uuid
-     * @since 1.0
-     */
-    public void requestPlayer(UUID uuid, boolean async) {
-        requestPlayer(uuid, async, null);
+        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(
+                collection, Filters.eq(stat.getStat(), value), doAfter));
     }
 
-    /**
-     * Is fired to grab a player from Mongo
-     * if they don't exist. Fire addNewPlayer() creation.
-     *
-     * @param uuid
-     * @since 1.0
-     */
-    public void requestPlayer(UUID uuid, boolean async, Runnable doAfterOptional) {
-        if (async) {
-            retrieveDocumentFromUUID(uuid, doc -> {
-                if (doc == null) {
-                    addNewPlayer(uuid, async);
-                } else {
-                    PLAYERS.put(uuid, doc);
-                }
-                if (doAfterOptional != null)
-                    doAfterOptional.run();
-            });
-        } else {
-            Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
-            if (doc == null) addNewPlayer(uuid, async);
-            else PLAYERS.put(uuid, doc);
-
-
-            if (Bukkit.isPrimaryThread()) {
-                log.info("[Database] Requested for " + uuid + "'s document from the database on the main thread.");
-
+    public static void insertNew(MongoCollection collection,
+                                 Map<String, Object> map,
+                                 SingleResultCallback<Void> callback) {
+        collection.insertOne(new Document() {{
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                append(entry.getKey(), entry.getValue());
             }
-
-            if (doAfterOptional != null)
-                doAfterOptional.run();
-        }
-    }
-
-    public String getUUIDFromName(String playerName) {
-        if (CACHED_UUIDS.containsKey(playerName)) return CACHED_UUIDS.get(playerName);
-
-
-        if (Bukkit.isPrimaryThread()) {
-            log.warning("[Database] Retrieving " + playerName + " 's UUID from name on the main thread.");
-
-
-        }
-
-        Document doc = DatabaseInstance.playerData.find(Filters.eq("info.username", playerName.toLowerCase())).first();
-        if (doc == null) return "";
-        String uuidString = ((Document) doc.get("info")).get("uuid", String.class);
-        CACHED_UUIDS.put(playerName, uuidString);
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                CACHED_UUIDS.remove(playerName);
-            }
-        }, 500);
-        return uuidString;
-    }
-
-
-    public String getOfflineName(UUID uuid) {
-        if (Bukkit.isPrimaryThread()) {
-            log.info("[Database] Retrieving for " + uuid.toString() + "'s name on the main thread.");
-
-        }
-
-        Document doc = DatabaseInstance.playerData.find(Filters.eq("info.uuid", uuid.toString())).first();
-        if (doc == null) return "";
-        else {
-            return ((Document) doc.get("info")).get("username", String.class);
-        }
-    }
-
-
-    /**
-     * Adds a new player to Mongo Creates Document here.
-     *
-     * @param uuid
-     * @since 1.0
-     */
-
-    private void addNewPlayer(UUID uuid, boolean async) {
-        Document newPlayerDocument = new Document("info", new Document("uuid", uuid.toString())
-                .append("username", "")
-                .append("usernameHistory", Arrays.asList(""))
-                .append("ipAddress", "")
-                .append("firstLogin", System.currentTimeMillis() / 1000L)
-                .append("lastLogin", 0L)
-                .append("lastLogout", 0L)
-                .append("rank", "default")
-                .append("isNew", true)
-                .append("currentCharacter", 0)
-                .append("ipAddressHistory", Arrays.asList(""))
-                .append("isPlaying", true));
-        System.out.println(newPlayerDocument.toJson());
-        DatabaseInstance.playerData.insertOne(newPlayerDocument);
-        requestPlayer(uuid, async);
-        log.info("[Database] Requesting new data for : " + uuid);
-    }
-
-    public void stopInvocation() {
-        SERVER_EXECUTOR_SERVICE.shutdown();
+        }}, callback);
     }
 }

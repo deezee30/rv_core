@@ -1,8 +1,7 @@
 package com.riddlesvillage.core.database.query;
 
-import com.mongodb.client.MongoCollection;
+import com.mongodb.async.client.MongoCollection;
 import com.mongodb.client.model.UpdateOneModel;
-import com.riddlesvillage.core.database.data.Query;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -18,12 +17,17 @@ public class BulkWriteQuery<BulkWriteResult> extends Query<BulkWriteResult> {
      * @param doAfterOptional Consumer task to do after query is complete.
      * @param models          Write models
      */
-    public BulkWriteQuery(MongoCollection collection, List<UpdateOneModel<Document>> models, Consumer<BulkWriteResult> doAfterOptional) {
+    public BulkWriteQuery(MongoCollection collection,
+                          List<UpdateOneModel<Document>> models,
+                          Consumer<BulkWriteResult> doAfterOptional) {
         super(collection, null, doAfterOptional);
         this.models = models;
     }
 
-    public BulkWriteQuery(MongoCollection collection, Bson searchQuery, Consumer<BulkWriteResult> doAfter, List<UpdateOneModel<Document>> models) {
+    public BulkWriteQuery(MongoCollection collection,
+                          Bson searchQuery,
+                          Consumer<BulkWriteResult> doAfter,
+                          List<UpdateOneModel<Document>> models) {
         super(collection, searchQuery, doAfter);
         this.models = models;
     }

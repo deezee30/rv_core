@@ -7,7 +7,6 @@
 package com.riddlesvillage.core.collect;
 
 import com.google.common.collect.ImmutableList;
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.Validate;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
@@ -67,18 +66,17 @@ public class EnhancedList<E> extends ArrayList<E> implements JSONAware {
 		return list.getRandomElement();
 	}
 
-	@NotNull
 	public final ImmutableList<E> getImmutableElements() {
 		return ImmutableList.copyOf(this);
 	}
 
-	public String toReadableList(@NotNull String separator) {
+	public String toReadableList(String separator) {
 		// Do not append "and" instead of the last separator by default
 		return toReadableList(separator, false);
 	}
 
-	public String toReadableList(@NotNull String separator,
-								 @NotNull boolean concaterator) {
+	public String toReadableList(String separator,
+								 boolean concaterator) {
 		Validate.notNull(separator);
 
 		StringBuilder builder = new StringBuilder();

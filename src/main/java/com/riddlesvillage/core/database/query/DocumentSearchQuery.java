@@ -1,7 +1,7 @@
 package com.riddlesvillage.core.database.query;
 
-import com.mongodb.client.MongoCollection;
-import com.riddlesvillage.core.database.data.Query;
+
+import com.mongodb.async.client.MongoCollection;
 import org.bson.conversions.Bson;
 
 import java.util.function.Consumer;
@@ -16,5 +16,4 @@ public class DocumentSearchQuery<Document> extends Query<Document> {
     public DocumentSearchQuery(MongoCollection collection, Bson searchQuery, Consumer<Document> doAfter) {
         super(collection, searchQuery, doAfter);
     }
-
 }
