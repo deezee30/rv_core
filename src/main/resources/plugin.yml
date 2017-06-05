@@ -50,7 +50,7 @@ commands:
     aliases: [t, tok, token]
 
   premium:
-    description: Promotes a certain player to a premium rank
+    description: Promotes a certain player to a premium enumRank
     aliases: [pr, setpremium]
 
   god:
@@ -66,5 +66,5 @@ commands:
     aliases: [clearchat, chatclear]
 
   rank:
-    description: Modify a player's rank (console only)
+    description: Modify a player's enumRank (console only)
     aliases: [ranks]

@@ -7,19 +7,20 @@ package com.riddlesvillage.core.player;
 import com.riddlesvillage.core.Messaging;
 import org.bukkit.ChatColor;
 
-public enum Rank {
+public enum EnumRank {
 
 	DEFAULT	(0,		"Member",	ChatColor.GRAY),
 	HELPER	(1,		"Helper",	ChatColor.AQUA),
 	MOD		(5,		"Mod",		ChatColor.GREEN),
 	DEV		(5,		"Dev",		ChatColor.DARK_GREEN),
+	LEAD_DEV (6,		"Lead Dev",		ChatColor.GOLD),
 	ADMIN	(99999, "Admin",	ChatColor.BLUE);
 
 	private final int id;
 	private final String name;
 	private final ChatColor color;
 
-	Rank(int id, String name, ChatColor color) {
+	EnumRank(int id, String name, ChatColor color) {
 		this.id = id;
 		this.name = name;
 		this.color = color;
@@ -51,9 +52,9 @@ public enum Rank {
 		return getDisplayName();
 	}
 
-	public static Rank byName(String name) {
-		for (Rank rank : values()) {
-			if (rank.getName().equalsIgnoreCase(name)) return rank;
+	public static EnumRank byName(String name) {
+		for (EnumRank enumRank : values()) {
+			if (enumRank.getName().equalsIgnoreCase(name)) return enumRank;
 		}
 
 		return null;

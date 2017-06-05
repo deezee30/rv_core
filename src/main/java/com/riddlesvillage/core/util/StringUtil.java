@@ -3,6 +3,7 @@ package com.riddlesvillage.core.util;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.Validate;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,5 +63,19 @@ public final class StringUtil {
 		while (m.find()) strings.add(m.group(1));
 
 		return strings.build();
+	}
+
+	public static String getStringFromStringList(List<String> list) {
+		String string = "";
+		if (list.size() == 1) {
+			string += list.get(0);
+		}
+		for (String s : list) {
+			string += s + ", ";
+		}
+		if (string.length() > 3) {
+			string = string.substring(0, string.length()-2);
+		}
+		return string;
 	}
 }

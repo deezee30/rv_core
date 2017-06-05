@@ -8,7 +8,7 @@ package com.riddlesvillage.core.database.data;
 
 import com.riddlesvillage.core.CoreSettings;
 import com.riddlesvillage.core.database.StatType;
-import com.riddlesvillage.core.player.Rank;
+import com.riddlesvillage.core.player.EnumRank;
 
 import java.util.Collections;
 
@@ -24,7 +24,7 @@ public enum DataInfo implements StatType {
 	PLAYING		("playing", 		true),
 	COINS		("coins",			0),
 	TOKENS		("tokens",			0),
-	RANK		("rank",			Rank.DEFAULT),
+	RANK		("rank",			EnumRank.DEFAULT),
 	PREMIUM		("premium",		false),
 	LOCALE		("locale",			CoreSettings.DEFAULT_LOCALE);
 

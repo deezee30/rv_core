@@ -183,7 +183,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 				 * is online before calling all other events.
 				 */
 				if (player.isOnline()) {
-					player.setDisplayName(getRank().getColor() + player.getName());
+					player.setDisplayName(getEnumRank().getColor() + player.getName());
 
 					INSTANCE.getServer().getPluginManager().callEvent(
 							new CorePlayerPostLoadEvent(CorePlayer.this, newcomer));

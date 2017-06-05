@@ -14,8 +14,8 @@ import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.player.CorePlayer;
+import com.riddlesvillage.core.player.EnumRank;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
-import com.riddlesvillage.core.player.Rank;
 import com.riddlesvillage.core.player.statistic.CoinsHolder;
 import com.riddlesvillage.core.player.statistic.PremiumHolder;
 import com.riddlesvillage.core.player.statistic.StatisticHolder;
@@ -92,8 +92,8 @@ public abstract class AbstractCoreProfile implements StatisticHolder, CoinsHolde
 			tokens			= 0;
 	private transient StatisticHolder
 			statHolder		= this;
-	private transient Rank
-			rank			= Rank.DEFAULT;
+	private transient EnumRank
+            enumRank = EnumRank.DEFAULT;
 	private transient List<String>
 			ipHistory		= Lists.newArrayList(),
 			nameHistory		= Lists.newArrayList();
@@ -177,7 +177,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, CoinsHolde
 				ipHistory = document.get("ipHistory", List.class);
 				coins = document.getInteger("coins");
 				tokens = document.getInteger("tokens");
-				rank = Rank.byName(document.getString("rank").toUpperCase());
+				enumRank = EnumRank.byName(document.getString("enumRank").toUpperCase());
 				premium = document.getBoolean("premium");
 			}
 		};
@@ -236,37 +236,37 @@ public abstract class AbstractCoreProfile implements StatisticHolder, CoinsHolde
 
 	// == Ranks ====================================================== //
 
-	public final Rank getRank() {
-		return rank;
+	public final EnumRank getEnumRank() {
+		return enumRank;
 	}
 
-	public final void setRank(Rank rank) {
-		this.rank = rank;
+	public final void setEnumRank(EnumRank enumRank) {
+		this.enumRank = enumRank;
 		DatabaseAPI.update(
 				Database.getMainCollection(),
 				getUuid(),
 				DataOperator.$SET,
 				DataInfo.RANK,
-				rank.getName(),
+				enumRank.getName(),
 				updateResult -> RiddlesCore.logIf(
 						!updateResult.wasAcknowledged(),
-						"%s's rank update to %s was unacknowledged",
+						"%s's enumRank update to %s was unacknowledged",
 						getName(),
-						rank.getDisplayName()
+						enumRank.getDisplayName()
 				)
 		);
 	}
 
 	public final boolean isHelper() {
-		return rank.getId() >= Rank.HELPER.getId();
+		return enumRank.getId() >= EnumRank.HELPER.getId();
 	}
 
 	public final boolean isMod() {
-		return rank.getId() >= Rank.MOD.getId();
+		return enumRank.getId() >= EnumRank.MOD.getId();
 	}
 
 	public final boolean isAdmin() {
-		return rank.getId() >= Rank.ADMIN.getId();
+		return enumRank.getId() >= EnumRank.ADMIN.getId();
 	}
 
 	// == Premium State ====================================================== //
@@ -341,7 +341,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, CoinsHolde
 		return new ImmutableList.Builder<String>()
 				.add("~")
 				.add("~&3======= " + getDisplayName() + " &3=======")
-				.add("~&3Rank: " + rank.getDisplayName())
+				.add("~&3Rank: " + enumRank.getDisplayName())
 				.add("~&3Premium: " + (premium ? "&2True" : "&4False"))
 				.add("~&3Currently " + (isOnline() ? "&2Online" : "&4Offline"))
 				.add("~")
