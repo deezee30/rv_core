@@ -648,21 +648,9 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 		return rank;
 	}
 
-	public final void setRank(EnumRank rank) {
+	@Override
+	public final void modifyRank(EnumRank rank) {
 		this.rank = rank;
-		DatabaseAPI.update(
-				Database.getMainCollection(),
-				getUuid(),
-				DataOperator.$SET,
-				DataInfo.RANK,
-				rank.getName(),
-				updateResult -> RiddlesCore.logIf(
-						!updateResult.wasAcknowledged(),
-						"%s's rank update to %s was unacknowledged",
-						getName(),
-						rank.getDisplayName()
-				)
-		);
 	}
 
 	public final boolean isHelper() {

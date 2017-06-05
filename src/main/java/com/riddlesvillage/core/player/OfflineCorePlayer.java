@@ -172,6 +172,11 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	}
 
 	@Override
+	public void modifyRank(EnumRank rank) {
+		this.rank = rank;
+	}
+
+	@Override
 	public int getTokens() {
 		return tokens;
 	}

@@ -46,7 +46,7 @@ public final class RankCommand implements CommandExecutor {
 					EnumRank enumRank = EnumRank.valueOf(rankName);
 
 					String targetName = args[0];
-					MANAGER.getOrOffline(targetName).setEnumRank(enumRank);
+					MANAGER.getOrOffline(targetName).setRank(enumRank);
 					RiddlesCore.log("%s's rank has been set to %s", targetName, rankName);
 
 					return true;
