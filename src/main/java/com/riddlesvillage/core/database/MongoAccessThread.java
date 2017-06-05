@@ -1,5 +1,6 @@
 package com.riddlesvillage.core.database;
 
+import com.mongodb.async.SingleResultCallback;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.UpdateResult;
@@ -45,20 +46,23 @@ public class MongoAccessThread extends Thread {
                             updateQuery.getSearchQuery(),
                             updateQuery.getNewDocument(),
                             UPDATE_OPTIONS,
-                            (result, t) -> {
-                                if (result.wasAcknowledged()) {
-                                    if (updateQuery.getDoAfter() != null) {
-                                        CONSUMER_EXECUTOR_SERVICE.submit(() -> updateQuery.getDoAfter().accept(result));
+                            new SingleResultCallback<UpdateResult>() {
+                                @Override
+                                public void onResult(UpdateResult updateResult, Throwable throwable) {
+                                    if (updateResult.wasAcknowledged()) {
+                                        if (updateQuery.getDoAfter() != null) {
+                                            CONSUMER_EXECUTOR_SERVICE.submit(() -> updateQuery.getDoAfter().accept(updateResult));
+                                        }
+                                    } else {
+                                        RiddlesCore.log(
+                                                "Update query failed: %s - %s",
+                                                updateQuery.getSearchQuery().toString(),
+                                                updateQuery.getNewDocument().toString()
+                                        );
                                     }
-                                } else {
-                                    RiddlesCore.log(
-                                            "Update query failed: %s - %s",
-                                            updateQuery.getSearchQuery().toString(),
-                                            updateQuery.getNewDocument().toString()
-                                    );
                                 }
-                            }
-                    );
+                            });
+
 
                 } else if (query instanceof DocumentSearchQuery) {
                     DocumentSearchQuery documentSearchQuery = (DocumentSearchQuery) query;
@@ -68,9 +72,12 @@ public class MongoAccessThread extends Thread {
                                     () -> documentSearchQuery.getDoAfter().accept(result)));
                 } else if (query instanceof BulkWriteQuery) {
                     BulkWriteQuery<BulkWriteResult> bulkWriteQuery = (BulkWriteQuery<BulkWriteResult>) query;
-                    bulkWriteQuery.getCollection().bulkWrite(bulkWriteQuery.getModels(), (result, t) -> {
-                        if (bulkWriteQuery.getDoAfter() != null) {
-                            CONSUMER_EXECUTOR_SERVICE.submit(() -> bulkWriteQuery.getDoAfter().accept(result));
+                    bulkWriteQuery.getCollection().bulkWrite(bulkWriteQuery.getModels(), new SingleResultCallback<BulkWriteResult>() {
+                        @Override
+                        public void onResult(BulkWriteResult bulkWriteResult, Throwable throwable) {
+                            if (bulkWriteQuery.getDoAfter() != null) {
+                                CONSUMER_EXECUTOR_SERVICE.submit(() -> bulkWriteQuery.getDoAfter().accept(bulkWriteResult));
+                            }
                         }
                     });
                 }

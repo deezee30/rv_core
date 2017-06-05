@@ -9,13 +9,15 @@ package com.riddlesvillage.core.internal.command;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.CorePlayerManager;
-import com.riddlesvillage.core.player.Rank;
+import com.riddlesvillage.core.player.EnumRank;
+import com.riddlesvillage.core.util.StringUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public final class RankCommand implements CommandExecutor {
 
@@ -41,10 +43,10 @@ public final class RankCommand implements CommandExecutor {
 				String rankName = args[1].toUpperCase(Locale.ENGLISH);
 
 				try {
-					Rank rank = Rank.valueOf(rankName);
+					EnumRank enumRank = EnumRank.valueOf(rankName);
 
 					String targetName = args[0];
-					MANAGER.getOrOffline(targetName).setRank(rank);
+					MANAGER.getOrOffline(targetName).setEnumRank(enumRank);
 					RiddlesCore.log("%s's rank has been set to %s", targetName, rankName);
 
 					return true;
@@ -53,8 +55,7 @@ public final class RankCommand implements CommandExecutor {
 					break;
 				}
 		}
-
-		RiddlesCore.log("Available ranks: " + Arrays.asList(Rank.values()));
+		RiddlesCore.log("Available ranks: " + StringUtil.getStringFromStringList(Arrays.stream(EnumRank.values()).map(EnumRank::getName).collect(Collectors.toList())));
 
 		return true;
 	}

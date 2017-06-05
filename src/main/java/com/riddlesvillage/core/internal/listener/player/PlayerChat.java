@@ -7,7 +7,7 @@ package com.riddlesvillage.core.internal.listener.player;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.internal.config.MainConfig;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.Rank;
+import com.riddlesvillage.core.player.EnumRank;
 import com.riddlesvillage.core.player.profile.CoreProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -45,11 +45,11 @@ final class PlayerChat implements Listener {
 			}
 		}
 
-		Rank rank = player.getRank();
+		EnumRank enumRank = player.getEnumRank();
 
 		event.setFormat(String.format(
 				ChatColor.translateAlternateColorCodes('&', RiddlesCore.getSettings().get(player.getLocale(), "chat.format")),
-				rank.getDisplayName(),
+				enumRank.getDisplayName(),
 				player.getDisplayName(),
 				msg
 		));
