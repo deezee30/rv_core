@@ -54,6 +54,7 @@ public interface CoinsHolder extends CoreProfile {
 	 * @see     #setCoins(Value)
 	 * @see     CoinValueModificationEvent
 	 * @since   1.1
+	 * @deprecated Used for local storage. Use {@link #setCoins(Value)} instead
 	 */
 	void modifyCoins(int coins);
 

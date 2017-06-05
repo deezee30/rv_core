@@ -1,0 +1,33 @@
+##########################################################
+# +----------------------------------------------------+ #
+# |                                                    | #
+# |            RiddlesCore for RiddlesVillage          | #
+# |                                                    | #
+# +----------------------------------------------------+ #
+# | Version . . . . . . . . . . . . . . . . . . .  0.1 | #
+# | Java  . . . . . . . . . . . . . . . . . . . . .  8 | #
+# | JDK . . . . . . . . . . . . . . . . . . . . .  1.8 | #
+# | Line Endings  . . . . . . . . . . . . . . . . Unix | #
+# | Compiler  . . . . . . . . . . . . . . . .  Maven 3 | #
+# +----------------------------------------------------+ #
+# | An engine built for RiddlesVillage used to provide | #
+# | stabilized support for various simple and          | #
+# | difficult tasks.  Efficiency, compatibility and    | #
+# | speed are the three priorities used when working   | #
+# | with Riddles plugins.                              | #
+# +----------------------------------------------------+ #
+##########################################################
+
+address: localhost
+
+name: riddlesvillage
+
+username: matthew
+
+password: password
+
+##########################################################
+# +----------------------------------------------------+ #
+# |      End of configuration file "database.yml"      | #
+# +----------------------------------------------------+ #
+##########################################################

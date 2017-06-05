@@ -50,6 +50,7 @@ public interface TokensHolder extends CoreProfile {
 	 * @see		#setTokens(Value)
 	 * @see		TokenValueModificationEvent
 	 * @since	1.1
+	 * @deprecated Used for local storage. Use {@link #setTokens(Value)} instead
 	 */
 	void modifyTokens(int tokens);
 
