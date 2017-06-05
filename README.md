@@ -48,7 +48,7 @@ Make sure to add the private repo:
 ```xml
 <repository>
     <id>riddlesvillage</id>
-    <url>https://repo.riddlescore.com/content/groups/private/</url>
+    <url>https://repo.riddlesvillage.com/content/groups/private/</url>
 </repository>
 ```
 

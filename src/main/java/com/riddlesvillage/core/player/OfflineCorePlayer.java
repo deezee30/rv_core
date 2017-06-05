@@ -5,12 +5,17 @@
 package com.riddlesvillage.core.player;
 
 import com.google.common.base.Strings;
+import com.mongodb.async.client.MongoCollection;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.collect.EnhancedList;
+import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
+import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,6 +39,14 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 		}.runTaskTimerAsynchronously(RiddlesCore.getInstance(), 600L, 600L);
 	}
 
+	private transient EnumRank
+			rank	= EnumRank.DEFAULT;
+	private transient boolean
+			premium	= false;
+	private transient int
+			coins	= 0,
+			tokens	= 0;
+
 	private OfflineCorePlayer(UUID uuid, String name) {
 		super(uuid, name);
 		timer.forceStop();
@@ -41,7 +54,35 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 
 	@Override
 	public String getDisplayName() {
-		return ChatColor.BLUE + getName();
+		return ChatColor.GRAY + getName();
+	}
+
+	@Override
+	public String getIp() {
+		return null;
+	}
+
+	@Override
+	public List<String> getIpHistory() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<String> getNameHistory() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public MongoCollection<Document> getCollection() {
+		return Database.getMainCollection();
+	}
+
+	@Override
+	public void loadStats(Document stats) {
+		rank = EnumRank.byName(stats.getString("rank"));
+		premium = stats.getBoolean("premium");
+		coins = stats.getInteger("coins");
+		tokens = stats.getInteger("tokens");
 	}
 
 	public static OfflineCorePlayer fromName(String name) {
@@ -96,6 +137,16 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	}
 
 	@Override
+	public int getCoins() {
+		return coins;
+	}
+
+	@Override
+	public void modifyCoins(int coins) {
+		this.coins = coins;
+	}
+
+	@Override
 	public double getCoinMultiplier() {
 		return 1;
 	}
@@ -103,5 +154,35 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	@Override
 	public void setCoinMultiplier(double factor) {
 		// do nothing - player offline
+	}
+
+	@Override
+	public boolean isPremium() {
+		return premium;
+	}
+
+	@Override
+	public void modifyPremium(boolean premium) {
+		this.premium = premium;
+	}
+
+	@Override
+	public EnumRank getRank() {
+		return rank;
+	}
+
+	@Override
+	public void modifyRank(EnumRank rank) {
+		this.rank = rank;
+	}
+
+	@Override
+	public int getTokens() {
+		return tokens;
+	}
+
+	@Override
+	public void modifyTokens(int tokens) {
+		this.tokens = tokens;
 	}
 }

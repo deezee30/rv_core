@@ -22,9 +22,9 @@ public final class GodCommand implements CommandExecutor {
 							 String[] args) {
 
 		CorePlayer player = CorePlayerManager.getInstance().get(sender.getName());
-		boolean isPlayer = player == null;
+		boolean isPlayer = player != null;
 
-		if (!isPlayer || (isPlayer && player.isAdmin())) {
+		if (isPlayer && !player.isMod()) {
 			player.sendMessage("player.error.no-permission");
 			return true;
 		}
@@ -52,8 +52,12 @@ public final class GodCommand implements CommandExecutor {
 
 				boolean damageable = !target.isDamageable();
 				target.setDamageable(damageable);
-				target.sendMessage("god." + (damageable ? "disabled" : "enabled"));
-				player.sendMessage("god." + (damageable ? "disabled" : "enabled"));
+
+				String msg = "god." + (damageable ? "disabled" : "enabled");
+
+				target.sendMessage(msg);
+				if (isPlayer)	player.sendMessage(msg);
+				else			RiddlesCore.log(msg);
 		}
 
 		return true;

@@ -4,30 +4,22 @@
 
 package com.riddlesvillage.core.player.profile;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.riddlesvillage.core.CoreException;
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
-import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.EnumRank;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
-import com.riddlesvillage.core.player.statistic.CoinsHolder;
-import com.riddlesvillage.core.player.statistic.PremiumHolder;
-import com.riddlesvillage.core.player.statistic.StatisticHolder;
-import com.riddlesvillage.core.player.statistic.TokensHolder;
+import com.riddlesvillage.core.player.statistic.*;
 import com.riddlesvillage.core.service.timer.Timer;
 import com.riddlesvillage.core.util.UUIDUtil;
 import org.bson.Document;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * An abstract version of expanded {@link CoreProfile}.
@@ -62,7 +54,7 @@ import java.util.function.Consumer;
  * @see CorePlayer
  * @see OfflineCorePlayer
  */
-public abstract class AbstractCoreProfile implements StatisticHolder, CoinsHolder, TokensHolder, PremiumHolder {
+public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHolder, CoinsHolder, TokensHolder, RankedPlayer {
 
 	/*
 	 * In case the player is offline and the UUID or name has
@@ -72,31 +64,20 @@ public abstract class AbstractCoreProfile implements StatisticHolder, CoinsHolde
 	 *
 	 * If both values are null, profile will not be generated.
 	 */
-	private UUID uuid;
-	private String name;
+	private volatile UUID uuid = null;
+	private volatile String name = null;
 
 	/**
 	 * Used for timing this class.  Can be accessed and interacted
 	 * with via sub classes.  It is recommented to stop the timer
 	 * after all loading is done via {@link Timer#forceStop()}.
 	 */
-	protected final transient Timer
+	protected volatile transient Timer
 			timer			= new Timer();
-	protected transient Document
-			downloadedDoc	= null;
 	private transient boolean
-			played			= false,
-			premium			= false;
-	private transient int
-			coins			= 0,
-			tokens			= 0;
+			played			= false;
 	private transient StatisticHolder
 			statHolder		= this;
-	private transient EnumRank
-            enumRank = EnumRank.DEFAULT;
-	private transient List<String>
-			ipHistory		= Lists.newArrayList(),
-			nameHistory		= Lists.newArrayList();
 
 	/**
 	 * @see #AbstractCoreProfile(UUID, String)
@@ -142,14 +123,37 @@ public abstract class AbstractCoreProfile implements StatisticHolder, CoinsHolde
 			return;
 		}
 
-		// Record how long it takes to load the profile
-		timer.start();
-
 		this.uuid = uuid;
 		this.name = name;
 
-		// Async download stats from database
-		refreshStats();
+		// Record how long it takes to load the profile
+		timer.start();
+
+		if (name == null || uuid == null) {
+
+			boolean lookupName = name == null;
+			DataInfo data = lookupName ? DataInfo.UUID : DataInfo.NAME;
+			DatabaseAPI.retrieveDocument(Database.getMainCollection(), data, lookupName ? uuid : name, document -> {
+
+				Optional<Document> downloadedDoc = Optional.fromNullable(document);
+				if (downloadedDoc.isPresent()) {
+					played = true;
+					this.name = document.getString("name");
+					this.uuid = UUIDUtil.fromString(document.getString("uuid"));
+
+					if (getCollection() == null) {
+						// Async download custom stats from database
+						refreshStats();
+					} else {
+						// Apply already downloaded stats
+						loadStats(document);
+					}
+				} else {
+					// player never played before
+					Messaging.debug("Generated fake player %s (%s)");
+				}
+			});
+		}
 
 		// Called from subclass when load is complete
 		timer.onFinishExecute(() -> Messaging.debug(
@@ -162,33 +166,9 @@ public abstract class AbstractCoreProfile implements StatisticHolder, CoinsHolde
 	}
 
 	protected void refreshStats() {
-		Consumer<Document> doAfter = document -> {
-			if (document == null) {
-				// player never played before
-				Messaging.debug("Generated fake player but has not been found in the database");
-			} else {
-				AbstractCoreProfile.this.downloadedDoc = document;
-				played = true;
+		// Async download custom stats from database
+		DatabaseAPI.retrieveDocument(getCollection(), DataInfo.UUID, uuid, this :: loadStats);
 
-				// Update stats
-				uuid = UUIDUtil.fromString(document.getString("uuid"));
-				name = document.getString("name");
-				nameHistory = document.get("nameHistory", List.class);
-				ipHistory = document.get("ipHistory", List.class);
-				coins = document.getInteger("coins");
-				tokens = document.getInteger("tokens");
-				enumRank = EnumRank.byName(document.getString("enumRank").toUpperCase());
-				premium = document.getBoolean("premium");
-			}
-		};
-
-		if (name == null) {
-			// download stats using UUID
-			DatabaseAPI.retrieveDocument(Database.getMainCollection(), DataInfo.UUID, uuid, doAfter);
-		} else {
-			// download stats using name
-			DatabaseAPI.retrieveDocument(Database.getMainCollection(), DataInfo.NAME, name, doAfter);
-		}
 	}
 
 	@Override
@@ -220,89 +200,6 @@ public abstract class AbstractCoreProfile implements StatisticHolder, CoinsHolde
 	@Override
 	public final boolean hasPlayed() {
 		return played;
-	}
-
-	public String getIp() {
-		return ipHistory.size() == 0 ? null : ipHistory.get(ipHistory.size() - 1);
-	}
-
-	public final List<String> getIpHistory() {
-		return ipHistory;
-	}
-
-	public final List<String> getNameHistory() {
-		return nameHistory;
-	}
-
-	// == Ranks ====================================================== //
-
-	public final EnumRank getEnumRank() {
-		return enumRank;
-	}
-
-	public final void setEnumRank(EnumRank enumRank) {
-		this.enumRank = enumRank;
-		DatabaseAPI.update(
-				Database.getMainCollection(),
-				getUuid(),
-				DataOperator.$SET,
-				DataInfo.RANK,
-				enumRank.getName(),
-				updateResult -> RiddlesCore.logIf(
-						!updateResult.wasAcknowledged(),
-						"%s's enumRank update to %s was unacknowledged",
-						getName(),
-						enumRank.getDisplayName()
-				)
-		);
-	}
-
-	public final boolean isHelper() {
-		return enumRank.getId() >= EnumRank.HELPER.getId();
-	}
-
-	public final boolean isMod() {
-		return enumRank.getId() >= EnumRank.MOD.getId();
-	}
-
-	public final boolean isAdmin() {
-		return enumRank.getId() >= EnumRank.ADMIN.getId();
-	}
-
-	// == Premium State ====================================================== //
-
-	@Override
-	public final boolean isPremium() {
-		return premium;
-	}
-
-	@Override
-	public final void modifyPremium(boolean premium) {
-		this.premium = premium;
-	}
-
-	// == Coins ====================================================== //
-
-	@Override
-	public int getCoins() {
-		return coins;
-	}
-
-	@Override
-	public void modifyCoins(int coins) {
-		this.coins = coins;
-	}
-
-	// == Tokens ====================================================== //
-
-	@Override
-	public int getTokens() {
-		return tokens;
-	}
-
-	@Override
-	public void modifyTokens(int tokens) {
-		this.tokens = tokens;
 	}
 
 	// == Statistics ====================================================== //
@@ -341,8 +238,8 @@ public abstract class AbstractCoreProfile implements StatisticHolder, CoinsHolde
 		return new ImmutableList.Builder<String>()
 				.add("~")
 				.add("~&3======= " + getDisplayName() + " &3=======")
-				.add("~&3Rank: " + enumRank.getDisplayName())
-				.add("~&3Premium: " + (premium ? "&2True" : "&4False"))
+				.add("~&3Rank: " + getRank().getDisplayName())
+				.add("~&3Premium: " + (isPremium() ? "&2True" : "&4False"))
 				.add("~&3Currently " + (isOnline() ? "&2Online" : "&4Offline"))
 				.add("~")
 				.build();

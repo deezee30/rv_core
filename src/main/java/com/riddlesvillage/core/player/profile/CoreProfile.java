@@ -4,9 +4,12 @@
 
 package com.riddlesvillage.core.player.profile;
 
+import com.mongodb.async.client.MongoCollection;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.CorePlayerManager;
+import org.bson.Document;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -59,6 +62,24 @@ public interface CoreProfile {
 
 
 	/**
+	 * @return The last known IP address the player has used or current one
+	 */
+	String getIp();
+
+
+	/**
+	 * @return A {@link List} of previously connected with IP addresses
+	 */
+	List<String> getIpHistory();
+
+
+	/**
+	 * @return A {@link List} of previously connected with usernames
+	 */
+	List<String> getNameHistory();
+
+
+	/**
 	 * Checks if this profile has played on this server before.
 	 *
 	 * @return 	{@code true} if the profile has played before,
@@ -92,4 +113,8 @@ public interface CoreProfile {
 	default CorePlayer toCorePlayer() {
 		return PLAYER_MANAGER.get(getUuid());
 	}
+
+	MongoCollection<Document> getCollection();
+
+	void loadStats(Document stats);
 }

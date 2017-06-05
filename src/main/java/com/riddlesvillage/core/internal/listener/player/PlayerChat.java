@@ -45,7 +45,7 @@ final class PlayerChat implements Listener {
 			}
 		}
 
-		EnumRank enumRank = player.getEnumRank();
+		EnumRank enumRank = player.getRank();
 
 		event.setFormat(String.format(
 				ChatColor.translateAlternateColorCodes('&', RiddlesCore.getSettings().get(player.getLocale(), "chat.format")),

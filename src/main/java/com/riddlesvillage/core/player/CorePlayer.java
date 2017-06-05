@@ -8,12 +8,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.common.util.concurrent.Atomics;
+import com.mongodb.async.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOneModel;
 import com.riddlesvillage.core.CoreSettings;
 import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
@@ -45,7 +46,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An online-only version of any user
@@ -68,10 +68,18 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	private transient ScoreboardHolder
 			sbHolder 		= this;
 
+	private transient EnhancedList<String>
+			ipHistory		= new EnhancedList<>(),
+			nameHistory		= new EnhancedList<>();
+
 	private transient String
 			locale 			= SETTINGS.getLocaleOrDefault(MainConfig.getDefaultLocale());
 
+	private transient EnumRank
+			rank			= EnumRank.DEFAULT;
+
 	private transient boolean
+			premium			= false,
 			vanished 		= false,
 			cmdBlocked 		= false,
 			damageable 		= true,
@@ -82,12 +90,17 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	private transient double
 			coinMultiplier	= 1.0d;
 
+	private transient int
+			coins			= 0,
+			tokens			= 0;
+
 	CorePlayer(Player player, String assumedHostName) {
 		super(player.getUniqueId(), player.getName());
+
 		this.player = player;
 
-		final AtomicReference<String> hostName
-				= Atomics.newReference(assumedHostName == null ? "127.0.0.1" : assumedHostName);
+		nameHistory.add(player.getName());
+		ipHistory.add(assumedHostName);
 
 		// Check if player exists in database collection
 		boolean newcomer = !hasPlayed();
@@ -98,8 +111,8 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 			DataInfo.UUID.append(doc, getUuid());
 			DataInfo.NAME.append(doc, getName());
-			DataInfo.NAME_HISTORY.append(doc);
-			DataInfo.IP_HISTORY.append(doc);
+			DataInfo.NAME_HISTORY.append(doc, nameHistory);
+			DataInfo.IP_HISTORY.append(doc, ipHistory);
 			DataInfo.FIRST_LOGIN.append(doc, System.currentTimeMillis() / 1000);
 			DataInfo.LAST_LOGIN.append(doc, System.currentTimeMillis() / 1000);
 			DataInfo.LAST_LOGOUT.append(doc);
@@ -118,9 +131,6 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 			// Player's name and stats may have changed since his last query - Remove him from cache
 			OfflineCorePlayer.removeFromCache(getUuid());
 
-			// Update player locale from downloaded document
-			locale = downloadedDoc.getString("locale");
-
 			List<UpdateOneModel<Document>> operations = Lists.newArrayList();
 			Bson searchQuery = Filters.eq("uuid", getUuid());
 
@@ -134,7 +144,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 					DataOperator.$SET.getOperator(),
 					new Document(DataInfo.NAME_HISTORY.getStat(), getNameHistory()))));
 
-			// update IP
+			// update IP history
 			operations.add(new UpdateOneModel<>(searchQuery, new Document(
 					DataOperator.$SET.getOperator(),
 					new Document(DataInfo.IP_HISTORY.getStat(), getIpHistory()))));
@@ -183,7 +193,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 				 * is online before calling all other events.
 				 */
 				if (player.isOnline()) {
-					player.setDisplayName(getEnumRank().getColor() + player.getName());
+					player.setDisplayName(getRank().getColor() + player.getName());
 
 					INSTANCE.getServer().getPluginManager().callEvent(
 							new CorePlayerPostLoadEvent(CorePlayer.this, newcomer));
@@ -228,8 +238,36 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	}
 
 	@Override
+	public MongoCollection<Document> getCollection() {
+		return null;
+	}
+
+	@Override
+	public void loadStats(Document stats) {
+		locale = stats.getString("locale");
+		rank = EnumRank.byName(stats.getString("rank"));
+		premium = stats.getBoolean("premium");
+		coins = stats.getInteger("coins");
+		tokens = stats.getInteger("tokens");
+		((List<String>) stats.get("nameHistory"))
+				.forEach(s -> nameHistory.addIf(!nameHistory.contains(s), s));
+		((List<String>) stats.get("ipHistory"))
+				.forEach(s -> ipHistory.addIf(!ipHistory.contains(s), s));
+	}
+
+	@Override
 	public String getIp() {
 		return player.getAddress().getHostName();
+	}
+
+	@Override
+	public List<String> getIpHistory() {
+		return ipHistory;
+	}
+
+	@Override
+	public List<String> getNameHistory() {
+		return nameHistory;
 	}
 
 	/**
@@ -242,6 +280,8 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 				ChatColor.YELLOW + getName()
 				: player.getDisplayName();
 	}
+
+	// == Messaging ====================================================== //
 
 	/**
 	 * Sends multiple localized messages from the locales via the provided
@@ -434,7 +474,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 		));
 	}
 
-	// == User Data ====================================================== //
+	// == Basic Limitations ====================================================== //
 
 	/**
 	 * @return Whether or not the player is allowed to build/break blocks.
@@ -518,6 +558,8 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 		return this.canGetHungry = canGetHungry;
 	}
 
+	// == Locale ====================================================== //
+
 	/**
 	 * @return The player's chosen locale. Default is specified in the config.
 	 */
@@ -553,6 +595,30 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 		return locale;
 	}
 
+	// == Premium ====================================================== //
+
+	@Override
+	public boolean isPremium() {
+		return premium;
+	}
+
+	@Override
+	public void modifyPremium(boolean premium) {
+		this.premium = premium;
+	}
+
+	// == Coins ====================================================== //
+
+	@Override
+	public int getCoins() {
+		return coins;
+	}
+
+	@Override
+	public void modifyCoins(int coins) {
+		this.coins = coins;
+	}
+
 	@Override
 	public double getCoinMultiplier() {
 		return coinMultiplier;
@@ -562,6 +628,41 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	public void setCoinMultiplier(double factor) {
 		if (factor < 0) return;
 		coinMultiplier = factor;
+	}
+
+	// == Tokens ====================================================== //
+
+	@Override
+	public int getTokens() {
+		return tokens;
+	}
+
+	@Override
+	public void modifyTokens(int tokens) {
+		this.tokens = tokens;
+	}
+
+	// == Ranks ====================================================== //
+
+	public final EnumRank getRank() {
+		return rank;
+	}
+
+	@Override
+	public final void modifyRank(EnumRank rank) {
+		this.rank = rank;
+	}
+
+	public final boolean isHelper() {
+		return isAllowedFor(EnumRank.HELPER);
+	}
+
+	public final boolean isMod() {
+		return isAllowedFor(EnumRank.MOD);
+	}
+
+	public final boolean isAdmin() {
+		return isAllowedFor(EnumRank.ADMIN);
 	}
 
 	// == Inventory State ====================================================== //
