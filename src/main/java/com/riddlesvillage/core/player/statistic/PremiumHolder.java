@@ -9,8 +9,8 @@ import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
-import com.riddlesvillage.core.player.profile.CoreProfile;
 import com.riddlesvillage.core.player.event.PremiumStatusModificationEvent;
+import com.riddlesvillage.core.player.profile.CoreProfile;
 import org.bukkit.Bukkit;
 
 /**
@@ -53,6 +53,7 @@ public interface PremiumHolder extends CoreProfile {
 	 * @see		#setPremium(boolean)
 	 * @see		PremiumStatusModificationEvent
 	 * @since	2.0
+	 * @deprecated Used for local storage. Use {@link #setPremium(boolean)} instead
 	 */
 	void modifyPremium(boolean premium);
 
