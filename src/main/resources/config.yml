@@ -1,0 +1,65 @@
+##########################################################
+# +----------------------------------------------------+ #
+# |                                                    | #
+# |            RiddlesCore for RiddlesVillage          | #
+# |                                                    | #
+# +----------------------------------------------------+ #
+# | Version . . . . . . . . . . . . . . . . . . .  0.1 | #
+# | Java  . . . . . . . . . . . . . . . . . . . . .  8 | #
+# | JDK . . . . . . . . . . . . . . . . . . . . .  1.8 | #
+# | Line Endings  . . . . . . . . . . . . . . . . Unix | #
+# | Compiler  . . . . . . . . . . . . . . . .  Maven 3 | #
+# +----------------------------------------------------+ #
+# | An engine built for RiddlesVillage used to provide | #
+# | stabilized support for various simple and          | #
+# | difficult tasks.  Efficiency, compatibility and    | #
+# | speed are the three priorities used when working   | #
+# | with Riddles plugins.                              | #
+# +----------------------------------------------------+ #
+##########################################################
+
+# Please keep this option false until told to change it.
+debug: true
+
+# The default language to be used for players until they change it.
+default-locale: english
+
+# Whether or not to show the player titles as a prefix in chat.
+show-rank-in-chat: false
+
+# How many lines are sent to clear the chat.
+clearchat-lines: 30
+
+# The commands that any player can execute while in game.
+allowed-commands-when-disabled:
+- hub
+- leave
+- l
+- quit
+- q
+- spectate
+- spec
+- sp
+- class
+- kits
+- kit
+- k
+- experience
+- points
+- exp
+- xp
+- player
+- stats
+- st
+- arena
+- a
+- teleport
+- tp
+- report
+- rep
+
+##########################################################
+# +----------------------------------------------------+ #
+# |       End of configuration file "config.yml"       | #
+# +----------------------------------------------------+ #
+##########################################################
