@@ -129,31 +129,35 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 		// Record how long it takes to load the profile
 		timer.start();
 
-		if (name == null || uuid == null) {
+		DataInfo data = DataInfo.UUID;
+		Object value = uuid;
 
-			boolean lookupName = name == null;
-			DataInfo data = lookupName ? DataInfo.UUID : DataInfo.NAME;
-			DatabaseAPI.retrieveDocument(Database.getMainCollection(), data, lookupName ? uuid : name, document -> {
-
-				Optional<Document> downloadedDoc = Optional.fromNullable(document);
-				if (downloadedDoc.isPresent()) {
-					played = true;
-					this.name = document.getString("name");
-					this.uuid = UUIDUtil.fromString(document.getString("uuid"));
-
-					if (getCollection() == null) {
-						// Async download custom stats from database
-						refreshStats();
-					} else {
-						// Apply already downloaded stats
-						loadStats(document);
-					}
-				} else {
-					// player never played before
-					Messaging.debug("Generated fake player %s (%s)");
-				}
-			});
+		// if uuid is null, use name instead
+		if (uuid == null) {
+			data = DataInfo.NAME;
+			value = name;
 		}
+
+		DatabaseAPI.retrieveDocument(Database.getMainCollection(), data, value, document -> {
+
+			Optional<Document> downloadedDoc = Optional.fromNullable(document);
+			if (downloadedDoc.isPresent()) {
+				played = true;
+				this.name = document.getString("name");
+				this.uuid = UUIDUtil.fromString(document.getString("uuid"));
+
+				if (getCollection() == null) {
+					// Async download custom stats from database
+					refreshStats();
+				} else {
+					// Apply already downloaded stats
+					loadStats(document);
+				}
+			} else {
+				// player never played before
+				Messaging.debug("Generated fake player %s (%s)");
+			}
+		});
 
 		// Called from subclass when load is complete
 		timer.onFinishExecute(() -> Messaging.debug(
