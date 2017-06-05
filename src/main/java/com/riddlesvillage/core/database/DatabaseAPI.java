@@ -33,7 +33,7 @@ public class DatabaseAPI {
                                   Consumer<BulkWriteResult> doAfterOptional) {
         MongoAccessThread.submitQuery(new BulkWriteQuery<>(
                 Database.getMainCollection(), operations, doAfterOptional));
-    }
+    } 
 
     public static void update(MongoCollection<Document> collection,
                        UUID uuid,
