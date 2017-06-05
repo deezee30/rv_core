@@ -44,6 +44,7 @@
                                     <include>com.zaxxer:*</include>
                                     <include>org.javassist:javassist</include>
                                     <include>org.mongodb:mongodb-driver-async</include>
+                                    <include>org.mongodb:mongodb-driver-async</include>
                                     <include>org.mongodb:bson</include>
                                 </includes>
                             </artifactSet>
@@ -99,7 +100,6 @@
             <version>3.4.2</version>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>org.ini4j</groupId>
             <artifactId>ini4j</artifactId>
