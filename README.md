@@ -13,7 +13,7 @@ the online and offline player objects should be sub-classes of
 
 `AbstractCoreProfile`'s job is to download relevant statistics from
 the database including internal and custom `Document`s from any
-provided MongoCollection<Document>` automatically before the player
+provided `MongoCollection<Document>` automatically before the player
 is interactable. This is done upon the instantiation of the class.
 
 There are three constructors to call from the sub class:
@@ -29,7 +29,7 @@ then a *fake player* is generated. The unknown `UUID` or name will
 remain the same as provided.
 
 However, when a player's credentials are known, `AbstractCoreProfile(UUID, String)`
-should be called. The player's statistics will downloaded from whatever
+should be called. The player's statistics will downloaded from which ever
 `MongoCollection<Document>` is provided from the sub class's `#getCollection()`
 via the primary key, AKA the player's `UUID`. Every player-related collection must
 contain a `UUID` field to be used as a primary key. If the sub class does not have
@@ -38,7 +38,52 @@ statistic lookup won't be performed.
 
 Once the lookup is made, `#loadStats(Document stats)` will be called, where the
 argument contains all fields found in the player's collection. Those can be
-extracted and set as local variables.
+extracted and set as local variables. Below is a quick example of how this procedure
+would go.
+
+*In the event listener:*
+```java
+@EventHandler(priority = EventPriority.LOW)
+public void onCorePlayerPostLoad(CorePlayerPostLoadEvent event) {
+    CorePlayer player = event.getPlayer();
+    CustomPlayer customPlayer = new CustomPlayer(player);
+    // Also add customPlayer to cache in the player manager
+}
+```
+
+`CustomPlayer.class`:
+```java
+public final class CustomPlayer extends AbstractCoreProfile {
+
+    // reference to core player is handy
+    private final CorePlayer player;
+
+    // statistics from database
+    private int kills = 0, deaths = 0;
+
+    CustomPlayer(CorePlayer player) {
+        super(player.getUuid(), player.getName());
+        this.player = player;
+
+        // ... load the player instance as you do ...
+    }
+
+    @Override
+    public MongoCollection<Document> getCollection() {
+        // Here you return a custom collection or null
+        return null;
+    }
+
+    @Override
+    public void loadStats(Document stats) {
+        // update cached statistics as soon as they are downloaded async
+        kills = stats.getInteger("kills");
+        deaths = stats.getInteger("deaths");
+    }
+}
+```
+
+A similar approach should be used for offline players too, if needed.
 
 > Note that there must only be at most online **and** offline player instances per player.
 
