@@ -29,7 +29,7 @@ then a *fake player* is generated. The unknown `UUID` or name will
 remain the same as provided.
 
 However, when a player's credentials are known, `AbstractCoreProfile(UUID, String)`
-should be called. The player's statistics will downloaded from which ever
+should be called. The player's statistics will be downloaded from which ever
 `MongoCollection<Document>` is provided from the sub class's `#getCollection()`
 via the primary key, AKA the player's `UUID`. Every player-related collection must
 contain a `UUID` field to be used as a primary key. If the sub class does not have
