@@ -9,6 +9,8 @@ import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
+import com.riddlesvillage.core.player.CorePlayer;
+import com.riddlesvillage.core.player.OfflineCorePlayer;
 import com.riddlesvillage.core.player.event.PremiumStatusModificationEvent;
 import com.riddlesvillage.core.player.profile.CoreProfile;
 import org.bukkit.Bukkit;
@@ -27,7 +29,17 @@ public interface PremiumHolder extends CoreProfile {
 	 * @return	{@code true} if the holder is a premium player,
 	 * 			{@code false} if otherwise.
 	 */
-	boolean isPremium();
+	default boolean isPremium() {
+		CorePlayer player = toCorePlayer();
+		if (player == null) {
+			return (getUuid() == null ?
+					OfflineCorePlayer.fromName(getName()) :
+					OfflineCorePlayer.fromUuid(getUuid())
+			).isPremium();
+		} else {
+			return player.isPremium();
+		}
+	}
 
 
 	/**
@@ -43,7 +55,7 @@ public interface PremiumHolder extends CoreProfile {
 	 * private boolean premium = false;
 	 *
 	 * {@literal @}Override
-	 * public void modifyPremium(boolean premium) {@literal {}
+	 * public void _setPremium(boolean premium) {@literal {}
 	 *     this.premium = premium;
 	 * {@literal }}
 	 * </code>
@@ -55,14 +67,24 @@ public interface PremiumHolder extends CoreProfile {
 	 * @since	2.0
 	 * @deprecated Used for local storage. Use {@link #setPremium(boolean)} instead
 	 */
-	void modifyPremium(boolean premium);
+	default void _setPremium(boolean premium) {
+		CorePlayer player = toCorePlayer();
+		if (player == null) {
+			(getUuid() == null ?
+					OfflineCorePlayer.fromName(getName()) :
+					OfflineCorePlayer.fromUuid(getUuid())
+			)._setPremium(premium);
+		} else {
+			player._setPremium(premium);
+		}
+	}
 
 
 	/**
 	 * Calls a new {@link PremiumStatusModificationEvent} event.
 	 *
 	 * After it is processed, if the {@code event} has not been
-	 * cancelled, {@link #modifyPremium(boolean)} is called with
+	 * cancelled, {@link #_setPremium(boolean)} is called with
 	 * the {@param premium} parameter and the database
 	 * is updated with the new value.
 	 *
@@ -75,7 +97,7 @@ public interface PremiumHolder extends CoreProfile {
 		PremiumStatusModificationEvent event = new PremiumStatusModificationEvent(this, premium);
 		Bukkit.getPluginManager().callEvent(event);
 		if (!event.isCancelled()) {
-			modifyPremium(premium);
+			_setPremium(premium);
 
 			DatabaseAPI.update(
 					Database.getMainCollection(),

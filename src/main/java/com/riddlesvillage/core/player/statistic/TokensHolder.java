@@ -10,6 +10,8 @@ import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.database.value.Value;
+import com.riddlesvillage.core.player.CorePlayer;
+import com.riddlesvillage.core.player.OfflineCorePlayer;
 import com.riddlesvillage.core.player.event.TokenValueModificationEvent;
 import com.riddlesvillage.core.player.event.TokenValueModificationException;
 import com.riddlesvillage.core.player.profile.CoreProfile;
@@ -24,7 +26,17 @@ public interface TokensHolder extends CoreProfile {
 	/**
 	 * @return The amount of tokens the profile currently has.
 	 */
-	int getTokens();
+	default int getTokens() {
+		CorePlayer player = toCorePlayer();
+		if (player == null) {
+			return (getUuid() == null ?
+					OfflineCorePlayer.fromName(getName()) :
+					OfflineCorePlayer.fromUuid(getUuid())
+			).getTokens();
+		} else {
+			return player.getTokens();
+		}
+	}
 
 
 	/**
@@ -40,7 +52,7 @@ public interface TokensHolder extends CoreProfile {
 	 * private int tokens = 0;
 	 *
 	 * {@literal @}Override
-	 * public void modifyTokens(int tokens) {@literal {}
+	 * public void _setTokens(int tokens) {@literal {}
 	 *     this.tokens = tokens;
 	 * {@literal }}
 	 * </code>
@@ -52,14 +64,24 @@ public interface TokensHolder extends CoreProfile {
 	 * @since	1.1
 	 * @deprecated Used for local storage. Use {@link #setTokens(Value)} instead
 	 */
-	void modifyTokens(int tokens);
+	default void _setTokens(int tokens) {
+		CorePlayer player = toCorePlayer();
+		if (player == null) {
+			(getUuid() == null ?
+					OfflineCorePlayer.fromName(getName()) :
+					OfflineCorePlayer.fromUuid(getUuid())
+			)._setTokens(tokens);
+		} else {
+			player._setTokens(tokens);
+		}
+	}
 
 
 	/**
 	 * Calls a new {@link TokenValueModificationEvent} event.
 	 *
 	 * After it is processed, if the {@code event} has not been
-	 * cancelled, {@link #modifyTokens(int)} is called with the
+	 * cancelled, {@link #_setTokens(int)} is called with the
 	 * new token value calculated (via {@link Value#appendTo(int)})
 	 * by this method and the database collection is updated with
 	 * the new value.
@@ -84,7 +106,7 @@ public interface TokensHolder extends CoreProfile {
 		if (!event.isCancelled()) {
 			int newTokens = event.getNewTokens();
 
-			modifyTokens(newTokens);
+			_setTokens(newTokens);
 
 			DatabaseAPI.update(
 					Database.getMainCollection(),
