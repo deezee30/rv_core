@@ -80,6 +80,11 @@ public final class CustomPlayer extends AbstractCoreProfile {
         kills = stats.getInteger("kills");
         deaths = stats.getInteger("deaths");
     }
+
+    @Override
+    public CorePlayer toCorePlayer() {
+        return player;
+    }
 }
 ```
 
