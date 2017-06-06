@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>This class should be used for any scenario where a
  * virtual server user is involved who is expected to be
- * interacted with a MySQL database, regardless whether
+ * interacted with a Mongo database, regardless whether
  * he could be online or offile.  This profile is designed
  * to store the fundamental data for online and offline
  * players, who are eligible for interaction with the
@@ -223,7 +223,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 
 		/*
 		 * If statHolder equals to the current instance (this
-		 * instance of HeroProfile), then return custom lines
+		 * instance of CoreProfile), then return custom lines
 		 * for statistics.  Otherwise let statHolder decide
 		 * which statistics to return.
 		 */

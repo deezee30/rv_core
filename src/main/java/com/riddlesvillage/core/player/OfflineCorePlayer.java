@@ -142,18 +142,8 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	}
 
 	@Override
-	public void modifyCoins(int coins) {
+	public void _setCoins(int coins) {
 		this.coins = coins;
-	}
-
-	@Override
-	public double getCoinMultiplier() {
-		return 1;
-	}
-
-	@Override
-	public void setCoinMultiplier(double factor) {
-		// do nothing - player offline
 	}
 
 	@Override
@@ -162,7 +152,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	}
 
 	@Override
-	public void modifyPremium(boolean premium) {
+	public void _setPremium(boolean premium) {
 		this.premium = premium;
 	}
 
@@ -172,7 +162,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	}
 
 	@Override
-	public void modifyRank(EnumRank rank) {
+	public void _setRank(EnumRank rank) {
 		this.rank = rank;
 	}
 
@@ -182,7 +172,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	}
 
 	@Override
-	public void modifyTokens(int tokens) {
+	public void _setTokens(int tokens) {
 		this.tokens = tokens;
 	}
 }

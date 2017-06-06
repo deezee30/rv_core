@@ -12,6 +12,8 @@ import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.database.value.Value;
+import com.riddlesvillage.core.player.CorePlayer;
+import com.riddlesvillage.core.player.OfflineCorePlayer;
 import com.riddlesvillage.core.player.event.CoinValueModificationEvent;
 import com.riddlesvillage.core.player.event.CoinValueModificationException;
 import com.riddlesvillage.core.player.profile.CoreProfile;
@@ -27,7 +29,17 @@ public interface CoinsHolder extends CoreProfile {
 	/**
 	 * @return The amount of coins the profile currently has.
 	 */
-	int getCoins();
+	default int getCoins() {
+		CorePlayer player = toCorePlayer();
+		if (player == null) {
+			return (getUuid() == null ?
+					OfflineCorePlayer.fromName(getName()) :
+					OfflineCorePlayer.fromUuid(getUuid())
+			).getCoins();
+		} else {
+			return player.getCoins();
+		}
+	}
 
 
 	/**
@@ -44,7 +56,7 @@ public interface CoinsHolder extends CoreProfile {
 	 * private int coins = 0;
 	 *
 	 * {@literal @}Override
-	 * public void modifyCoins(int coins) {@literal {}
+	 * public void _setCoins(int coins) {@literal {}
 	 *     this.coins = coins;
 	 * {@literal }}
 	 * </code>
@@ -56,14 +68,24 @@ public interface CoinsHolder extends CoreProfile {
 	 * @since   1.1
 	 * @deprecated Used for local storage. Use {@link #setCoins(Value)} instead
 	 */
-	void modifyCoins(int coins);
+	default void _setCoins(int coins) {
+		CorePlayer player = toCorePlayer();
+		if (player == null) {
+			(getUuid() == null ?
+					OfflineCorePlayer.fromName(getName()) :
+					OfflineCorePlayer.fromUuid(getUuid())
+			)._setCoins(coins);
+		} else {
+			player._setCoins(coins);
+		}
+	}
 
 
 	/**
 	 * Calls a new {@link CoinValueModificationEvent} event.
 	 *
 	 * After it is processed, if the {@code event} has not been
-	 * cancelled, {@link #modifyCoins(int)} is called with the
+	 * cancelled, {@link #_setCoins(int)} is called with the
 	 * new coin value calculated (via {@link Value#appendTo(int)})
 	 * by this method and the database collection is updated with
 	 * the new value.
@@ -93,7 +115,7 @@ public interface CoinsHolder extends CoreProfile {
 		if (!event.isCancelled()) {
 			int newCoins = event.getNewCoins();
 
-			modifyCoins(newCoins);
+			_setCoins(newCoins);
 
 			DatabaseAPI.update(
 					Database.getMainCollection(),
@@ -124,7 +146,10 @@ public interface CoinsHolder extends CoreProfile {
 	 *
 	 * @return Coin multiplier for specific {@code CoinsHolder}.
 	 */
-	double getCoinMultiplier();
+	default double getCoinMultiplier() {
+		CorePlayer player = toCorePlayer();
+		return player == null ? 1D : player.getCoinMultiplier();
+	}
 
 	/**
 	 * A coin multiplier value for special events or personal perks.
@@ -138,5 +163,8 @@ public interface CoinsHolder extends CoreProfile {
 	 *
 	 * @param factor The factor by which the base coin is multiplied.
 	 */
-	void setCoinMultiplier(double factor);
+	default void setCoinMultiplier(double factor) {
+		CorePlayer player = toCorePlayer();
+		if (player != null) player.setCoinMultiplier(factor);
+	}
 }

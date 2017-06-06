@@ -603,7 +603,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	}
 
 	@Override
-	public void modifyPremium(boolean premium) {
+	public void _setPremium(boolean premium) {
 		this.premium = premium;
 	}
 
@@ -615,7 +615,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	}
 
 	@Override
-	public void modifyCoins(int coins) {
+	public void _setCoins(int coins) {
 		this.coins = coins;
 	}
 
@@ -638,7 +638,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	}
 
 	@Override
-	public void modifyTokens(int tokens) {
+	public void _setTokens(int tokens) {
 		this.tokens = tokens;
 	}
 
@@ -649,7 +649,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	}
 
 	@Override
-	public final void modifyRank(EnumRank rank) {
+	public final void _setRank(EnumRank rank) {
 		this.rank = rank;
 	}
 
