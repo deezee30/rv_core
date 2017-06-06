@@ -150,6 +150,7 @@ And then add RiddlesCore as a dependency in Maven:
     <groupId>com.riddlesvillage</groupId>
     <artifactId>core</artifactId>
     <version>latest</version>
+    <scope>provided</scope>
 </dependency>
 ```
 
@@ -163,9 +164,13 @@ depend: [RiddlesCore]
 
 ## Links
 [Website](https://riddlesvillage.com "RiddlesVillage")
+
 [Git master](https://github.com/RiddlesVillage/core/tree/master "Master branch")
+
 [Jenkins CI](https://riddlesvillage.com "Jenkins CI")
+
 [Trello](https://trello.com/b/tEWzXRzj/riddles-village-zone)
+
 [Admin panel](https://panel.riddlesvillage.com/auth/login)
 
 ---
