@@ -36,7 +36,7 @@ public final class MessagesConfig {
 		RiddlesCore.getSettings().findAndRegisterLocales(PLUGIN_INSTANCE);
 
 		Messaging.setPrefix(ChatColor.stripColor(
-				ChatColor.translateAlternateColorCodes('&', RiddlesCore.getSettings().get("prefix"))
+				ChatColor.translateAlternateColorCodes('&', RiddlesCore.getSettings().get("chat.prefix"))
 		));
 
 		Messaging.setOutput(new ConsoleOutput(Bukkit.getConsoleSender()));
