@@ -39,7 +39,6 @@ public final class Database implements Closeable {
                         credentials.getPass().toCharArray()
                 ))).build());
 
-
         database = client.getDatabase("riddlesvillage");
         playerData = database.getCollection("player_data");
 

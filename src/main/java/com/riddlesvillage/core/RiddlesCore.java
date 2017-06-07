@@ -33,17 +33,23 @@ public final class RiddlesCore extends JavaPlugin {
 
 	private static final CoreSettings settings = new CoreSettings();
 	private static RiddlesCore instance;
-	private final Messenger messenger = new Messenger(this, true, 60);
 	private final Database database = Database.getInstance();
+	private final Timer loadTimer = new Timer();
+	private Messenger messenger;
+
+	@Override
+	public void onLoad() {
+		instance = this;
+
+		// Record the time taken to load RiddlesCore
+		loadTimer.start();
+
+		messenger = new Messenger(this, true, 60);
+	}
 
 	@Override
 	public void onEnable() {
 		try {
-			// Record the time taken to load RiddlesCore
-			final Timer t = new Timer().start();
-
-			instance = this;
-
 			settings.initClasses(
 					// Load configuration and language files
 					"com.riddlesvillage.core.internal.config.MessagesConfig",
@@ -86,7 +92,7 @@ public final class RiddlesCore extends JavaPlugin {
 			log("~&3=========== &eRiddlesCore&3 ===========");
 			log("~&3=> Version: &e%s", desc.getVersion());
 			log("~&3=> Authors: &e%s", desc.getAuthors());
-			log("~&3=> Loaded in &e%sms", t.forceStop().getTime(TimeUnit.MILLISECONDS));
+			log("~&3=> Loaded in &e%sms", loadTimer.forceStop().getTime(TimeUnit.MILLISECONDS));
 			log("~&3===================================");
 		} catch (Exception e) {
 			e.printStackTrace();
