@@ -156,7 +156,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 				}
 			} else {
 				// player never played before
-				Messaging.debug("Generated fake player %s (%s)");
+				Messaging.debug("Generated fake player %s (%s)", name, uuid);
 			}
 		});
 
