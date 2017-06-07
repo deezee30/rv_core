@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -35,27 +36,25 @@ public final class RiddlesCore extends JavaPlugin {
 	private static RiddlesCore instance;
 	private final Database database = Database.getInstance();
 	private final Timer loadTimer = new Timer();
-	private Messenger messenger;
+	private Messenger messenger = new Messenger(this);
 
 	@Override
 	public void onLoad() {
 		instance = this;
-
-		// Record the time taken to load RiddlesCore
-		loadTimer.start();
-
-		messenger = new Messenger(this, true, 60);
 	}
 
 	@Override
 	public void onEnable() {
 		try {
+			// Record the time taken to load RiddlesCore
+			loadTimer.start();
+
 			settings.initClasses(
 					// Load configuration and language files
 					"com.riddlesvillage.core.internal.config.MessagesConfig",
 					"com.riddlesvillage.core.internal.config.MainConfig",
 					"com.riddlesvillage.core.internal.config.SpawnsConfig",
-					"com.riddlesvillage.core.internal.config.DatabaseConfig",
+					"com.riddlesvillage.core.internal.config.DatabaseConfig"
 			);
 
 			settings.addLocale(CoreSettings.DEFAULT_LOCALE);
@@ -83,6 +82,16 @@ public final class RiddlesCore extends JavaPlugin {
 
 			// Initialize database connection and setup management
 			database.init(DatabaseConfig.getCredentials());
+
+			// Perform tasks after plugin initialized, ie next tick
+			new BukkitRunnable() {
+
+				@Override
+				public void run() {
+					// start server listener
+					messenger.cache.start();
+				}
+			}.runTask(this);
 
 			PluginDescriptionFile desc = getDescription();
 

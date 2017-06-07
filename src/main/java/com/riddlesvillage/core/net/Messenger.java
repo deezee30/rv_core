@@ -26,14 +26,14 @@ public final class Messenger implements PluginMessageListener {
 		j.getServer().getMessenger().registerOutgoingPluginChannel(j, "BungeeCord");
 		j.getServer().getMessenger().registerIncomingPluginChannel(j, "BungeeCord", this);
 		plugin = j;
-		cache = new Cache();
+		cache = new Cache(this, j);
 	}
 
-	public Messenger(Plugin j, Boolean autoCache, Integer autoCacheHeartBeat) {
+	public Messenger(Plugin j, Integer autoCacheHeartBeat) {
 		j.getServer().getMessenger().registerOutgoingPluginChannel(j, "BungeeCord");
 		j.getServer().getMessenger().registerIncomingPluginChannel(j, "BungeeCord", this);
 		plugin = j;
-		cache = new Cache(autoCache, autoCacheHeartBeat, j);
+		cache = new Cache(this, j, autoCacheHeartBeat);
 	}
 
 	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
