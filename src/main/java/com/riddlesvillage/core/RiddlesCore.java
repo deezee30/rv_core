@@ -56,9 +56,6 @@ public final class RiddlesCore extends JavaPlugin {
 					"com.riddlesvillage.core.internal.config.MainConfig",
 					"com.riddlesvillage.core.internal.config.SpawnsConfig",
 					"com.riddlesvillage.core.internal.config.DatabaseConfig",
-
-					// Start Boss Bar timer to ensure no errors occur onDisable() if noone joins
-					"com.riddlesvillage.core.util.BossBar"
 			);
 
 			settings.addLocale(CoreSettings.DEFAULT_LOCALE);
