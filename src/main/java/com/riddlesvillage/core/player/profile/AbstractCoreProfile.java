@@ -210,6 +210,19 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 	// == Defaults ====================================================== //
 
 	@Override
+	public String getDisplayName() {
+		CorePlayer player = toCorePlayer();
+		if (player == null) {
+			return (getUuid() == null ?
+					OfflineCorePlayer.fromName(getName()) :
+					OfflineCorePlayer.fromUuid(getUuid())
+			).getDisplayName();
+		} else {
+			return player.getDisplayName();
+		}
+	}
+
+	@Override
 	public String getIp() {
 		CorePlayer player = toCorePlayer();
 		if (player == null) {
