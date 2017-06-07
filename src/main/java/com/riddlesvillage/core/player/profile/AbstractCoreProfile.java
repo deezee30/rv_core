@@ -18,6 +18,7 @@ import com.riddlesvillage.core.service.timer.Timer;
 import com.riddlesvillage.core.util.UUIDUtil;
 import org.bson.Document;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -205,6 +206,48 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 	public final boolean hasPlayed() {
 		return played;
 	}
+
+	// == Defaults ====================================================== //
+
+	@Override
+	public String getIp() {
+		CorePlayer player = toCorePlayer();
+		if (player == null) {
+			return (getUuid() == null ?
+					OfflineCorePlayer.fromName(getName()) :
+					OfflineCorePlayer.fromUuid(getUuid())
+			).getIp();
+		} else {
+			return player.getIp();
+		}
+	}
+
+	@Override
+	public List<String> getIpHistory() {
+		CorePlayer player = toCorePlayer();
+		if (player == null) {
+			return (getUuid() == null ?
+					OfflineCorePlayer.fromName(getName()) :
+					OfflineCorePlayer.fromUuid(getUuid())
+			).getIpHistory();
+		} else {
+			return player.getIpHistory();
+		}
+	}
+
+	@Override
+	public List<String> getNameHistory() {
+		CorePlayer player = toCorePlayer();
+		if (player == null) {
+			return (getUuid() == null ?
+					OfflineCorePlayer.fromName(getName()) :
+					OfflineCorePlayer.fromUuid(getUuid())
+			).getNameHistory();
+		} else {
+			return player.getNameHistory();
+		}
+	}
+
 
 	// == Statistics ====================================================== //
 
