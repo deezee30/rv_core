@@ -90,7 +90,7 @@ public final class CustomPlayer extends AbstractCoreProfile {
 
 A similar approach should be used for offline players too, if needed.
 
-> Note that there must only be at most online **and** offline player instances per player.
+> Note that there must only be at most **ONE** online **and** offline player instances per player.
 
 > There must only be either an online or an offline player instance cached at once but not both.
 
