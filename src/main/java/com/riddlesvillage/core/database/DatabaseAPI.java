@@ -106,10 +106,11 @@ public class DatabaseAPI {
     public static void insertNew(MongoCollection collection,
                                  Map<String, Object> map,
                                  SingleResultCallback<Void> callback) {
-        collection.insertOne(new Document() {{
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                append(entry.getKey(), entry.getValue());
-            }
-        }}, callback);
+        Document insert = new Document();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            insert.append(entry.getKey(), entry.getValue());
+        }
+
+		collection.insertOne(insert, callback);
     }
 }
