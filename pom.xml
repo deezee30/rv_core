@@ -44,12 +44,12 @@
                                     <include>com.zaxxer:*</include>
                                     <include>org.javassist:javassist</include>
                                     <include>org.mongodb:mongodb-driver-async</include>
-                                    <include>org.mongodb:mongodb-driver-async</include>
+                                    <include>org.mongodb:mongodb-driver-core</include>
                                     <include>org.mongodb:bson</include>
                                 </includes>
                             </artifactSet>
                             <finalName>RiddlesCore</finalName>
-                            <outputFile>${user.home}/Desktop/RiddlesCore.jar</outputFile>
+                            <outputFile>${user.home}/Desktop/server/plugins/RiddlesCore.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
@@ -98,8 +98,14 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-async</artifactId>
             <version>3.4.2</version>
-            <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-core</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+
         <dependency>
             <groupId>org.ini4j</groupId>
             <artifactId>ini4j</artifactId>
