@@ -68,3 +68,11 @@ commands:
   rank:
     description: Modify a player's enumRank (console only)
     aliases: [ranks]
+
+  namehistory:
+    description: Gets players username history
+    aliases: [names, nameshistory]
+
+  iphistory:
+    description: Gets players username history
+    aliases: [ipaddresshistory, ips, ipaddresses]
