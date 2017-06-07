@@ -20,7 +20,7 @@
 
 address: localhost
 
-name: riddlesvillage
+database: riddlesvillage
 
 username: matthew
 
