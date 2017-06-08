@@ -37,7 +37,7 @@ public final class GodCommand implements CommandExecutor {
 			case 0:
 				if (!isPlayer)	RiddlesCore.log("command.usage", new String[] {"usage"}, "/god <player>");
 				else {
-					player.sendMessage("god." + (player.setDamageable(!player.isDamageable()) ? "disabled" : "enabled"));
+					player.sendMessage("god." + (player.setDamageable(!player.isDamageable()) ? "disable" : "enable"));
 				}
 
 				return true;
@@ -53,7 +53,7 @@ public final class GodCommand implements CommandExecutor {
 				boolean damageable = !target.isDamageable();
 				target.setDamageable(damageable);
 
-				String msg = "god." + (damageable ? "disabled" : "enabled");
+				String msg = "god." + (damageable ? "disable" : "enable");
 
 				target.sendMessage(msg);
 				if (isPlayer)	player.sendMessage(msg);
