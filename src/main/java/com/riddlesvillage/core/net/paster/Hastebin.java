@@ -2,16 +2,16 @@ package com.riddlesvillage.core.net.paster;
 
 import com.riddlesvillage.core.collect.EnhancedMap;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
 public class Hastebin extends Paster {
 
-	private static final String URL = "https://www.hastebin.com/";
+	private static final String URL = "https://hastebin.com";
 
 	Hastebin(String content) {
 		super(content);
@@ -19,11 +19,14 @@ public class Hastebin extends Paster {
 
 	@Override
 	protected URL process() throws Exception {
-		HttpURLConnection connection = null;
+		HttpsURLConnection connection = null;
 		try {
 			URL url = new URL(URL + "documents");
-			connection = (HttpURLConnection) url.openConnection();
+			connection = (HttpsURLConnection) url.openConnection();
 			connection.setRequestMethod("POST");
+			connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+			connection.setRequestProperty("Content-Type", "text/plain");
+			connection.setRequestProperty("charset", "utf-8");
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
 
