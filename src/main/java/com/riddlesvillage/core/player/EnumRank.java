@@ -49,7 +49,7 @@ public enum EnumRank {
 
 	@Override
 	public String toString() {
-		return getDisplayName();
+		return name();
 	}
 
 	public static EnumRank byName(String name) {
@@ -57,6 +57,6 @@ public enum EnumRank {
 			if (enumRank.getName().equalsIgnoreCase(name)) return enumRank;
 		}
 
-		return null;
+		return DEFAULT;
 	}
 }

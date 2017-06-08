@@ -29,17 +29,19 @@ then a *fake player* is generated. The unknown `UUID` or name will
 remain the same as provided.
 
 However, when a player's credentials are known, `AbstractCoreProfile(UUID, String)`
-should be called. The player's statistics will be downloaded from which ever
-`MongoCollection<Document>` is provided from the sub class's `#getCollection()`
-via the primary key, AKA the player's `UUID`. Every player-related collection must
-contain a `UUID` field to be used as a primary key. If the sub class does not have
-an associated collection in the database, `null` can be returned and a further
-statistic lookup won't be performed.
+should be called. The player's statistics will be downloaded from
+which ever `MongoCollection<Document>` is provided from the sub
+class's `#getCollection()` via the primary key, AKA the player's 
+`UUID`. Every player-related collection must contain a `UUID` field
+to be used as a primary key. If the sub class does not have an
+associated collection in the database, `null` can be returned and
+a further statistic lookup won't be performed.
 
-Once the lookup is made, `#loadStats(Document stats)` will be called, where the
-argument contains all fields found in the player's collection. Those can be
-extracted and set as local variables. Below is a quick example of how this procedure
-would go.
+Once the lookup is made, `#onLoad(Optional<Document> stats)` will be
+called, where the argument contains all fields found in the player's
+collection. This is called directly after all database lookups have
+been performed. Those can be extracted and set as local variables.
+Below is a quick example of how this procedure would go.
 
 *In the event listener:*
 ```java
@@ -69,16 +71,24 @@ public final class CustomPlayer extends AbstractCoreProfile {
     }
 
     @Override
-    public MongoCollection<Document> getCollection() {
-        // Here you return a custom collection or null
-        return null;
+    public void onLoad(Optional<Document> doc) {
+        if (doc.isPresent()) {
+            // update cached statistics as soon as they are downloaded async
+            Document stats = doc.get();
+            kills = stats.getInteger("kills");
+            deaths = stats.getInteger("deaths");
+
+            // load the rest of the player based on given data
+        } else {
+            // handle error
+            RiddlesCore.log("Failed player lookup!");
+        }
     }
 
     @Override
-    public void loadStats(Document stats) {
-        // update cached statistics as soon as they are downloaded async
-        kills = stats.getInteger("kills");
-        deaths = stats.getInteger("deaths");
+    public MongoCollection<Document> getCollection() {
+        // return a custom collection or null if none
+        return database.getCollection("pvp");
     }
 
     @Override

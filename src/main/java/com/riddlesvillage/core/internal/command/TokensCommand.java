@@ -159,11 +159,12 @@ public final class TokensCommand implements CommandExecutor {
 								DataOperator.$SET,
 								DataInfo.TOKENS,
 								newTokens,
-								updateResult -> RiddlesCore.logIf(
+								(updateResult, throwable) -> RiddlesCore.logIf(
 										!updateResult.wasAcknowledged(),
-										"Failed updating %s's token value to %s",
+										"Failed updating %s's token value to %s: %s",
 										offlinePlayer.getName(),
-										newTokens
+										newTokens,
+										throwable
 								)
 						);
 					} else {

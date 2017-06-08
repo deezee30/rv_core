@@ -159,11 +159,12 @@ public final class CoinsCommand implements CommandExecutor {
 								DataOperator.$SET,
 								DataInfo.COINS,
 								newCoins,
-								updateResult -> RiddlesCore.logIf(
+								(updateResult, throwable) -> RiddlesCore.logIf(
 										!updateResult.wasAcknowledged(),
-										"Failed updating %s's coin value to %s",
+										"Failed updating %s's coin value to %s: %s",
 										offlinePlayer.getName(),
-										newCoins
+										newCoins,
+										throwable
 								)
 						);
 					} else {

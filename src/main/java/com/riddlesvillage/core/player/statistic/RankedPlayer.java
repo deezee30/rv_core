@@ -54,11 +54,12 @@ public interface RankedPlayer extends CoreProfile {
 				DataOperator.$SET,
 				DataInfo.RANK,
 				rank.getName(),
-				updateResult -> RiddlesCore.logIf(
+				(updateResult, throwable) -> RiddlesCore.logIf(
 						!updateResult.wasAcknowledged(),
-						"%s's rank update to %s was unacknowledged",
+						"%s's rank update to %s was unacknowledged: %s",
 						getName(),
-						rank.getDisplayName()
+						rank.getDisplayName(),
+						throwable
 				)
 		);
 	}

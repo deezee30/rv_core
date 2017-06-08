@@ -50,8 +50,8 @@ public final class StatsCommand implements CommandExecutor {
 							l.forEach(s -> Messaging.log(s));
 						}
 					} else {
-						if (!RiddlesCore.logIf(!isPlayer, ERROR)) {
-							playerSender.sendMessage(ERROR);
+						if (!RiddlesCore.logIf(!isPlayer, ERROR, victimName)) {
+							playerSender.sendMessage(ERROR, victimName);
 						}
 					}
 				}

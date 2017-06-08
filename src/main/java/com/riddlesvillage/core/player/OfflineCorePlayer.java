@@ -49,7 +49,6 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 
 	private OfflineCorePlayer(UUID uuid, String name) {
 		super(uuid, name);
-		timer.forceStop();
 	}
 
 	@Override
@@ -78,11 +77,17 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	}
 
 	@Override
-	public void loadStats(Document stats) {
-		rank = EnumRank.byName(stats.getString("rank"));
-		premium = stats.getBoolean("premium");
-		coins = stats.getInteger("coins");
-		tokens = stats.getInteger("tokens");
+	public void onLoad(Optional<Document> doc) {
+		if (doc.isPresent()) {
+			Document stats = doc.get();
+
+			rank = EnumRank.byName(stats.getString("rank"));
+			premium = stats.getBoolean("premium");
+			coins = stats.getInteger("coins");
+			tokens = stats.getInteger("tokens");
+		} else {
+			RiddlesCore.log("Failed to obtain stats for '%s' ('%s')", getName(), getUuid());
+		}
 	}
 
 	public static OfflineCorePlayer fromName(String name) {

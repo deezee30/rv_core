@@ -52,7 +52,7 @@ public final class CorePlayerManager extends PlayerManager<CorePlayer> {
 	 * <p>This should be used when the {@param player}'s
 	 * {@link Player#getAddress()} is still undefined.  This
 	 * usually happens before the {@code CraftPlayer} instance
-	 * is fully loaded, ie, when the player is about to join
+	 * isn't fully loaded, ie, when the player is about to join
 	 * the server ({@link org.bukkit.event.player.PlayerLoginEvent})</p>
 	 *
 	 * <p>If the player is already registered, the current
@@ -78,6 +78,8 @@ public final class CorePlayerManager extends PlayerManager<CorePlayer> {
 			return rPlayer;
 		}
 
+		// Player's name and stats may have changed since his last query - Remove him from cache
+		OfflineCorePlayer.removeFromCache(player.getUniqueId());
 		PLAYERS.add(rPlayer = new CorePlayer(player, hostName));
 		return rPlayer;
 	}

@@ -6,16 +6,16 @@
 
 package com.riddlesvillage.core;
 
-import com.google.common.base.Optional;
 import org.apache.commons.lang3.Validate;
 
 import java.net.URL;
+import java.util.Optional;
 
 public class CoreException extends Exception {
 
 	private static final long serialVersionUID = -6450641089472167745L;
 
-	private final Optional<URL> pasteLink = Optional.absent();
+	private final Optional<URL> pasteLink = Optional.empty();
 
 	public CoreException(String message,
 						 Object... components) {

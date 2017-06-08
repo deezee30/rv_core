@@ -4,10 +4,10 @@
 
 package com.riddlesvillage.core.player.profile;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.CoreException;
 import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
@@ -19,6 +19,7 @@ import com.riddlesvillage.core.util.UUIDUtil;
 import org.bson.Document;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -130,6 +131,15 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 		// Record how long it takes to load the profile
 		timer.start();
 
+		// Called from subclass when load is complete
+		timer.onFinishExecute(() -> Messaging.debug(
+				"Generated player profile (%s) '%s' with ID '%s' in %sms",
+				AbstractCoreProfile.this.getClass().getSimpleName(),
+				AbstractCoreProfile.this.name,
+				AbstractCoreProfile.this.uuid,
+				timer.getTime(TimeUnit.MILLISECONDS)
+		));
+
 		DataInfo data = DataInfo.UUID;
 		Object value = uuid;
 
@@ -139,11 +149,13 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 			value = name;
 		}
 
-		DatabaseAPI.retrieveDocument(Database.getMainCollection(), data, value, document -> {
+		DatabaseAPI.retrieveDocument(Database.getMainCollection(), data, value, (document, throwable) -> {
+			RiddlesCore.logIf(throwable != null, "Error loading '%s' ('%s'):", name, uuid, throwable);
 
-			Optional<Document> downloadedDoc = Optional.fromNullable(document);
+			Optional<Document> downloadedDoc = Optional.ofNullable(document);
 			if (downloadedDoc.isPresent()) {
 				played = true;
+
 				this.name = document.getString("name");
 				this.uuid = UUIDUtil.fromString(document.getString("uuid"));
 
@@ -152,27 +164,28 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 					refreshStats();
 				} else {
 					// Apply already downloaded stats
-					loadStats(document);
+					finishLoading(downloadedDoc);
 				}
 			} else {
 				// player never played before
 				Messaging.debug("Generated fake player '%s' ('%s')", name, uuid);
 			}
 		});
-
-		// Called from subclass when load is complete
-		timer.onFinishExecute(() -> Messaging.debug(
-				"Generated player profile (%s) '%s' with ID '%s' in %sms",
-				AbstractCoreProfile.this.getClass().getSimpleName(),
-				AbstractCoreProfile.this.name,
-				AbstractCoreProfile.this.uuid,
-				timer.getTime(TimeUnit.MILLISECONDS)
-		));
 	}
+
+	private void finishLoading(Optional<Document> document) {
+		onLoad(document);
+		timer.forceStop();
+	}
+
+	protected abstract void onLoad(Optional<Document> document);
 
 	protected void refreshStats() {
 		// Async download custom stats from database
-		DatabaseAPI.retrieveDocument(getCollection(), DataInfo.UUID, uuid, this :: loadStats);
+		DatabaseAPI.retrieveDocument(getCollection(), DataInfo.UUID, uuid, ((result, t) -> {
+			RiddlesCore.logIf(t != null, "Error loading '%s' ('%s'):", name, uuid, t);
+			finishLoading(Optional.ofNullable(result));
+		}));
 	}
 
 	@Override
@@ -259,7 +272,6 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 			return player.getNameHistory();
 		}
 	}
-
 
 	// == Statistics ====================================================== //
 

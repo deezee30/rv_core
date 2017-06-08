@@ -22,4 +22,28 @@ public interface StatType {
 		map.put(getStat(), def);
 		return map;
 	}
+
+	static StatType create(String stat) {
+		return create(stat, null);
+	}
+
+	static StatType create(String stat, Object def) {
+		return new StatType() {
+
+			@Override
+			public String getStat() {
+				return stat;
+			}
+
+			@Override
+			public Object getDefault() {
+				return def;
+			}
+
+			@Override
+			public String toString() {
+				return stat;
+			}
+		};
+	}
 }

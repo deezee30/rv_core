@@ -6,15 +6,11 @@
 
 package com.riddlesvillage.core;
 
-import com.google.common.base.Optional;
 import com.riddlesvillage.core.util.StringUtil;
 
 import java.io.Console;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.IllegalFormatException;
-import java.util.Map;
+import java.util.*;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
@@ -22,6 +18,7 @@ import static org.apache.commons.lang3.Validate.notNull;
  * Easy to use tool for quickly working with {@code String}s in
  * order to output them, modify them for use in messages and etc.
  *
+ * @author Maulss
  * @see StringUtil
  * @see Console
  * @see java.util.Formatter

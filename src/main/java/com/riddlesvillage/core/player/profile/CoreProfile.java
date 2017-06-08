@@ -115,6 +115,4 @@ public interface CoreProfile {
 	}
 
 	MongoCollection<Document> getCollection();
-
-	void loadStats(Document stats);
 }

@@ -105,11 +105,12 @@ public interface PremiumHolder extends CoreProfile {
 					DataOperator.$SET,
 					DataInfo.PREMIUM,
 					premium,
-					updateResult -> RiddlesCore.logIf(
+					(updateResult, throwable) -> RiddlesCore.logIf(
 							!updateResult.wasAcknowledged(),
-							"Failed updating %s's premium status to %s",
+							"Failed updating %s's premium status to %s: %s",
 							getName(),
-							premium
+							premium,
+							throwable
 					)
 			);
 		}

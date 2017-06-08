@@ -6,7 +6,6 @@
 
 package com.riddlesvillage.core.collect;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -104,7 +103,7 @@ public class EnhancedMap<K, V> extends LinkedHashMap<K, V> implements JSONAware 
 		for (Map.Entry<K, V> entry : entries)
 			if (j++ == position) return Optional.of(entry);
 
-		return Optional.absent();
+		return Optional.empty();
 	}
 
 	public int getIndex(K key) {

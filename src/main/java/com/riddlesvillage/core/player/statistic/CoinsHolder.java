@@ -123,11 +123,12 @@ public interface CoinsHolder extends CoreProfile {
 					DataOperator.$SET,
 					DataInfo.COINS,
 					newCoins,
-					updateResult -> RiddlesCore.logIf(
+					(updateResult, throwable) -> RiddlesCore.logIf(
 							!updateResult.wasAcknowledged(),
-							"Failed updating %s's coin value to %s",
+							"Failed updating %s's coin value to %s: %s",
 							getName(),
-							newCoins
+							newCoins,
+							throwable
 					)
 			);
 		}

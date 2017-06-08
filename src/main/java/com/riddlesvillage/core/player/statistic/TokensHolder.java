@@ -114,11 +114,12 @@ public interface TokensHolder extends CoreProfile {
 					DataOperator.$SET,
 					DataInfo.TOKENS,
 					newTokens,
-					updateResult -> RiddlesCore.logIf(
+					(updateResult, throwable) -> RiddlesCore.logIf(
 							!updateResult.wasAcknowledged(),
-							"Failed updating %s's token value to %s",
+							"Failed updating %s's token value to %s: %s",
 							getName(),
-							newTokens
+							newTokens,
+							throwable
 					)
 			);
 		}
