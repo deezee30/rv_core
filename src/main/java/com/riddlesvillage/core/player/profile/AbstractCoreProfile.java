@@ -75,7 +75,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 	 */
 	protected volatile transient Timer
 			timer			= new Timer();
-	private transient boolean
+	protected transient boolean
 			played			= false;
 	private transient StatisticHolder
 			statHolder		= this;
@@ -156,7 +156,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 				}
 			} else {
 				// player never played before
-				Messaging.debug("Generated fake player %s (%s)", name, uuid);
+				Messaging.debug("Generated fake player '%s' ('%s')", name, uuid);
 			}
 		});
 
@@ -173,7 +173,6 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 	protected void refreshStats() {
 		// Async download custom stats from database
 		DatabaseAPI.retrieveDocument(getCollection(), DataInfo.UUID, uuid, this :: loadStats);
-
 	}
 
 	@Override

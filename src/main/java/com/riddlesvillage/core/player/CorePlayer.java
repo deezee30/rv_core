@@ -125,7 +125,14 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 			DatabaseAPI.insertNew(
 					Database.getMainCollection(), doc,
-					(result, t1) -> Messaging.debug("New player %s successfully created", getName())
+					(result, t1) -> {
+						if (t1 != null) {
+							Messaging.debug("Failed to insert '%s' into db: %s", getName(), t1);
+							t1.printStackTrace();
+						} else {
+							Messaging.debug("New player '%s' successfully created", CorePlayer.this.getName());
+						}
+					}
 			);
 		} else {
 			// Player's name and stats may have changed since his last query - Remove him from cache
@@ -162,12 +169,13 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 			// submit bulk update and await for result
 			DatabaseAPI.bulkUpdate(operations, bulkWriteResult -> RiddlesCore.logIf(
 					!bulkWriteResult.wasAcknowledged(),
-					"Bulk update failed for %s (login)",
+					"Bulk update failed for '%s' (login)",
 					getName()
 			));
 		}
 
 		invManager = new InventoryManager(this);
+		played = true;
 
 		Messaging.debug("%s's default language is %s", getName(), WordUtils.capitalize(locale));
 		timer.forceStop();
@@ -470,7 +478,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 		 * components, prefix and player's set locale and send it to player.
 		 */
 		player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-				Messaging.prefix(message, SETTINGS.get(locale, "prefix"))
+				Messaging.prefix(message, SETTINGS.get(locale, "chat.prefix"))
 		));
 	}
 
