@@ -20,8 +20,8 @@
 
 name: ${project.name}
 version: ${project.version}
-authors: [Maulss, matt11matthew]
 main: ${project.groupId}.${project.artifactId}.RiddlesCore
+authors: [matt11matthew, Maulss]
 prefix: Core
 
 commands:
@@ -66,5 +66,5 @@ commands:
     aliases: [clearchat, chatclear]
 
   rank:
-    description: Modify a player's rank (console only)
+    description: Modify a player's enumRank (console only)
     aliases: [ranks]

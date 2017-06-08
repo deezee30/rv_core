@@ -68,6 +68,8 @@ public final class RiddlesCore extends JavaPlugin {
 							.put("clearchat",	new ClearChatCommand())
 							.put("coins",		new CoinsCommand())
 							.put("debug",		new DebugCommand())
+							.put("iphistory",		new IpHistoryCommand())
+							.put("namehistory",		new NameHistoryCommand())
 							.put("god",			new GodCommand())
 							.put("premium",		new PremiumCommand())
 							.put("rank",		new RankCommand())
