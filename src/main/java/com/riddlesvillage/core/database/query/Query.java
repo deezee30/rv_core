@@ -1,9 +1,8 @@
 package com.riddlesvillage.core.database.query;
 
+import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.MongoCollection;
 import org.bson.conversions.Bson;
-
-import java.util.function.Consumer;
 
 public abstract class Query<T> {
 
@@ -11,14 +10,14 @@ public abstract class Query<T> {
 
     private final MongoCollection collection;
 
-    private final Consumer<T> doAfter;
+    private final SingleResultCallback<T> doAfter;
 
     /**
      * @param collection  Database collection
      * @param searchQuery Search query
      * @param doAfter     Consumer task to do after query is complete.
      */
-    public Query(MongoCollection collection, Bson searchQuery, Consumer<T> doAfter) {
+    public Query(MongoCollection collection, Bson searchQuery, SingleResultCallback<T> doAfter) {
         this.collection = collection;
         this.searchQuery = searchQuery;
         this.doAfter = doAfter;
@@ -32,7 +31,7 @@ public abstract class Query<T> {
         return collection;
     }
 
-    public Consumer<T> getDoAfter() {
+    public SingleResultCallback<T> getDoAfter() {
         return doAfter;
     }
 }

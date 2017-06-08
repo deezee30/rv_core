@@ -30,14 +30,14 @@ public final class Database implements Closeable {
 
         RiddlesCore.log("Database connection pool is being created...");
         client = MongoClients.create(MongoClientSettings.builder()
-                .clusterSettings(ClusterSettings.builder()
-                                .hosts(Collections.singletonList(new ServerAddress(credentials.getAddress())))
-                                .build()
-                ).credentialList(Collections.singletonList(MongoCredential.createCredential(
-                        credentials.getUser(),
-                        credentials.getDatabase(),
-                        credentials.getPass().toCharArray()
-                ))).build());
+				.clusterSettings(ClusterSettings.builder()
+								.hosts(Collections.singletonList(new ServerAddress(credentials.getAddress())))
+								.build()
+				).credentialList(Collections.singletonList(MongoCredential.createCredential(
+						credentials.getUser(),
+						credentials.getDatabase(),
+						credentials.getPass().toCharArray()
+				))).build());
 
         database = client.getDatabase("riddlesvillage");
         playerData = database.getCollection("player_data");

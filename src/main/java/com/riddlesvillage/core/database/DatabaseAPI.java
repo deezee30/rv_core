@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
 public class DatabaseAPI {
@@ -31,7 +30,7 @@ public class DatabaseAPI {
      *                        completed. doAfterOptional is executed async.
      */
     public static void bulkUpdate(List<UpdateOneModel<Document>> operations,
-                                  Consumer<BulkWriteResult> doAfterOptional) {
+								  SingleResultCallback<BulkWriteResult> doAfterOptional) {
 		Validate.notNull(operations);
 
         MongoAccessThread.submitQuery(new BulkWriteQuery<>(
@@ -39,11 +38,11 @@ public class DatabaseAPI {
     }
 
     public static void update(MongoCollection<Document> collection,
-                       UUID uuid,
-                       DataOperator operator,
-                       StatType variable,
-                       Object object,
-                       Consumer<UpdateResult> doAfterOptional) {
+							  UUID uuid,
+							  DataOperator operator,
+							  StatType variable,
+							  Object object,
+		SingleResultCallback<UpdateResult> doAfterOptional) {
 		Validate.notNull(collection);
 		Validate.notNull(operator);
 		Validate.notNull(variable);
@@ -91,18 +90,18 @@ public class DatabaseAPI {
         return clazz.cast(document.get(data.getStat()));
     }
 
-    public static void retrieveCoreDataFromUuid(UUID uuid, Consumer<Document> doAfter) {
+    public static void retrieveCoreDataFromUuid(UUID uuid, SingleResultCallback<Document> doAfter) {
         retrieveDocument(Database.getMainCollection(), DataInfo.UUID, uuid, doAfter);
     }
 
-    public static void retrieveCoreDataFromName(String username, Consumer<Document> doAfter) {
+    public static void retrieveCoreDataFromName(String username, SingleResultCallback<Document> doAfter) {
         retrieveDocument(Database.getMainCollection(), DataInfo.NAME, username, doAfter);
     }
 
     public static void retrieveDocument(MongoCollection<Document> collection,
                                  StatType stat,
                                  Object value,
-                                 Consumer<Document> doAfter) {
+                                 SingleResultCallback<Document> doAfter) {
         Validate.notNull(collection);
         Validate.notNull(stat);
 

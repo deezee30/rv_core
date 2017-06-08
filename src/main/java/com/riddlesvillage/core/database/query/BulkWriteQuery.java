@@ -1,12 +1,12 @@
 package com.riddlesvillage.core.database.query;
 
+import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.client.model.UpdateOneModel;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class BulkWriteQuery<BulkWriteResult> extends Query<BulkWriteResult> {
 
@@ -19,14 +19,14 @@ public class BulkWriteQuery<BulkWriteResult> extends Query<BulkWriteResult> {
      */
     public BulkWriteQuery(MongoCollection collection,
                           List<UpdateOneModel<Document>> models,
-                          Consumer<BulkWriteResult> doAfterOptional) {
+                          SingleResultCallback<BulkWriteResult> doAfterOptional) {
         super(collection, null, doAfterOptional);
         this.models = models;
     }
 
     public BulkWriteQuery(MongoCollection collection,
                           Bson searchQuery,
-                          Consumer<BulkWriteResult> doAfter,
+                          SingleResultCallback<BulkWriteResult> doAfter,
                           List<UpdateOneModel<Document>> models) {
         super(collection, searchQuery, doAfter);
         this.models = models;

@@ -4,7 +4,6 @@ import com.mongodb.async.SingleResultCallback;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.UpdateResult;
-import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.database.query.BulkWriteQuery;
 import com.riddlesvillage.core.database.query.DocumentSearchQuery;
 import com.riddlesvillage.core.database.query.Query;
@@ -47,37 +46,40 @@ public class MongoAccessThread extends Thread {
                             updateQuery.getNewDocument(),
                             UPDATE_OPTIONS,
                             new SingleResultCallback<UpdateResult>() {
+
                                 @Override
                                 public void onResult(UpdateResult updateResult, Throwable throwable) {
-                                    if (updateResult.wasAcknowledged()) {
-                                        if (updateQuery.getDoAfter() != null) {
-                                            CONSUMER_EXECUTOR_SERVICE.submit(() -> updateQuery.getDoAfter().accept(updateResult));
-                                        }
-                                    } else {
-                                        RiddlesCore.log(
-                                                "Update query failed: %s - %s",
-                                                updateQuery.getSearchQuery().toString(),
-                                                updateQuery.getNewDocument().toString()
-                                        );
+                                    if (updateQuery.getDoAfter() != null) {
+                                        CONSUMER_EXECUTOR_SERVICE.submit(() -> updateQuery
+                                                .getDoAfter().onResult(updateResult, throwable));
                                     }
                                 }
                             });
-
 
                 } else if (query instanceof DocumentSearchQuery) {
                     DocumentSearchQuery documentSearchQuery = (DocumentSearchQuery) query;
                     documentSearchQuery.getCollection()
                             .find(documentSearchQuery.getSearchQuery())
-                            .first((result, t) -> CONSUMER_EXECUTOR_SERVICE.submit(
-                                    () -> documentSearchQuery.getDoAfter().accept(result)));
+                            .first((result, throwable) -> CONSUMER_EXECUTOR_SERVICE.submit(
+                                    new Runnable() {
+
+                                        @Override
+                                        public void run() {
+                                            documentSearchQuery.getDoAfter().onResult(result, throwable);
+                                        }
+                                    }));
+
                 } else if (query instanceof BulkWriteQuery) {
                     BulkWriteQuery<BulkWriteResult> bulkWriteQuery = (BulkWriteQuery<BulkWriteResult>) query;
-                    bulkWriteQuery.getCollection().bulkWrite(bulkWriteQuery.getModels(), new SingleResultCallback<BulkWriteResult>() {
-                        @Override
-                        public void onResult(BulkWriteResult bulkWriteResult, Throwable throwable) {
-                            if (bulkWriteQuery.getDoAfter() != null) {
-                                CONSUMER_EXECUTOR_SERVICE.submit(() -> bulkWriteQuery.getDoAfter().accept(bulkWriteResult));
-                            }
+                    bulkWriteQuery.getCollection().bulkWrite(bulkWriteQuery.getModels(), (bulkWriteResult, throwable) -> {
+                        if (bulkWriteQuery.getDoAfter() != null) {
+                            CONSUMER_EXECUTOR_SERVICE.submit(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    bulkWriteQuery.getDoAfter().onResult((BulkWriteResult) bulkWriteResult, throwable);
+                                }
+                            });
                         }
                     });
                 }

@@ -1,9 +1,8 @@
 package com.riddlesvillage.core.database.query;
 
+import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.MongoCollection;
 import org.bson.conversions.Bson;
-
-import java.util.function.Consumer;
 
 public class SingleUpdateQuery<UpdateResult> extends Query<UpdateResult> {
 
@@ -18,7 +17,7 @@ public class SingleUpdateQuery<UpdateResult> extends Query<UpdateResult> {
     public SingleUpdateQuery(MongoCollection collection,
                              Bson searchQuery,
                              Bson newDocument,
-                             Consumer<UpdateResult> doAfterOptional) {
+                             SingleResultCallback<UpdateResult> doAfterOptional) {
         super(collection, searchQuery, doAfterOptional);
         this.newDocument = newDocument;
     }
