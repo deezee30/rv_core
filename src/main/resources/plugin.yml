@@ -68,3 +68,11 @@ commands:
   rank:
     description: Modify a player's enumRank (console only)
     aliases: [ranks]
+
+  iphistory:
+    description: Shows a list of previously used IPs based on UUID
+    aliases: [ips, showips, showiphistory]
+
+  namehistory:
+    description: Shows a list of previously used names based on UUID
+    aliases: [names, shownames, shownamehistory]
