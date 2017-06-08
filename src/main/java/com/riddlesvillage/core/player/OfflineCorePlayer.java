@@ -26,7 +26,6 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	 * To check if they are a real profile simply call #hasPlayed().
 	 */
 	private static final EnhancedList<OfflineCorePlayer>	CACHED_PROFILES = new EnhancedList<>();
-	private static final CorePlayerManager					ONLINE_PLAYERS	= CorePlayerManager.getInstance();
 
 	static {
 		// Refresh cached users every 30 seconds.
@@ -85,6 +84,8 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 			premium = stats.getBoolean("premium");
 			coins = stats.getInteger("coins");
 			tokens = stats.getInteger("tokens");
+
+			CACHED_PROFILES.add(this);
 		} else {
 			RiddlesCore.log("Failed to obtain stats for '%s' ('%s')", getName(), getUuid());
 		}
@@ -96,9 +97,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 		if (cache.isPresent()) {
 			return cache.get();
 		} else {
-			OfflineCorePlayer profile = new OfflineCorePlayer(null, name);
-			CACHED_PROFILES.addIf(ONLINE_PLAYERS.get(name) == null, profile);
-			return profile;
+			return new OfflineCorePlayer(null, name);
 		}
 	}
 
@@ -108,9 +107,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 		if (cache.isPresent()) {
 			return cache.get();
 		} else {
-			OfflineCorePlayer profile = new OfflineCorePlayer(uuid, null);
-			CACHED_PROFILES.addIf(ONLINE_PLAYERS.get(uuid) == null, profile);
-			return profile;
+			return new OfflineCorePlayer(uuid, null);
 		}
 	}
 
