@@ -13,6 +13,7 @@ import com.riddlesvillage.core.database.query.DocumentSearchQuery;
 import com.riddlesvillage.core.database.query.SingleUpdateQuery;
 import org.apache.commons.lang.Validate;
 import org.bson.Document;
+import org.bson.codecs.Codec;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ public class DatabaseAPI {
      */
     public static void bulkUpdate(List<UpdateOneModel<Document>> operations,
                                   Consumer<BulkWriteResult> doAfterOptional) {
+		Validate.notNull(operations);
+
         MongoAccessThread.submitQuery(new BulkWriteQuery<>(
                 Database.getMainCollection(), operations, doAfterOptional));
     }
@@ -41,11 +44,15 @@ public class DatabaseAPI {
                        StatType variable,
                        Object object,
                        Consumer<UpdateResult> doAfterOptional) {
+		Validate.notNull(collection);
+		Validate.notNull(operator);
+		Validate.notNull(variable);
+
         MongoAccessThread.submitQuery(new SingleUpdateQuery<>(
                 collection,
                 Filters.eq("uuid", uuid.toString()),
                 new Document(operator.getOperator(),
-                        new Document(variable.getStat(), object)),
+                        new Document(variable.getStat(), checkForCodec(object))),
                 doAfterOptional
         ));
     }
@@ -99,8 +106,8 @@ public class DatabaseAPI {
         Validate.notNull(collection);
         Validate.notNull(stat);
 
-        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(
-                collection, Filters.eq(stat.getStat(), value), doAfter));
+        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(collection,
+				Filters.eq(stat.getStat(), checkForCodec(value)), doAfter));
     }
 
     public static void insertNew(MongoCollection collection,
@@ -108,9 +115,15 @@ public class DatabaseAPI {
                                  SingleResultCallback<Void> callback) {
         Document insert = new Document();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            insert.append(entry.getKey(), entry.getValue());
+            insert.append(entry.getKey(), checkForCodec(entry.getValue()));
         }
 
 		collection.insertOne(insert, callback);
     }
+
+	private static Object checkForCodec(Object obj) {
+		if (obj == null) return null;
+		if (!(obj instanceof Codec<?>)) return String.valueOf(obj);
+		return obj;
+	}
 }
