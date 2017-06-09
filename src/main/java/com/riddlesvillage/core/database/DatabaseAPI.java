@@ -1,6 +1,7 @@
 package com.riddlesvillage.core.database;
 
 import com.mongodb.async.SingleResultCallback;
+import com.mongodb.async.client.MongoClients;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.model.Filters;
@@ -13,7 +14,7 @@ import com.riddlesvillage.core.database.query.DocumentSearchQuery;
 import com.riddlesvillage.core.database.query.SingleUpdateQuery;
 import org.apache.commons.lang.Validate;
 import org.bson.Document;
-import org.bson.codecs.Codec;
+import org.bson.codecs.configuration.CodecConfigurationException;
 
 import java.util.List;
 import java.util.Map;
@@ -122,7 +123,16 @@ public class DatabaseAPI {
 
 	private static Object checkForCodec(Object obj) {
 		if (obj == null) return null;
-		if (!(obj instanceof Codec<?>)) return String.valueOf(obj);
+		// we don't want mongodb driver to convert uuid to binary 0x03
+		if (obj instanceof UUID) return obj.toString();
+		try {
+			// check if there is a codec for object
+			MongoClients.getDefaultCodecRegistry().get(obj.getClass());
+		} catch (CodecConfigurationException ignored) {
+			// if not, simply return as String
+			return String.valueOf(obj);
+		}
+
 		return obj;
 	}
 }
