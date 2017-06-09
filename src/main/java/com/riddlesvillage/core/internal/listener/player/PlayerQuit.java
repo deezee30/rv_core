@@ -17,6 +17,6 @@ final class PlayerQuit implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		event.setQuitMessage(null);
 
-		PLAYER_MANAGER.get(event.getPlayer().getUniqueId()).destroy();
+		PLAYER_MANAGER.get(event).destroy();
 	}
 }

@@ -159,22 +159,23 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 				this.name = document.getString("name");
 				this.uuid = UUIDUtil.fromString(document.getString("uuid"));
 
-				if (getCollection() == null) {
-					// Async download custom stats from database
-					refreshStats();
-				} else {
+				if (Database.getMainCollection().equals(getCollection()) || getCollection() == null) {
 					// Apply already downloaded stats
 					finishLoading(downloadedDoc);
+				} else {
+					// Async download custom stats from database
+					refreshStats();
 				}
 			} else {
 				// player never played before
-				Messaging.debug("Generated fake player '%s' ('%s')", name, uuid);
+				finishLoading(Optional.<Document>empty());
 			}
 		});
 	}
 
 	private void finishLoading(Optional<Document> document) {
 		onLoad(document);
+		if (isOnline()) played = true;
 		timer.forceStop();
 	}
 
@@ -183,7 +184,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 	protected void refreshStats() {
 		// Async download custom stats from database
 		DatabaseAPI.retrieveDocument(getCollection(), DataInfo.UUID, uuid, ((result, t) -> {
-			RiddlesCore.logIf(t != null, "Error loading '%s' ('%s'):", name, uuid, t);
+			RiddlesCore.logIf(t != null, "Error loading '%s' ('%s'): %s", name, uuid, t);
 			finishLoading(Optional.ofNullable(result));
 		}));
 	}

@@ -12,13 +12,13 @@ import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.EnumRank;
+import com.riddlesvillage.core.player.Rank;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
 import com.riddlesvillage.core.player.profile.CoreProfile;
 
 public interface RankedPlayer extends CoreProfile {
 
-	default EnumRank getRank() {
+	default Rank getRank() {
 		CorePlayer player = toCorePlayer();
 		if (player == null) {
 			return (getUuid() == null ?
@@ -31,9 +31,9 @@ public interface RankedPlayer extends CoreProfile {
 	}
 
 	/**
-	 * @deprecated Use {@link #setRank(EnumRank)} instead
+	 * @deprecated Use {@link #setRank(Rank)} instead
 	 */
-	default void _setRank(EnumRank rank) {
+	default void _setRank(Rank rank) {
 		CorePlayer player = toCorePlayer();
 		if (player == null) {
 			(getUuid() == null ?
@@ -45,7 +45,7 @@ public interface RankedPlayer extends CoreProfile {
 		}
 	}
 
-	default void setRank(EnumRank rank) {
+	default void setRank(Rank rank) {
 		_setRank(rank);
 
 		DatabaseAPI.update(
@@ -53,7 +53,7 @@ public interface RankedPlayer extends CoreProfile {
 				getUuid(),
 				DataOperator.$SET,
 				DataInfo.RANK,
-				rank.getName(),
+				rank,
 				(updateResult, throwable) -> RiddlesCore.logIf(
 						!updateResult.wasAcknowledged(),
 						"%s's rank update to %s was unacknowledged: %s",
@@ -64,7 +64,7 @@ public interface RankedPlayer extends CoreProfile {
 		);
 	}
 
-	default boolean isAllowedFor(EnumRank rank) {
+	default boolean isAllowedFor(Rank rank) {
 		return getRank().getId() >= rank.getId();
 	}
 }

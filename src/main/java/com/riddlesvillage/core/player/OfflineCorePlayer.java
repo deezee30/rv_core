@@ -6,6 +6,7 @@ package com.riddlesvillage.core.player;
 
 import com.google.common.base.Strings;
 import com.mongodb.async.client.MongoCollection;
+import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.database.Database;
@@ -25,7 +26,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	 * Cached profiles may include names/uuids of players that may not exist.
 	 * To check if they are a real profile simply call #hasPlayed().
 	 */
-	private static final EnhancedList<OfflineCorePlayer>	CACHED_PROFILES = new EnhancedList<>();
+	private static final EnhancedList<OfflineCorePlayer> CACHED_PROFILES = new EnhancedList<>();
 
 	static {
 		// Refresh cached users every 30 seconds.
@@ -38,16 +39,23 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 		}.runTaskTimerAsynchronously(RiddlesCore.getInstance(), 600L, 600L);
 	}
 
-	private transient EnumRank
-			rank	= EnumRank.DEFAULT;
+	private Optional<Runnable>
+			doAfter = Optional.empty();
+	private transient Rank
+			rank	= Rank.DEFAULT;
 	private transient boolean
 			premium	= false;
 	private transient int
 			coins	= 0,
 			tokens	= 0;
 
-	private OfflineCorePlayer(UUID uuid, String name) {
+	private OfflineCorePlayer(UUID uuid, String name, Runnable doAfter) {
 		super(uuid, name);
+		this.doAfter = Optional.ofNullable(doAfter);
+	}
+
+	OfflineCorePlayer(CorePlayer player) {
+		super(player.getUuid(), player.getName());
 	}
 
 	@Override
@@ -80,34 +88,48 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 		if (doc.isPresent()) {
 			Document stats = doc.get();
 
-			rank = EnumRank.byName(stats.getString("rank"));
+			rank = Rank.byName(stats.getString("rank"));
 			premium = stats.getBoolean("premium");
 			coins = stats.getInteger("coins");
 			tokens = stats.getInteger("tokens");
 
-			CACHED_PROFILES.add(this);
+			CACHED_PROFILES.addIf(!CACHED_PROFILES.contains(this), this);
 		} else {
-			RiddlesCore.log("Failed to obtain stats for '%s' ('%s')", getName(), getUuid());
+			Messaging.debug("Failed to obtain stats for '%s' ('%s')", getName(), getUuid());
+		}
+
+		// run the runnable once
+		if (doAfter.isPresent()) {
+			doAfter.get().run();
+			doAfter = Optional.empty();
 		}
 	}
 
 	public static OfflineCorePlayer fromName(String name) {
+		return fromName(name, null);
+	}
+
+	public static OfflineCorePlayer fromName(String name, Runnable doAfter) {
 		final Optional<OfflineCorePlayer> cache = get(name);
 
 		if (cache.isPresent()) {
 			return cache.get();
 		} else {
-			return new OfflineCorePlayer(null, name);
+			return new OfflineCorePlayer(null, name, doAfter);
 		}
 	}
 
 	public static OfflineCorePlayer fromUuid(UUID uuid) {
+		return fromUuid(uuid, null);
+	}
+
+	public static OfflineCorePlayer fromUuid(UUID uuid, Runnable doAfter) {
 		final Optional<OfflineCorePlayer> cache = get(uuid);
 
 		if (cache.isPresent()) {
 			return cache.get();
 		} else {
-			return new OfflineCorePlayer(uuid, null);
+			return new OfflineCorePlayer(uuid, null, doAfter);
 		}
 	}
 
@@ -159,12 +181,12 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	}
 
 	@Override
-	public EnumRank getRank() {
+	public Rank getRank() {
 		return rank;
 	}
 
 	@Override
-	public void _setRank(EnumRank rank) {
+	public void _setRank(Rank rank) {
 		this.rank = rank;
 	}
 

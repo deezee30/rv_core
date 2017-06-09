@@ -76,8 +76,8 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	private transient String
 			locale 			= SETTINGS.getLocaleOrDefault(MainConfig.getDefaultLocale());
 
-	private transient EnumRank
-			rank			= EnumRank.DEFAULT;
+	private transient Rank
+			rank			= Rank.DEFAULT;
 
 	private transient boolean
 			premium			= false,
@@ -110,7 +110,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 			Document stats = document.get();
 
 			locale = stats.getString("locale");
-			rank = EnumRank.byName(stats.getString("rank"));
+			rank = Rank.byName(stats.getString("rank"));
 			premium = stats.getBoolean("premium");
 			coins = stats.getInteger("coins");
 			tokens = stats.getInteger("tokens");
@@ -119,118 +119,110 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 			((List<String>) stats.get("ipHistory"))
 					.forEach(s -> ipHistory.addIf(!ipHistory.contains(s), s));
 
-			// Check if player exists in database collection
-			boolean newcomer = !hasPlayed();
+			List<UpdateOneModel<Document>> operations = Lists.newArrayList();
+			Bson searchQuery = Filters.eq("uuid", getUuid());
 
-			if (newcomer) {
-				// If not, generate a new row for this player with default values
-				Map<String, Object> doc = Maps.newHashMap();
+			// update name
+			operations.add(new UpdateOneModel<>(searchQuery, new Document(
+					DataOperator.$SET.getOperator(),
+					new Document(DataInfo.NAME.getStat(), getName()))));
 
-				DataInfo.UUID.append(doc, getUuid());
-				DataInfo.NAME.append(doc, getName());
-				DataInfo.NAME_HISTORY.append(doc, nameHistory);
-				DataInfo.IP_HISTORY.append(doc, ipHistory);
-				DataInfo.FIRST_LOGIN.append(doc, System.currentTimeMillis() / 1000);
-				DataInfo.LAST_LOGIN.append(doc, System.currentTimeMillis() / 1000);
-				DataInfo.LAST_LOGOUT.append(doc);
-				DataInfo.PLAYING.append(doc);
-				DataInfo.COINS.append(doc);
-				DataInfo.TOKENS.append(doc);
-				DataInfo.RANK.append(doc);
-				DataInfo.PREMIUM.append(doc);
-				DataInfo.LOCALE.append(doc);
+			// update name history
+			operations.add(new UpdateOneModel<>(searchQuery, new Document(
+					DataOperator.$SET.getOperator(),
+					new Document(DataInfo.NAME_HISTORY.getStat(), getNameHistory()))));
 
-				DatabaseAPI.insertNew(
-						Database.getMainCollection(), doc,
-						(result, t1) -> {
-							if (t1 != null) {
-								Messaging.debug("Failed to insert '%s' into db: %s", getName(), t1);
-								t1.printStackTrace();
-							} else {
-								Messaging.debug("New player '%s' successfully created", CorePlayer.this.getName());
-							}
-						}
-				);
-			} else {
-				List<UpdateOneModel<Document>> operations = Lists.newArrayList();
-				Bson searchQuery = Filters.eq("uuid", getUuid());
+			// update IP history
+			operations.add(new UpdateOneModel<>(searchQuery, new Document(
+					DataOperator.$SET.getOperator(),
+					new Document(DataInfo.IP_HISTORY.getStat(), getIpHistory()))));
 
-				// update name
-				operations.add(new UpdateOneModel<>(searchQuery, new Document(
-						DataOperator.$SET.getOperator(),
-						new Document(DataInfo.NAME.getStat(), getName()))));
+			// update playing
+			operations.add(new UpdateOneModel<>(searchQuery, new Document(
+					DataOperator.$SET.getOperator(),
+					new Document(DataInfo.PLAYING.getStat(), true))));
 
-				// update name history
-				operations.add(new UpdateOneModel<>(searchQuery, new Document(
-						DataOperator.$SET.getOperator(),
-						new Document(DataInfo.NAME_HISTORY.getStat(), getNameHistory()))));
+			// update last login time
+			operations.add(new UpdateOneModel<>(searchQuery, new Document(
+					DataOperator.$SET.getOperator(),
+					new Document(DataInfo.LAST_LOGIN.getStat(), System.currentTimeMillis() / 1000))));
 
-				// update IP history
-				operations.add(new UpdateOneModel<>(searchQuery, new Document(
-						DataOperator.$SET.getOperator(),
-						new Document(DataInfo.IP_HISTORY.getStat(), getIpHistory()))));
-
-				// update playing
-				operations.add(new UpdateOneModel<>(searchQuery, new Document(
-						DataOperator.$SET.getOperator(),
-						new Document(DataInfo.PLAYING.getStat(), true))));
-
-				// update last login time
-				operations.add(new UpdateOneModel<>(searchQuery, new Document(
-						DataOperator.$SET.getOperator(),
-						new Document(DataInfo.LAST_LOGIN.getStat(), System.currentTimeMillis() / 1000))));
-
-				// submit bulk update and await for result
-				DatabaseAPI.bulkUpdate(operations, (bulkWriteResult, throwable) -> RiddlesCore.logIf(
-						!bulkWriteResult.wasAcknowledged(),
-						"Bulk update failed for '%s' (login):",
-						getName(),
-						throwable
-				));
-			}
-
-			Messaging.debug("%s's default language is %s", getName(), WordUtils.capitalize(locale));
-
-			// Delay task until the CraftPlayer instance has been fully loaded
-			new BukkitRunnable() {
-
-				@Override
-				public void run() {
-
-					// Check how long it takes to load the player in other events via RiddlesCore
-					final Timer eventTimer = new Timer().start();
-					eventTimer.onFinishExecute(() -> Messaging.debug(
-							"'%s' was loaded in other plugins in %sms",
-							CorePlayer.this,
-							eventTimer.getTime(TimeUnit.MILLISECONDS)
-					));
-
-					/*
-					 * Call event for other plugins using RiddlesCore
-					 * to load CorePlayer instances after this instance
-					 * loads. Make sure player actually logged in and
-					 * is online before calling all other events.
-					 */
-					if (player.isOnline()) {
-						player.setDisplayName(getRank().getColor() + player.getName());
-
-						INSTANCE.getServer().getPluginManager().callEvent(
-								new CorePlayerPostLoadEvent(CorePlayer.this, newcomer));
-
-						// Give player the default items
-						giveLoginItems();
-					} else {
-						// Player has been revoked access to server
-						destroy();
-					}
-
-					eventTimer.forceStop();
-				}
-			}.runTask(INSTANCE);
+			// submit bulk update and await for result
+			DatabaseAPI.bulkUpdate(operations, (bulkWriteResult, throwable) -> RiddlesCore.logIf(
+					!bulkWriteResult.wasAcknowledged(),
+					"Bulk update failed for '%s' (login):",
+					getName(),
+					throwable
+			));
 		} else {
-			player.kickPlayer("Failed to load");
-			RiddlesCore.log("Failed to load stats for '%s' ('%s')", getName(), getUuid());
+			// player never played before
+			Map<String, Object> doc = Maps.newHashMap();
+
+			DataInfo.UUID.append(doc, getUuid());
+			DataInfo.NAME.append(doc, getName());
+			DataInfo.NAME_HISTORY.append(doc, nameHistory);
+			DataInfo.IP_HISTORY.append(doc, ipHistory);
+			DataInfo.FIRST_LOGIN.append(doc, System.currentTimeMillis() / 1000);
+			DataInfo.LAST_LOGIN.append(doc, System.currentTimeMillis() / 1000);
+			DataInfo.LAST_LOGOUT.append(doc);
+			DataInfo.PLAYING.append(doc);
+			DataInfo.COINS.append(doc);
+			DataInfo.TOKENS.append(doc);
+			DataInfo.RANK.append(doc);
+			DataInfo.PREMIUM.append(doc);
+			DataInfo.LOCALE.append(doc);
+
+			DatabaseAPI.insertNew(
+					Database.getMainCollection(), doc,
+					(result, t1) -> {
+						if (t1 != null) {
+							Messaging.debug("Failed to insert '%s' into db: %s", getName(), t1);
+							t1.printStackTrace();
+						} else {
+							Messaging.debug("New player '%s' successfully created", CorePlayer.this.getName());
+						}
+					}
+			);
 		}
+
+		Messaging.debug("%s's language is %s", getName(), WordUtils.capitalize(locale));
+
+		// Delay task until the CraftPlayer instance has been fully loaded
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+
+				// Check how long it takes to load the player in other events via RiddlesCore
+				final Timer eventTimer = new Timer().start();
+				eventTimer.onFinishExecute(() -> Messaging.debug(
+						"'%s' was loaded in other plugins in %sms",
+						CorePlayer.this,
+						eventTimer.getTime(TimeUnit.MILLISECONDS)
+				));
+
+				/*
+				 * Call event for other plugins using RiddlesCore
+				 * to load CorePlayer instances after this instance
+				 * loads. Make sure player actually logged in and
+				 * is online before calling all other events.
+				 */
+				if (player.isOnline()) {
+					player.setDisplayName(getRank().getColor() + player.getName());
+
+					INSTANCE.getServer().getPluginManager().callEvent(
+							new CorePlayerPostLoadEvent(CorePlayer.this, document.isPresent()));
+
+					// Give player the default items
+					giveLoginItems();
+				} else {
+					// Player has been revoked access to server
+					destroy();
+				}
+
+				eventTimer.forceStop();
+			}
+		}.runTask(INSTANCE);
 	}
 
 	// == Native ====================================================== //
@@ -262,7 +254,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 	@Override
 	public MongoCollection<Document> getCollection() {
-		return null;
+		return Database.getMainCollection();
 	}
 
 	@Override
@@ -610,7 +602,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 	@Override
 	public boolean isPremium() {
-		return premium;
+		return premium || isMod();
 	}
 
 	@Override
@@ -655,25 +647,25 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 	// == Ranks ====================================================== //
 
-	public final EnumRank getRank() {
+	public final Rank getRank() {
 		return rank;
 	}
 
 	@Override
-	public final void _setRank(EnumRank rank) {
+	public final void _setRank(Rank rank) {
 		this.rank = rank;
 	}
 
 	public final boolean isHelper() {
-		return isAllowedFor(EnumRank.HELPER);
+		return isAllowedFor(Rank.HELPER);
 	}
 
 	public final boolean isMod() {
-		return isAllowedFor(EnumRank.MOD);
+		return isAllowedFor(Rank.MOD);
 	}
 
 	public final boolean isAdmin() {
-		return isAllowedFor(EnumRank.ADMIN);
+		return isAllowedFor(Rank.ADMIN);
 	}
 
 	// == Inventory State ====================================================== //
@@ -878,13 +870,17 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 		// send bulk update and await result
 		DatabaseAPI.bulkUpdate(operations, (bulkWriteResult, throwable) -> RiddlesCore.logIf(
-				!bulkWriteResult.wasAcknowledged(),
+				throwable != null,
 				"Bulk update failed for %s (destroy):",
 				getName(),
 				throwable
 		));
 
 		PLAYER_MANAGER.remove(this);
+	}
+
+	public OfflineCorePlayer toOfflinePlayer() {
+		return new OfflineCorePlayer(this);
 	}
 
 	/**
