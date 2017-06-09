@@ -7,7 +7,7 @@ package com.riddlesvillage.core.internal.listener.player;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.internal.config.MainConfig;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.EnumRank;
+import com.riddlesvillage.core.player.Rank;
 import com.riddlesvillage.core.player.profile.CoreProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -21,17 +21,12 @@ final class PlayerChat implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onChat(AsyncPlayerChatEvent event) {
-		CorePlayer player = CoreProfile.PLAYER_MANAGER.get(event.getPlayer().getName());
+		CorePlayer player = CoreProfile.PLAYER_MANAGER.get(event);
 
 		// Allow only premiums and staff to chat during premium-chat mode
 		if (RiddlesCore.getSettings().isPremiumChat() && !(player.isPremium() || player.isMod())) {
 			player.sendMessage("chat.premium-only");
 			event.setCancelled(true);
-			return;
-		}
-
-		// Make sure custom chat format is enabled
-		if (!MainConfig.doShowRankInChat()) {
 			return;
 		}
 
@@ -45,14 +40,17 @@ final class PlayerChat implements Listener {
 			}
 		}
 
-		EnumRank enumRank = player.getRank();
+		// Make sure custom chat format is enabled
+		if (MainConfig.doFormatChat()) {
+			Rank rank = player.getRank();
 
-		event.setFormat(String.format(
-				ChatColor.translateAlternateColorCodes('&', RiddlesCore.getSettings().get(player.getLocale(), "chat.format")),
-				enumRank.getDisplayName(),
-				player.getDisplayName(),
-				msg
-		));
+			event.setFormat(String.format(
+					ChatColor.translateAlternateColorCodes('&', RiddlesCore.getSettings().get(player.getLocale(), "chat.format")),
+					rank.getDisplayName(),
+					player.getDisplayName(),
+					msg
+			));
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

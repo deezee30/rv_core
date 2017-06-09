@@ -24,8 +24,8 @@ debug: true
 # The default language to be used for players until they change it.
 default-locale: english
 
-# Whether or not to show the player titles as a prefix in chat.
-show-rank-in-chat: false
+# Whether or not to rely on the core to set the chat format
+format-chat: true
 
 # How many lines are sent to clear the chat.
 clearchat-lines: 30

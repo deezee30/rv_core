@@ -15,7 +15,7 @@ public final class MainConfig extends CoreConfigFile {
 
 	public boolean debug;
 	public String defaultLocale;
-	public boolean showRankInChat;
+	public boolean formatChat;
 	public int clearChatLines;
 	public List<String> allowedCmds;
 
@@ -36,7 +36,7 @@ public final class MainConfig extends CoreConfigFile {
 		return new String[] {
 				"debug",
 				"default-locale",
-				"show-rank-in-chat",
+				"format-chat",
 				"clearchat-lines",
 				"allowed-commands-when-disabled"
 		};
@@ -50,8 +50,8 @@ public final class MainConfig extends CoreConfigFile {
 		return INSTANCE.defaultLocale;
 	}
 
-	public static boolean doShowRankInChat() {
-		return INSTANCE.showRankInChat;
+	public static boolean doFormatChat() {
+		return INSTANCE.formatChat;
 	}
 
 	public static int getClearChatLines() {
