@@ -12,6 +12,7 @@ import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.database.value.Value;
+import com.riddlesvillage.core.database.value.ValueType;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
 import com.riddlesvillage.core.player.event.CoinValueModificationEvent;
@@ -90,9 +91,43 @@ public interface CoinsHolder extends CoreProfile {
 	 * by this method and the database collection is updated with
 	 * the new value.
 	 *
+	 * By default the {@link #getCoinMultiplier()} is not applied.
+	 * If it needs to be, call {@code setCoins(value, true)}.
+	 *
 	 * @param	value
 	 * 			The amount of coins being changed along with the
 	 * 			change type, {@code GIVE}, {@code SET} or {@code TAKE}.
+	 * @throws	CoinValueModificationException If the amount provided ({@param value}) is a
+	 * 			negative.
+	 * @throws	CoinValueModificationException If subtracting the provided amount from the
+	 * 			current coin amount will result in a
+	 * 			negative.
+	 * @since	1.1
+	 * @see		CoinValueModificationEvent
+	 * @see		Value
+	 * @see		#setCoins(Value, boolean)
+	 * @see		#getCoinMultiplier()
+	 */
+	default void setCoins(Value<Integer> value) throws CoinValueModificationException {
+		setCoins(value, false);
+	}
+
+
+	/**
+	 * Calls a new {@link CoinValueModificationEvent} event.
+	 *
+	 * After it is processed, if the {@code event} has not been
+	 * cancelled, {@link #_setCoins(int)} is called with the
+	 * new coin value calculated (via {@link Value#appendTo(int)})
+	 * by this method and the database collection is updated with
+	 * the new value.
+	 *
+	 * @param	value
+	 * 			The amount of coins being changed along with the
+	 * 			change type, {@code GIVE}, {@code SET} or {@code TAKE}.
+	 * @param	applyMultiplier
+	 * 			If enabled and the value type is {@code GIVE},
+	 * 			{@link #getCoinMultiplier()} is applied.
 	 * @throws	CoinValueModificationException
 	 * 			If the amount provided ({@param value}) is a
 	 *          negative.
@@ -103,14 +138,18 @@ public interface CoinsHolder extends CoreProfile {
 	 * @see     CoinValueModificationEvent
 	 * @see     Value
 	 * @since	1.1
+	 * @see		#getCoinMultiplier()
 	 */
-	default void setCoins(Value<Integer> value) throws CoinValueModificationException {
-		CoinValueModificationEvent event = new CoinValueModificationEvent(
-				this, getCoins(), new Value<>(
-						MathUtil.floor((double) value.getValue() * getCoinMultiplier()),
-						value.getType())
-		);
+	default void setCoins(Value<Integer> value, boolean applyMultiplier) throws CoinValueModificationException {
+		// if possible, apply coin multiplier
+		if (applyMultiplier && value.getType().equals(ValueType.GIVE)) {
+			value = new Value<>(
+					MathUtil.floor((double) value.getValue() * getCoinMultiplier()),
+					ValueType.GIVE
+			);
+		}
 
+		CoinValueModificationEvent event = new CoinValueModificationEvent(this, getCoins(), value);
 		Bukkit.getPluginManager().callEvent(event);
 		if (!event.isCancelled()) {
 			int newCoins = event.getNewCoins();
