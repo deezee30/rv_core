@@ -108,6 +108,41 @@ A similar approach should be used for offline players too, if needed.
 
 #### Economy
 
+By default, the core utilizes two forms of economy, **coins** and
+**tokens**. Coins are the general everyday currency players can
+obtain from participating and winning gamemodes, etc. Tokens are
+a rarer currency that are more difficult to come by. A rough
+estimated currency exchange would be `1 token = 1000 coins`.
+
+##### Managing currency
+
+The most simplistic way to change a player's coin count is via
+`profile#setCoins(Value)`, where `profile` is the online or offline
+player instance - for example `CorePlayer`. `Value` is a simple
+class that stores an `int` and whether the value is supposed to
+**increase**, **decrease** or **set** the player's new coin count
+by the specified `int`. Tokens work the exact same way.
+
+Suppose you want to award a player with `1` token for winning a raffle:
+```java
+CorePlayer player = CorePlayerManager.getInstance().get("winner");
+Value<Integer> value = new Value(1, ValueType.GIVE);
+player.setTokens(value); // this will append 1 token to the current count
+player.sendMessage("1 token has been added to your account");
+player.sendMessage("You now have a total of %s tokens", player.getTokens());
+```
+
+##### Coin multiplier
+
+The coin multiplier is a personal factor `double` that accelerates earning
+coins. This can be enabled for a single player or the full server temporarily.
+This factor is only applied when the coin value increases, and an additional
+`boolean` parameter is also passed through `#setCoins()`.
+
+Calling `setCoins(value)` by default will not apply the coin multiplier. This
+is for use such as manual adding of coins via prizes, commands, etc. In
+situations where deserved, `setCoins(value, true)` should be called.
+
 #### Events
 
 #### Ranks
