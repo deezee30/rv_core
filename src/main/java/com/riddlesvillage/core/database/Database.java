@@ -1,14 +1,17 @@
 package com.riddlesvillage.core.database;
 
 import com.google.common.collect.Lists;
-import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.async.client.*;
 import com.mongodb.connection.ClusterSettings;
 import com.riddlesvillage.core.CoreException;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.database.data.Credentials;
+import com.riddlesvillage.core.database.data.RankCodec;
 import org.bson.Document;
+import org.bson.codecs.Codec;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
 
 import java.io.Closeable;
 import java.util.Collections;
@@ -17,11 +20,20 @@ import java.util.stream.IntStream;
 
 public final class Database implements Closeable {
 
+	public static MongoClient client;
+	public static MongoDatabase database = null;
+
+	private static MongoCollection<Document> playerData;
     private static Database INSTANCE = new Database();
 
-    public static MongoClient client;
-    public static MongoDatabase database = null;
-    private static MongoCollection<Document> playerData;
+	private static final Codec<?>[] CODECS = new Codec[] {
+			new RankCodec()
+	};
+
+	private static final CodecRegistry REGISTRY = CodecRegistries.fromRegistries(
+			MongoClients.getDefaultCodecRegistry(),
+			CodecRegistries.fromCodecs(CODECS)
+	);
 
     private Database() {}
 
@@ -29,15 +41,13 @@ public final class Database implements Closeable {
         if (client != null) throw new CoreException("Database connection already established");
 
         RiddlesCore.log("Database connection pool is being created...");
+
         client = MongoClients.create(MongoClientSettings.builder()
+				.codecRegistry(REGISTRY)
 				.clusterSettings(ClusterSettings.builder()
 								.hosts(Collections.singletonList(new ServerAddress(credentials.getAddress())))
 								.build()
-				).credentialList(Collections.singletonList(MongoCredential.createCredential(
-						credentials.getUser(),
-						credentials.getDatabase(),
-						credentials.getPass().toCharArray()
-				))).build());
+				).build());
 
         database = client.getDatabase("riddlesvillage");
         playerData = database.getCollection("player_data");
