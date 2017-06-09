@@ -26,7 +26,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 	 * Cached profiles may include names/uuids of players that may not exist.
 	 * To check if they are a real profile simply call #hasPlayed().
 	 */
-	private static final EnhancedList<OfflineCorePlayer> CACHED_PROFILES = new EnhancedList<>();
+	static final EnhancedList<OfflineCorePlayer> CACHED_PROFILES = new EnhancedList<>();
 
 	static {
 		// Refresh cached users every 30 seconds.

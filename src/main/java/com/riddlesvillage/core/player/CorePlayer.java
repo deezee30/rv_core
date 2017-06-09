@@ -877,6 +877,9 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 		));
 
 		PLAYER_MANAGER.remove(this);
+
+		// add offline player to cache
+		OfflineCorePlayer.CACHED_PROFILES.add(toOfflinePlayer());
 	}
 
 	public OfflineCorePlayer toOfflinePlayer() {
