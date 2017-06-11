@@ -69,17 +69,17 @@ public class Hologram implements IHologram {
         List<EntityArmorStand> spawnEntityLivingList = new ArrayList<>();
         double increment = 0.0D;
         for (String lineString : this.lineStringList) {
-            WorldServer s = ((CraftWorld)getLocation().getWorld()).getHandle();
-            EntityArmorStand stand = new EntityArmorStand(s);
-            stand.setLocation(getLocation().getX(), getLocation().getY()-increment, getLocation().getZ(), 0, 0);
+            WorldServer worldServer = ((CraftWorld)getLocation().getWorld()).getHandle();
+            EntityArmorStand entityArmorStand = new EntityArmorStand(worldServer);
+            entityArmorStand.setLocation(getLocation().getX(), getLocation().getY()-increment, getLocation().getZ(), 0, 0);
             if (lineString.startsWith(ChatColor.BOLD.toString())) {
-                increment+= 0.4;
+                increment += 0.4;
             } else {
-                increment+= 0.3;
+                increment += 0.3;
             }
-            stand.setCustomName(lineString);
-            stand.setCustomNameVisible(true);
-            spawnEntityLivingList.add(stand);
+            entityArmorStand.setCustomName(lineString);
+            entityArmorStand.setCustomNameVisible(true);
+            spawnEntityLivingList.add(entityArmorStand);
         }
         return spawnEntityLivingList;
     }
