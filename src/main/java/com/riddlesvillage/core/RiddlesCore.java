@@ -24,9 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static com.riddlesvillage.core.player.CorePlayer.PLAYER_MANAGER;
 
@@ -41,6 +39,13 @@ public final class RiddlesCore extends JavaPlugin {
 	@Override
 	public void onLoad() {
 		instance = this;
+
+		// start and warm up the default fork pool executor
+		try {
+			CompletableFuture.supplyAsync(() -> null).get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

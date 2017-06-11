@@ -5,7 +5,6 @@ import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.CorePlayerManager;
-import com.riddlesvillage.core.player.OfflineCorePlayer;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -33,29 +32,28 @@ public final class StatsCommand implements CommandExecutor {
 					playerSender.sendMessages(l.toArray(new String[l.size()]));
 				}
 				break;
+
 			case 1:
 				String victimName = args[0];
 
-				CorePlayer victim = MANAGER.get(victimName);
-				if (victim != null) {
-					ImmutableList<String> l = victim.getStatisticValues();
+				AbstractCoreProfile victim = MANAGER.getOrOffline(victimName);
+				if (!victim.hasPlayed()) {
+					if (!RiddlesCore.logIf(!isPlayer, ERROR, new String[] {"$player"}, victimName)) {
+						playerSender.sendMessage(ERROR, new String[] {"$player"}, victimName);
+					}
+
+					return true;
+				}
+
+				ImmutableList<String> l = victim.getStatisticValues();
+				if (isPlayer) {
 					playerSender.sendMessages(l.toArray(new String[l.size()]));
 				} else {
-					AbstractCoreProfile profile = OfflineCorePlayer.fromName(args[0]);
-					if (profile.hasPlayed()) {
-						ImmutableList<String> l = profile.getStatisticValues();
-						if (isPlayer) {
-							playerSender.sendMessages(l.toArray(new String[l.size()]));
-						} else {
-							l.forEach(s -> Messaging.log(s));
-						}
-					} else {
-						if (!RiddlesCore.logIf(!isPlayer, ERROR, new String[]{"$player"}, victimName)) {
-							playerSender.sendMessage(ERROR, new String[] {"$player"}, victimName);
-						}
-					}
+					l.forEach(s -> Messaging.log(s));
 				}
+
 				break;
+
 			default:
 				if (!RiddlesCore.logIf(!isPlayer, "command.usage", new String[] {"$usage"}, USAGE)) {
 					playerSender.sendMessage("command.usage", new String[] {"$usage"}, USAGE);

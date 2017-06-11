@@ -23,19 +23,11 @@ public final class CorePlayerManager extends PlayerManager<CorePlayer> {
 	}
 
 	public AbstractCoreProfile getOrOffline(UUID id) {
-		return getOrOffline(id, null);
-	}
-
-	public AbstractCoreProfile getOrOffline(UUID id, Runnable run) {
 		final CorePlayer player = get(id);
-		return player == null ? OfflineCorePlayer.fromUuid(id, run) : player;
+		return player == null ? OfflineCorePlayer.fromUuid(id) : player;
 	}
 
 	public AbstractCoreProfile getOrOffline(String name) {
-		return getOrOffline(name, null);
-	}
-
-	public AbstractCoreProfile getOrOffline(String name, Runnable run) {
 		final CorePlayer player = get(name);
 		return player == null ? OfflineCorePlayer.fromName(name) : player;
 	}

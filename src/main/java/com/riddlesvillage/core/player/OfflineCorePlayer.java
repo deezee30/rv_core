@@ -19,6 +19,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 public class OfflineCorePlayer extends AbstractCoreProfile {
 
@@ -39,7 +44,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 		}.runTaskTimerAsynchronously(RiddlesCore.getInstance(), 600L, 600L);
 	}
 
-	private Optional<Runnable>
+	private Optional<Consumer<OfflineCorePlayer>>
 			doAfter = Optional.empty();
 	private transient Rank
 			rank	= Rank.DEFAULT;
@@ -49,7 +54,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 			coins	= 0,
 			tokens	= 0;
 
-	private OfflineCorePlayer(UUID uuid, String name, Runnable doAfter) {
+	private OfflineCorePlayer(UUID uuid, String name, Consumer<OfflineCorePlayer> doAfter) {
 		super(uuid, name);
 		this.doAfter = Optional.ofNullable(doAfter);
 	}
@@ -100,37 +105,17 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 
 		// run the runnable once
 		if (doAfter.isPresent()) {
-			doAfter.get().run();
+			doAfter.get().accept(this);
 			doAfter = Optional.empty();
 		}
 	}
 
 	public static OfflineCorePlayer fromName(String name) {
-		return fromName(name, null);
-	}
-
-	public static OfflineCorePlayer fromName(String name, Runnable doAfter) {
-		final Optional<OfflineCorePlayer> cache = get(name);
-
-		if (cache.isPresent()) {
-			return cache.get();
-		} else {
-			return new OfflineCorePlayer(null, name, doAfter);
-		}
+		return get(get(name), null, name);
 	}
 
 	public static OfflineCorePlayer fromUuid(UUID uuid) {
-		return fromUuid(uuid, null);
-	}
-
-	public static OfflineCorePlayer fromUuid(UUID uuid, Runnable doAfter) {
-		final Optional<OfflineCorePlayer> cache = get(uuid);
-
-		if (cache.isPresent()) {
-			return cache.get();
-		} else {
-			return new OfflineCorePlayer(uuid, null, doAfter);
-		}
+		return get(get(uuid), uuid, null);
 	}
 
 	public static void removeFromCache(UUID uuid) {
@@ -158,6 +143,29 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 		}
 
 		return Optional.empty();
+	}
+
+	private static OfflineCorePlayer get(Optional<OfflineCorePlayer> cache,
+										 UUID uuid,
+										 String name) {
+		OfflineCorePlayer profile;
+
+		if (cache.isPresent()) {
+			profile = cache.get();
+		} else {
+			// wait for async download to finish, then resume operation
+			CompletableFuture<OfflineCorePlayer> futureProfile = new CompletableFuture<>();
+			profile = new OfflineCorePlayer(uuid, name, futureProfile::complete);
+
+			// allow maximum 2 seconds of processing
+			try {
+				profile = futureProfile.get(2, TimeUnit.SECONDS);
+			} catch (InterruptedException | ExecutionException | TimeoutException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return profile;
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public final class CoreSettings {
 			allowedCommands		= new EnhancedList<>(),
 			locales				= new EnhancedList<>();
 	private final EnhancedMap<String, CoreInventoryClickEvent>
-			inventories = new EnhancedMap<>();
+			inventories			= new EnhancedMap<>();
 	private final AtomicBoolean
 			premiumChat			= new AtomicBoolean(false);
 
