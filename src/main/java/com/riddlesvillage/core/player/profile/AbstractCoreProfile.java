@@ -156,8 +156,8 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 			if (downloadedDoc.isPresent()) {
 				played = true;
 
-				this.name = document.getString("name");
-				this.uuid = UUIDUtil.fromString(document.getString("uuid"));
+				this.name = document.getString(DataInfo.NAME.getStat());
+				this.uuid = UUIDUtil.fromString(document.getString(DataInfo.UUID.getStat()));
 
 				if (Database.getMainCollection().equals(getCollection()) || getCollection() == null) {
 					// Apply already downloaded stats
@@ -309,10 +309,12 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 
 		return new ImmutableList.Builder<String>()
 				.add("~")
-				.add("~&3======= " + getDisplayName() + " &3=======")
-				.add("~&3Rank: " + getRank().getDisplayName())
-				.add("~&3Premium: " + (isPremium() ? "&2True" : "&4False"))
-				.add("~&3Currently " + (isOnline() ? "&2Online" : "&4Offline"))
+				.add("~&e======= " + getDisplayName() + " &e=======")
+				.add("~&eRank: " + getRank().getDisplayName())
+				.add("~&eCoins: &3" + getCoins())
+				.add("~&eTokens: &3" + getTokens())
+				.add("~&ePremium: " + (isPremium() ? "&2True" : "&4False"))
+				.add("~&eCurrently " + (isOnline() ? "&2Online" : "&4Offline"))
 				.add("~")
 				.build();
 	}

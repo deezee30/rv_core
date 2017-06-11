@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.mongodb.async.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.WriteModel;
 import com.riddlesvillage.core.CoreSettings;
@@ -104,7 +105,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 		this.player = player;
 
-		searchQuery = new Document(DataInfo.UUID.getStat(), getUuid().toString());
+		searchQuery = Filters.eq(DataInfo.UUID.getStat(), getUuid().toString());
 		nameHistory.add(player.getName());
 		ipHistory.add(assumedHostName);
 	}
@@ -114,14 +115,14 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 		if (document.isPresent()) {
 			Document stats = document.get();
 
-			locale = stats.getString("locale");
-			rank = Rank.byName(stats.getString("rank"));
-			premium = stats.getBoolean("premium");
-			coins = stats.getInteger("coins");
-			tokens = stats.getInteger("tokens");
-			((List<String>) stats.get("nameHistory"))
+			locale = stats.getString(DataInfo.LOCALE.getStat());
+			rank = Rank.byName(stats.getString(DataInfo.RANK.getStat()));
+			premium = stats.getBoolean(DataInfo.PREMIUM.getStat());
+			coins = stats.getInteger(DataInfo.COINS.getStat());
+			tokens = stats.getInteger(DataInfo.TOKENS.getStat());
+			((List<String>) stats.get(DataInfo.NAME_HISTORY.getStat()))
 					.forEach(s -> nameHistory.addIf(!nameHistory.contains(s), s));
-			((List<String>) stats.get("ipHistory"))
+			((List<String>) stats.get(DataInfo.IP_HISTORY.getStat()))
 					.forEach(s -> ipHistory.addIf(!ipHistory.contains(s), s));
 
 			List<WriteModel<Document>> operations = Lists.newArrayList();

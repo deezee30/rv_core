@@ -14,7 +14,7 @@ import java.util.Collections;
 
 public enum DataInfo implements StatType {
 
-	UUID		("uuid",			null),
+	UUID		("_id",				null),
 	NAME		("name",			null),
 	NAME_HISTORY("nameHistory",		Collections.emptyList()),
 	IP_HISTORY	("ipHistory", 		Collections.emptyList()),

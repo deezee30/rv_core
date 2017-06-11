@@ -47,7 +47,7 @@ public class DatabaseAPI {
 		Validate.notNull(variable);
 
 		collection.updateOne(
-				Filters.eq("uuid", uuid.toString()),
+				Filters.eq(DataInfo.UUID.getStat(), uuid.toString()),
 				new Document(operator.getOperator(), new Document(
 						variable.getStat(),
 						checkForCodec(object)
