@@ -17,14 +17,14 @@ public class BulkWriteQuery<BulkWriteResult> extends Query<BulkWriteResult> {
      * @param doAfterOptional Consumer task to do after query is complete.
      * @param models          Write models
      */
-    public BulkWriteQuery(MongoCollection collection,
+    public BulkWriteQuery(MongoCollection<Document> collection,
                           List<UpdateOneModel<Document>> models,
                           SingleResultCallback<BulkWriteResult> doAfterOptional) {
         super(collection, null, doAfterOptional);
         this.models = models;
     }
 
-    public BulkWriteQuery(MongoCollection collection,
+    public BulkWriteQuery(MongoCollection<Document> collection,
                           Bson searchQuery,
                           SingleResultCallback<BulkWriteResult> doAfter,
                           List<UpdateOneModel<Document>> models) {

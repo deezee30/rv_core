@@ -2,6 +2,7 @@ package com.riddlesvillage.core.database.query;
 
 import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.MongoCollection;
+import org.bson.Document;
 import org.bson.conversions.Bson;
 
 public class SingleUpdateQuery<UpdateResult> extends Query<UpdateResult> {
@@ -14,7 +15,7 @@ public class SingleUpdateQuery<UpdateResult> extends Query<UpdateResult> {
      * @param newDocument     New Document to replace
      * @param doAfterOptional Consumer task to do after query is complete.
      */
-    public SingleUpdateQuery(MongoCollection collection,
+    public SingleUpdateQuery(MongoCollection<Document> collection,
                              Bson searchQuery,
                              Bson newDocument,
                              SingleResultCallback<UpdateResult> doAfterOptional) {

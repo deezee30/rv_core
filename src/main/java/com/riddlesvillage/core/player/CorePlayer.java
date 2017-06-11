@@ -9,8 +9,8 @@ import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.mongodb.async.client.MongoCollection;
-import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOneModel;
+import com.mongodb.client.model.WriteModel;
 import com.riddlesvillage.core.CoreSettings;
 import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.RiddlesCore;
@@ -60,6 +60,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 	private static final RiddlesCore INSTANCE = RiddlesCore.getInstance();
 	private static final CoreSettings SETTINGS = RiddlesCore.getSettings();
+	private static final MongoCollection<Document> COLLECTION = Database.getMainCollection();
 
 	private transient final Player player;
 
@@ -78,6 +79,9 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 	private transient Rank
 			rank			= Rank.DEFAULT;
+
+	private transient Bson
+			searchQuery		= new Document();
 
 	private transient boolean
 			premium			= false,
@@ -100,6 +104,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 		this.player = player;
 
+		searchQuery = new Document(DataInfo.UUID.getStat(), getUuid().toString());
 		nameHistory.add(player.getName());
 		ipHistory.add(assumedHostName);
 	}
@@ -119,8 +124,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 			((List<String>) stats.get("ipHistory"))
 					.forEach(s -> ipHistory.addIf(!ipHistory.contains(s), s));
 
-			List<UpdateOneModel<Document>> operations = Lists.newArrayList();
-			Bson searchQuery = Filters.eq("uuid", getUuid());
+			List<WriteModel<Document>> operations = Lists.newArrayList();
 
 			// update name
 			operations.add(new UpdateOneModel<>(searchQuery, new Document(
@@ -130,12 +134,12 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 			// update name history
 			operations.add(new UpdateOneModel<>(searchQuery, new Document(
 					DataOperator.$SET.getOperator(),
-					new Document(DataInfo.NAME_HISTORY.getStat(), getNameHistory()))));
+					new Document(DataInfo.NAME_HISTORY.getStat(), nameHistory))));
 
 			// update IP history
 			operations.add(new UpdateOneModel<>(searchQuery, new Document(
 					DataOperator.$SET.getOperator(),
-					new Document(DataInfo.IP_HISTORY.getStat(), getIpHistory()))));
+					new Document(DataInfo.IP_HISTORY.getStat(), ipHistory))));
 
 			// update playing
 			operations.add(new UpdateOneModel<>(searchQuery, new Document(
@@ -148,12 +152,15 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 					new Document(DataInfo.LAST_LOGIN.getStat(), System.currentTimeMillis() / 1000))));
 
 			// submit bulk update and await for result
-			DatabaseAPI.bulkUpdate(operations, (bulkWriteResult, throwable) -> RiddlesCore.logIf(
-					!bulkWriteResult.wasAcknowledged(),
-					"Bulk update failed for '%s' (login):",
-					getName(),
-					throwable
-			));
+			DatabaseAPI.bulkWrite(
+					COLLECTION,
+					operations,
+					(bulkWriteResult, throwable) -> RiddlesCore.logIf(
+							throwable != null,
+							"Bulk update failed for '%s' (login): %s",
+							getName(),
+							throwable
+					));
 		} else {
 			// player never played before
 			Map<String, Object> doc = Maps.newHashMap();
@@ -173,7 +180,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 			DataInfo.LOCALE.append(doc);
 
 			DatabaseAPI.insertNew(
-					Database.getMainCollection(), doc,
+					COLLECTION, doc,
 					(result, t1) -> {
 						if (t1 != null) {
 							Messaging.debug("Failed to insert '%s' into db: %s", getName(), t1);
@@ -223,6 +230,10 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 				eventTimer.forceStop();
 			}
 		}.runTask(INSTANCE);
+	}
+
+	private Bson searchQuery() {
+		return new Document(DataInfo.UUID.getStat(), getUuid());
 	}
 
 	// == Native ====================================================== //
@@ -582,7 +593,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	public String setLocale(String locale) {
 		this.locale = locale;
 		DatabaseAPI.update(
-				Database.getMainCollection(),
+				COLLECTION,
 				getUuid(),
 				DataOperator.$SET,
 				DataInfo.LOCALE,
@@ -854,8 +865,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	 * Terminates the this player's accessibility with the server.
 	 */
 	public void destroy() {
-		List<UpdateOneModel<Document>> operations = Lists.newArrayList();
-		Bson searchQuery = Filters.eq("uuid", getUuid());
+		List<WriteModel<Document>> operations = Lists.newArrayList();
 
 		// update last logout
 		operations.add(new UpdateOneModel<>(searchQuery, new Document(
@@ -869,12 +879,16 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 				new Document(DataInfo.PLAYING.getStat(), false))));
 
 		// send bulk update and await result
-		DatabaseAPI.bulkUpdate(operations, (bulkWriteResult, throwable) -> RiddlesCore.logIf(
-				throwable != null,
-				"Bulk update failed for %s (destroy):",
-				getName(),
-				throwable
-		));
+		DatabaseAPI.bulkWrite(
+				COLLECTION,
+				operations,
+				(bulkWriteResult, throwable) -> RiddlesCore.logIf(
+						throwable != null,
+						"Bulk update failed for %s (destroy): %s",
+						getName(),
+						throwable
+				)
+		);
 
 		PLAYER_MANAGER.remove(this);
 

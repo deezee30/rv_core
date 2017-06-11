@@ -5,13 +5,10 @@ import com.mongodb.async.client.MongoClients;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.UpdateOneModel;
+import com.mongodb.client.model.WriteModel;
 import com.mongodb.client.result.UpdateResult;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
-import com.riddlesvillage.core.database.query.BulkWriteQuery;
-import com.riddlesvillage.core.database.query.DocumentSearchQuery;
-import com.riddlesvillage.core.database.query.SingleUpdateQuery;
 import org.apache.commons.lang.Validate;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecConfigurationException;
@@ -19,7 +16,6 @@ import org.bson.codecs.configuration.CodecConfigurationException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("unchecked")
 public class DatabaseAPI {
@@ -30,12 +26,13 @@ public class DatabaseAPI {
      *                        specify extra actions after the update query is
      *                        completed. doAfterOptional is executed async.
      */
-    public static void bulkUpdate(List<UpdateOneModel<Document>> operations,
-								  SingleResultCallback<BulkWriteResult> doAfterOptional) {
+    public static void bulkWrite(MongoCollection<Document> collection,
+								 List<WriteModel<Document>> operations,
+								 SingleResultCallback<BulkWriteResult> doAfterOptional) {
+		Validate.notNull(collection);
 		Validate.notNull(operations);
 
-        MongoAccessThread.submitQuery(new BulkWriteQuery<>(
-                Database.getMainCollection(), operations, doAfterOptional));
+		collection.bulkWrite(operations, doAfterOptional);
     }
 
     public static void update(MongoCollection<Document> collection,
@@ -43,48 +40,19 @@ public class DatabaseAPI {
 							  DataOperator operator,
 							  StatType variable,
 							  Object object,
-		SingleResultCallback<UpdateResult> doAfterOptional) {
+							  SingleResultCallback<UpdateResult> doAfterOptional) {
 		Validate.notNull(collection);
+		Validate.notNull(uuid);
 		Validate.notNull(operator);
 		Validate.notNull(variable);
 
-        MongoAccessThread.submitQuery(new SingleUpdateQuery<>(
-                collection,
-                Filters.eq("uuid", uuid.toString()),
-                new Document(operator.getOperator(),
-                        new Document(variable.getStat(), checkForCodec(object))),
-                doAfterOptional
-        ));
-    }
-
-    /**
-     * Safely Returns the object that's requested
-     * based on UUID.
-     *
-     * @param uuid UUID
-     * @param data Data type
-     * @return Requested data
-     */
-    public static Object getData(UUID uuid, StatType data) {
-        AtomicReference<Document> doc = new AtomicReference<>(null);
-
-        Database.getMainCollection()
-                .find(Filters.eq("uuid", uuid.toString()))
-                .first((result, t) -> doc.set(result));
-
-        return getData(doc.get(), data);
-    }
-
-    /**
-     * Safely Returns the object that's requested
-     * based on UUID.
-     *
-     * @param document User's document
-     * @param data     Data type
-     * @return Requested data
-     */
-    public static Object getData(Document document, StatType data) {
-        return document.get(data.getStat());
+		collection.updateOne(
+				Filters.eq("uuid", uuid.toString()),
+				new Document(operator.getOperator(), new Document(
+						variable.getStat(),
+						checkForCodec(object)
+				)), doAfterOptional
+		);
     }
 
     public static <Obj> Obj getData(Document document, StatType data, Class<Obj> clazz) {
@@ -100,17 +68,16 @@ public class DatabaseAPI {
     }
 
     public static void retrieveDocument(MongoCollection<Document> collection,
-                                 StatType stat,
-                                 Object value,
-                                 SingleResultCallback<Document> doAfter) {
+										StatType stat,
+										Object value,
+										SingleResultCallback<Document> doAfter) {
         Validate.notNull(collection);
         Validate.notNull(stat);
 
-        MongoAccessThread.submitQuery(new DocumentSearchQuery<>(collection,
-				Filters.eq(stat.getStat(), checkForCodec(value)), doAfter));
-    }
+		collection.find(Filters.eq(stat.getStat(), checkForCodec(value))).first(doAfter);
+	}
 
-    public static void insertNew(MongoCollection collection,
+    public static void insertNew(MongoCollection<Document> collection,
                                  Map<String, Object> map,
                                  SingleResultCallback<Void> callback) {
         Document insert = new Document();

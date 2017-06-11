@@ -12,7 +12,9 @@ public class DocumentSearchQuery<Document> extends Query<Document> {
      * @param searchQuery Search query
      * @param doAfter     Consumer task to do after query is complete.
      */
-    public DocumentSearchQuery(MongoCollection collection, Bson searchQuery, SingleResultCallback<Document> doAfter) {
+    public DocumentSearchQuery(MongoCollection<org.bson.Document> collection,
+                               Bson searchQuery,
+							   SingleResultCallback<Document> doAfter) {
         super(collection, searchQuery, doAfter);
     }
 }
