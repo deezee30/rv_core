@@ -43,7 +43,6 @@
                                     <include>org.slf4j:*</include>
                                     <include>com.zaxxer:*</include>
                                     <include>org.javassist:javassist</include>
-                                    <include>org.mongodb:mongodb-driver</include>
                                     <include>org.mongodb:mongodb-driver-async</include>
                                     <include>org.mongodb:mongodb-driver-core</include>
                                     <include>org.mongodb:bson</include>
@@ -93,12 +92,6 @@
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <version>3.18.1-GA</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver</artifactId>
-            <version>3.4.2</version>
         </dependency>
 
         <dependency>
