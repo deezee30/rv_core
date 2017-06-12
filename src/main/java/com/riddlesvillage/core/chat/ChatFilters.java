@@ -6,6 +6,8 @@
 
 package com.riddlesvillage.core.chat;
 
+import com.google.common.collect.ImmutableList;
+import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.collect.EnhancedList;
 
 import java.util.Iterator;
@@ -15,14 +17,21 @@ public final class ChatFilters implements Iterable<ChatBlockFilter> {
 	private static final ChatFilters INSTANCE = new ChatFilters();
 	private EnhancedList<ChatBlockFilter> filters = new EnhancedList<>();
 
-	{
+	public void registerDefaults() {
 		addFilter(new MuteFilter());
 		addFilter(new AdvertisementFilter());
 		addFilter(new SpamFilter());
 	}
 
 	public void addFilter(ChatBlockFilter filter) {
-		filters.addIf(filter != null, filter);
+		if (filter == null) return;
+
+		Messaging.debug("Adding chat filter: " + filter.getClass().getSimpleName());
+		filters.add(filter);
+	}
+
+	public ImmutableList<ChatBlockFilter> getFilters() {
+		return filters.getImmutableElements();
 	}
 
 	@Override

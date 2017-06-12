@@ -11,11 +11,15 @@ import com.riddlesvillage.core.chat.ChatBlockFilter;
 import com.riddlesvillage.core.chat.ChatFilters;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
+import com.riddlesvillage.core.net.paster.PasteException;
+import com.riddlesvillage.core.net.paster.Paster;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.util.StringUtil;
 import com.riddlesvillage.core.util.inventory.item.IndexedItem;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -225,5 +229,38 @@ public final class CoreSettings {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void tryPasteLocales() {
+		Bukkit.getScheduler().runTaskAsynchronously(RiddlesCore.getInstance(), () -> {
+			StringBuilder sb = new StringBuilder();
+			String oldLocale = null;
+			for (Map.Entry<String, String> msg : RiddlesCore.getSettings().getAllMessages().entrySet()) {
+				String[] parts = msg.getKey().split("\\.");
+				String locale = parts[0];
+				String path = StringUtils.join(ArrayUtils.subarray(parts, 1, parts.length + 1), ".");
+				String message = RiddlesCore.getSettings().get(locale, path);
+
+				if (message != null && !message.equalsIgnoreCase("null")) {
+					if (message.startsWith("MemorySection")) continue;
+
+					message = ChatColor.stripColor(message);
+				}
+
+				if (oldLocale == null || !locale.equals(oldLocale)) {
+					oldLocale = locale;
+
+					sb.append("\n").append(locale).append(":");
+				}
+
+				sb.append(String.format("\n\t\"%-48s => \"%s\"", path + "\"", message));
+			}
+
+			try {
+				Paster.hastebin(sb.toString()).paste();
+			} catch (PasteException e) {
+				Messaging.log("Did not paste locale-supported messages: %s", e);
+			}
+		});
 	}
 }

@@ -21,4 +21,9 @@ class MuteFilter implements ChatBlockFilter {
 	public Optional<String> getReason() {
 		return Optional.of("chat.mute.reminder");
 	}
+
+	@Override
+	public boolean violate() {
+		return false;
+	}
 }

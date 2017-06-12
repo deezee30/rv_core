@@ -31,8 +31,8 @@ chat:
   # How many lines are sent to clear the chat.
   clear-lines: 30
 
-  # Maximum amount of messages in 30 seconds:
-  max-messages: 10
+  # Maximum amount of messages in 20 seconds:
+  max-messages: 5
 
   # The amount of allowed spam violations before starting to take action
   spam-violations-permitted: 3

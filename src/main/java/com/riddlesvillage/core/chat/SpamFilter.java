@@ -46,6 +46,11 @@ class SpamFilter implements ChatBlockFilter {
 		return Optional.of("chat.mute.no-spam");
 	}
 
+	@Override
+	public boolean violate() {
+		return true;
+	}
+
 	private void putTemp(String name, int messages) {
 		count.put(name, messages);
 
@@ -59,6 +64,6 @@ class SpamFilter implements ChatBlockFilter {
 					else count.put(name, c - 1);
 				}
 			}
-		}.runTaskLater(RiddlesCore.getInstance(), 30 * 20);
+		}.runTaskLater(RiddlesCore.getInstance(), 20 * 20);
 	}
 }

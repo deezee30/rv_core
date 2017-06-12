@@ -23,4 +23,9 @@ class AdvertisementFilter implements ChatBlockFilter {
 	public Optional<String> getReason() {
 		return Optional.of("chat.mute.no-ads");
 	}
+
+	@Override
+	public boolean violate() {
+		return true;
+	}
 }

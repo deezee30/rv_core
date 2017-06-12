@@ -39,6 +39,8 @@ final class PlayerChat implements Listener {
 
 		// Block all messages that aren't supposed to be sent
 		for (ChatBlockFilter filter : ChatFilters.getInstance()) {
+			if (event.isCancelled()) break;
+
 			if (filter.block(player, msg)) {
 				event.setCancelled(true);
 
@@ -49,7 +51,8 @@ final class PlayerChat implements Listener {
 				}
 
 				// add chat violation
-				player.getViolationManager().getChatViolation().addViolation();
+				if (filter.violate())
+					player.getViolationManager().getChatViolation().addViolation();
 			}
 		}
 
@@ -58,10 +61,12 @@ final class PlayerChat implements Listener {
 			// Check for player mentions
 			for (CorePlayer p : CoreProfile.PLAYER_MANAGER) {
 				if (msg.toLowerCase().contains(p.getName().toLowerCase())) {
+
+					// play sound for mentioned player
 					p.getPlayer().playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, .25F, 2F);
 
 					// replace names with display names
-					msg = msg.replaceAll("(?i)" + Pattern.quote(p.getName()), p.getDisplayName());
+					msg = msg.replaceAll("(?i)" + Pattern.quote(p.getName()), p.getDisplayName() + ChatColor.GRAY);
 				}
 			}
 

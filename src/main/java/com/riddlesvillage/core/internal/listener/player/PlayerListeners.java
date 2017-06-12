@@ -14,7 +14,6 @@ public final class PlayerListeners {
 	public static synchronized Listener[] get() {
 		return new Listener[] {
 				new PlayerChat(),
-				new PlayerChat(),
 				new PlayerDamage(),
 				new PlayerDeath(),
 				new PlayerDropItem(),

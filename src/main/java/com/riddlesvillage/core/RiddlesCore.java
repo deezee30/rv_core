@@ -6,7 +6,6 @@ package com.riddlesvillage.core;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import com.riddlesvillage.core.chat.ChatFilters;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.internal.command.*;
 import com.riddlesvillage.core.internal.config.DatabaseConfig;
@@ -92,7 +91,7 @@ public final class RiddlesCore extends JavaPlugin {
 			settings.addAllowedCommands(MainConfig.getAllowedCommands());
 
 			// Register default chat block filters
-			ChatFilters.getInstance();
+			settings.getChatFilters().registerDefaults();
 
 			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 

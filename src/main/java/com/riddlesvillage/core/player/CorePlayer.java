@@ -680,6 +680,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	@Override
 	public final void _setRank(Rank rank) {
 		this.rank = rank;
+		player.setDisplayName(rank.getColor() + getName());
 	}
 
 	public final boolean isHelper() {

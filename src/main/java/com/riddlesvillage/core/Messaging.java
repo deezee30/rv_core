@@ -183,7 +183,7 @@ public final class Messaging {
 	 */
 	public static Optional<String> debug(String string,
 										 Object... components) {
-		String msg = prefix(string, debugPrefix + prefix);
+		String msg = prefix(string, debugPrefix);
 		return debug ? write(System.out, msg, components) : Optional.of(msg);
 	}
 

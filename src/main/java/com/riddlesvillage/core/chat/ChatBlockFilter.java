@@ -15,4 +15,6 @@ public interface ChatBlockFilter {
 	boolean block(CorePlayer player, String message);
 
 	Optional<String> getReason();
+
+	boolean violate();
 }
