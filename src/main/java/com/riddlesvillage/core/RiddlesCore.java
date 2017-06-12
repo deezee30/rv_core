@@ -11,7 +11,6 @@ import com.riddlesvillage.core.internal.command.*;
 import com.riddlesvillage.core.internal.config.DatabaseConfig;
 import com.riddlesvillage.core.internal.config.MainConfig;
 import com.riddlesvillage.core.internal.listener.player.PlayerListeners;
-import com.riddlesvillage.core.net.Messenger;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import com.riddlesvillage.core.service.timer.Timer;
