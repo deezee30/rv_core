@@ -2,7 +2,7 @@
  * RiddlesCore
  */
 
-package com.riddlesvillage.core.util.inventory.item;
+package com.riddlesvillage.core.inventory.item;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;

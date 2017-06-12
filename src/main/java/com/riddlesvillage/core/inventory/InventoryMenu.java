@@ -2,14 +2,14 @@
  * RiddlesCore
  */
 
-package com.riddlesvillage.core.util.inventory;
+package com.riddlesvillage.core.inventory;
 
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.CoreInventoryClickEvent;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.util.inventory.item.IndexedItem;
+import com.riddlesvillage.core.inventory.item.IndexedItem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

@@ -15,7 +15,7 @@ import com.riddlesvillage.core.net.paster.PasteException;
 import com.riddlesvillage.core.net.paster.Paster;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.util.StringUtil;
-import com.riddlesvillage.core.util.inventory.item.IndexedItem;
+import com.riddlesvillage.core.inventory.item.IndexedItem;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
