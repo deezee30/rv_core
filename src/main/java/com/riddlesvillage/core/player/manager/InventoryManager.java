@@ -2,7 +2,7 @@
  * RiddlesCore
  */
 
-package com.riddlesvillage.core.util.inventory;
+package com.riddlesvillage.core.player.manager;
 
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.RiddlesCore;

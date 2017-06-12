@@ -7,7 +7,6 @@ package com.riddlesvillage.core.util.inventory.item;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.riddlesvillage.core.RiddlesCore;
-import com.riddlesvillage.core.CoreSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -123,7 +122,7 @@ public class ItemBuilder implements Cloneable {
 	}
 
 	public ItemStack build() {
-		return buildWithLocaleSupport(CoreSettings.DEFAULT_LOCALE);
+		return buildWithLocaleSupport(RiddlesCore.getSettings().getDefaultLocale());
 	}
 
 	public ItemStack buildWithLocaleSupport(String locale) {

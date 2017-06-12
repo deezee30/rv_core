@@ -22,12 +22,14 @@ import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.internal.config.MainConfig;
 import com.riddlesvillage.core.player.event.CorePlayerPostLoadEvent;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.ViolationManager;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
 import com.riddlesvillage.core.player.profile.CoreProfile;
 import com.riddlesvillage.core.scoreboard.ScoreboardFactory;
 import com.riddlesvillage.core.service.timer.Timer;
 import com.riddlesvillage.core.util.Firework;
-import com.riddlesvillage.core.util.inventory.InventoryManager;
+import com.riddlesvillage.core.player.manager.InventoryManager;
 import com.riddlesvillage.core.util.inventory.item.CoreItemStackList;
 import com.riddlesvillage.core.util.inventory.item.IndexedItem;
 import org.apache.commons.lang.WordUtils;
@@ -68,6 +70,9 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	private transient InventoryManager
 			invManager 		= new InventoryManager(this);
 
+	private transient ViolationManager
+			violations		= new ViolationManager(this);
+
 	private transient ScoreboardHolder
 			sbHolder 		= this;
 
@@ -88,6 +93,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 			premium			= false,
 			vanished 		= false,
 			cmdBlocked 		= false,
+			muted			= false,
 			damageable 		= true,
 			constructable 	= true,
 			movable			= true,
@@ -100,7 +106,7 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 			coins			= 0,
 			tokens			= 0;
 
-	CorePlayer(Player player, String assumedHostName) {
+	private CorePlayer(Player player, String assumedHostName) {
 		super(player.getUniqueId(), player.getName());
 
 		this.player = player;
@@ -572,6 +578,14 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 		return this.canGetHungry = canGetHungry;
 	}
 
+	public boolean isMuted() {
+		return muted;
+	}
+
+	public void setMuted(boolean muted) {
+		this.muted = muted;
+	}
+
 	// == Locale ====================================================== //
 
 	/**
@@ -839,6 +853,10 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 		return invManager;
 	}
 
+	public ViolationManager getViolationManager() {
+		return violations;
+	}
+
 	/**
 	 * Sets the holder for the {@link ScoreboardFactory}, which
 	 * is {@code null} by default.
@@ -891,6 +909,9 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 				)
 		);
 
+		// destroy violation managers to prevent memory leaks
+		violations.destroy();
+
 		PLAYER_MANAGER.remove(this);
 
 		// add offline player to cache
@@ -911,5 +932,9 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	 */
 	public static CorePlayer createIfAbsent(Player player) {
 		return PLAYER_MANAGER.add(Validate.notNull(player, "The player must not be null!"));
+	}
+
+	public static CorePlayer _init(Player player, String hostName) {
+		return new CorePlayer(Validate.notNull(player), hostName);
 	}
 }

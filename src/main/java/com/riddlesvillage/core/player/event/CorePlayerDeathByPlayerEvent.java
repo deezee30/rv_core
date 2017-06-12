@@ -4,7 +4,7 @@
 package com.riddlesvillage.core.player.event;
 
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.event.entity.PlayerDeathEvent;
 

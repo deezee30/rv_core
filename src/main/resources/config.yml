@@ -24,11 +24,21 @@ debug: true
 # The default language to be used for players until they change it.
 default-locale: english
 
-# Whether or not to rely on the core to set the chat format
-format-chat: true
+chat:
+  # Whether or not to rely on the core to set the chat format
+  format: true
 
-# How many lines are sent to clear the chat.
-clearchat-lines: 30
+  # How many lines are sent to clear the chat.
+  clear-lines: 30
+
+  # Maximum amount of messages in 30 seconds:
+  max-messages: 10
+
+  # The amount of allowed spam violations before starting to take action
+  spam-violations-permitted: 3
+
+  # Number of seconds for violation cooldowns (0 to disable)
+  violation-cooldown: 300
 
 # The commands that any player can execute while in game.
 allowed-commands-when-disabled:

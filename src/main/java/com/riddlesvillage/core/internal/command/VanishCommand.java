@@ -8,7 +8,7 @@ package com.riddlesvillage.core.internal.command;
 
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

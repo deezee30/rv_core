@@ -5,7 +5,6 @@
 package com.riddlesvillage.core.internal.config;
 
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
 
 import java.util.List;
 
@@ -15,15 +14,15 @@ public final class MainConfig extends CoreConfigFile {
 
 	public boolean debug;
 	public String defaultLocale;
-	public boolean formatChat;
-	public int clearChatLines;
+	public boolean chatFormat;
+	public int chatClearLines;
+	public int maxMessages;
+	public int chatSpamViolationsPermitted;
+	public int chatViolationCooldown;
 	public List<String> allowedCmds;
 
 	private MainConfig() {
-		allowedCmds.forEach(cmd -> RiddlesCore.getSettings().addAllowedCommand(cmd));
-
 		Messaging.enableDebugging(debug);
-		Messaging.setNoPrefixChar((char) 126);
 	}
 
 	@Override
@@ -36,8 +35,13 @@ public final class MainConfig extends CoreConfigFile {
 		return new String[] {
 				"debug",
 				"default-locale",
-				"format-chat",
-				"clearchat-lines",
+
+				"chat.format",
+				"chat.clear-lines",
+				"chat.max-messages" ,
+				"chat.spam-violations-permitted",
+				"chat.violation-cooldown",
+
 				"allowed-commands-when-disabled"
 		};
 	}
@@ -51,10 +55,26 @@ public final class MainConfig extends CoreConfigFile {
 	}
 
 	public static boolean doFormatChat() {
-		return INSTANCE.formatChat;
+		return INSTANCE.chatFormat;
 	}
 
 	public static int getClearChatLines() {
-		return INSTANCE.clearChatLines;
+		return INSTANCE.chatClearLines;
+	}
+
+	public static int getMaxMessages() {
+		return INSTANCE.maxMessages;
+	}
+
+	public static int getChatSpamViolationsPermitted() {
+		return INSTANCE.chatSpamViolationsPermitted;
+	}
+
+	public static int getChatViolationCooldown() {
+		return INSTANCE.chatViolationCooldown;
+	}
+
+	public static List<String> getAllowedCommands() {
+		return INSTANCE.allowedCmds;
 	}
 }

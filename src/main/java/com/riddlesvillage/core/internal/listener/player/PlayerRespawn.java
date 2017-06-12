@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.internal.listener.player;
 
-import com.riddlesvillage.core.player.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

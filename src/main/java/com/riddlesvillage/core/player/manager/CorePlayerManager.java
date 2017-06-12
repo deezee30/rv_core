@@ -2,8 +2,11 @@
  * RiddlesCore
  */
 
-package com.riddlesvillage.core.player;
+package com.riddlesvillage.core.player.manager;
 
+import com.riddlesvillage.core.player.CorePlayer;
+import com.riddlesvillage.core.player.CorePlayerList;
+import com.riddlesvillage.core.player.OfflineCorePlayer;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -80,7 +83,7 @@ public final class CorePlayerManager extends PlayerManager<CorePlayer> {
 
 		// Player's name and stats may have changed since his last query - Remove him from cache
 		OfflineCorePlayer.removeFromCache(player.getUniqueId());
-		PLAYERS.add(rPlayer = new CorePlayer(player, hostName));
+		PLAYERS.add(rPlayer = CorePlayer._init(player, hostName));
 		return rPlayer;
 	}
 

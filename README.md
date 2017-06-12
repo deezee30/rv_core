@@ -149,6 +149,8 @@ situations where deserved, `setCoins(value, true)` should be called.
 
 #### Premium
 
+#### Violations
+
 ### Database
 
 ### Command API
@@ -240,4 +242,3 @@ None
 - tab list
 - ping
 - OOP Mongo API revolving around CorePlayer
-- Testing

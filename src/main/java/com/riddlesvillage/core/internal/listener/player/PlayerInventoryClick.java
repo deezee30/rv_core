@@ -8,7 +8,7 @@ import com.riddlesvillage.core.CoreInventoryClickEvent;
 import com.riddlesvillage.core.CoreSettings;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

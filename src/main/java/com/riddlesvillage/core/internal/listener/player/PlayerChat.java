@@ -5,9 +5,10 @@
 package com.riddlesvillage.core.internal.listener.player;
 
 import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.chat.ChatBlockFilter;
+import com.riddlesvillage.core.chat.ChatFilters;
 import com.riddlesvillage.core.internal.config.MainConfig;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.Rank;
 import com.riddlesvillage.core.player.profile.CoreProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -16,6 +17,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 final class PlayerChat implements Listener {
 
@@ -33,20 +37,37 @@ final class PlayerChat implements Listener {
 		// Escape %* delimiters for String.format(...)
 		String msg = event.getMessage().replace("%", "%%");
 
-		// Play a sound for players mentioned in the message
-		for (CorePlayer p : CoreProfile.PLAYER_MANAGER) {
-			if (msg.toLowerCase().contains(p.getName().toLowerCase())) {
-				p.getPlayer().playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, .25F, 2F);
+		// Block all messages that aren't supposed to be sent
+		for (ChatBlockFilter filter : ChatFilters.getInstance()) {
+			if (filter.block(player, msg)) {
+				event.setCancelled(true);
+
+				// why?
+				Optional<String> reason = filter.getReason();
+				if (reason.isPresent()) {
+					player.sendMessage(reason.get());
+				}
+
+				// add chat violation
+				player.getViolationManager().getChatViolation().addViolation();
 			}
 		}
 
 		// Make sure custom chat format is enabled
 		if (MainConfig.doFormatChat()) {
-			Rank rank = player.getRank();
+			// Check for player mentions
+			for (CorePlayer p : CoreProfile.PLAYER_MANAGER) {
+				if (msg.toLowerCase().contains(p.getName().toLowerCase())) {
+					p.getPlayer().playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, .25F, 2F);
+
+					// replace names with display names
+					msg = msg.replaceAll("(?i)" + Pattern.quote(p.getName()), p.getDisplayName());
+				}
+			}
 
 			event.setFormat(String.format(
 					ChatColor.translateAlternateColorCodes('&', RiddlesCore.getSettings().get(player.getLocale(), "chat.format")),
-					rank.getDisplayName(),
+					player.getRank().getDisplayName(),
 					player.getDisplayName(),
 					msg
 			));

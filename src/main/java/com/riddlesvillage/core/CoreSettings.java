@@ -7,6 +7,8 @@ package com.riddlesvillage.core;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.riddlesvillage.core.chat.ChatBlockFilter;
+import com.riddlesvillage.core.chat.ChatFilters;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.player.CorePlayer;
@@ -24,6 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,7 +34,7 @@ import java.util.function.Predicate;
 
 public final class CoreSettings {
 
-	public static final String DEFAULT_LOCALE = "english";
+	private String defaultLocale = "english";
 
 	private final EnhancedMap<String, String>
 			messages			= new EnhancedMap<>();
@@ -44,6 +47,8 @@ public final class CoreSettings {
 			inventories			= new EnhancedMap<>();
 	private final AtomicBoolean
 			premiumChat			= new AtomicBoolean(false);
+	private final ChatFilters
+			chatFilters			= ChatFilters.getInstance();
 
 	CoreSettings() {}
 
@@ -54,6 +59,18 @@ public final class CoreSettings {
 	public void setPremiumChat(boolean premiumChat) {
 		this.premiumChat.set(premiumChat);
 		RiddlesCore.broadcast("premiumchat." + (premiumChat ? "enable" : "disable"));
+	}
+
+	public void addChatFilter(ChatBlockFilter filter) {
+		chatFilters.addFilter(filter);
+	}
+
+	public ChatFilters getChatFilters() {
+		return chatFilters;
+	}
+
+	public void addAllowedCommands(List<String> commands) {
+		allowedCommands.addAll(commands);
 	}
 
 	public void addAllowedCommand(String command) {
@@ -138,7 +155,7 @@ public final class CoreSettings {
 	}
 
 	public String get(String path) {
-		return get(DEFAULT_LOCALE, path);
+		return get(getDefaultLocale(), path);
 	}
 
 	public String get(String locale, String path) {
@@ -147,7 +164,7 @@ public final class CoreSettings {
 		}
 
 		String message = messages.get(locale.toLowerCase() + "." + path);
-		if (message == null) message = messages.get(DEFAULT_LOCALE + "." + path);
+		if (message == null) message = messages.get(getDefaultLocale() + "." + path);
 		if (message == null || message.equalsIgnoreCase("null")) {
 			return path.equals("chat.prefix") ? "" : path;
 		}
@@ -158,7 +175,8 @@ public final class CoreSettings {
 		locale = locale.toLowerCase();
 
 		if (!locales.contains(locale)) {
-			locale = DEFAULT_LOCALE;
+			locale = getDefaultLocale();
+			addLocale(locale);
 		}
 
 		messages.put(
@@ -183,12 +201,20 @@ public final class CoreSettings {
 		return locales.getImmutableElements();
 	}
 
+	public String getDefaultLocale() {
+		return defaultLocale;
+	}
+
+	public void setDefaultLocale(String defaultLocale) {
+		addLocale(this.defaultLocale = defaultLocale);
+	}
+
 	public ImmutableMap<String, String> getAllMessages() {
 		return messages.getImmutableEntries();
 	}
 
 	public String getLocaleOrDefault(String locale) {
-		return locales.contains(locale.toLowerCase()) ? locale : DEFAULT_LOCALE;
+		return locales.contains(locale.toLowerCase()) ? locale : getDefaultLocale();
 	}
 
 	public void initClasses(String... classPaths) {

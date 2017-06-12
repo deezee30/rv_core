@@ -5,7 +5,7 @@
 package com.riddlesvillage.core.internal;
 
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.player.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 

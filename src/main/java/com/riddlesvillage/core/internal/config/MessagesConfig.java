@@ -4,7 +4,6 @@
 
 package com.riddlesvillage.core.internal.config;
 
-import com.riddlesvillage.core.CoreSettings;
 import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.file.ConfigFile;
@@ -24,17 +23,20 @@ public final class MessagesConfig {
 	private static final RiddlesCore PLUGIN_INSTANCE = RiddlesCore.getInstance();
 
 	static {
+		String defaultLocale = RiddlesCore.getSettings().getDefaultLocale();
+
 		ConfigFile.check(
 				new File(String.format(
 						"%s%slocale",
 						PLUGIN_INSTANCE.getDataFolder().getPath(),
 						File.separator
-				), CoreSettings.DEFAULT_LOCALE + ".yml"),
-				PLUGIN_INSTANCE.getResource("locale/" + CoreSettings.DEFAULT_LOCALE + ".yml") // locale/english.yml
+				), defaultLocale + ".yml"),
+				PLUGIN_INSTANCE.getResource("locale/" + defaultLocale + ".yml") // locale/english.yml
 		);
 
 		RiddlesCore.getSettings().findAndRegisterLocales(PLUGIN_INSTANCE);
 
+		Messaging.setNoPrefixChar((char) 126);
 		Messaging.setPrefix(ChatColor.stripColor(
 				ChatColor.translateAlternateColorCodes('&', RiddlesCore.getSettings().get("chat.prefix"))
 		));

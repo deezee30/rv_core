@@ -6,7 +6,7 @@ package com.riddlesvillage.core.player.profile;
 
 import com.mongodb.async.client.MongoCollection;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.bson.Document;
 
 import java.util.List;

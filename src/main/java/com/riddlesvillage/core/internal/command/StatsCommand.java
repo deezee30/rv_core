@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

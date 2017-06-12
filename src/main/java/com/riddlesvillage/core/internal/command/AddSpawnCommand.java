@@ -3,7 +3,7 @@ package com.riddlesvillage.core.internal.command;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.internal.config.SpawnsConfig;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

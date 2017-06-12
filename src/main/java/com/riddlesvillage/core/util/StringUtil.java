@@ -1,8 +1,11 @@
 package com.riddlesvillage.core.util;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.net.InetAddresses;
 import org.apache.commons.lang3.Validate;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,5 +80,34 @@ public final class StringUtil {
 			string = string.substring(0, string.length()-2);
 		}
 		return string;
+	}
+
+	public static boolean containsInetAddress(String string) {
+		String[] parts = string.split("\\s+");
+
+		for (String part : parts) {
+			if (InetAddresses.isInetAddress(string)) return true;
+		}
+
+		return false;
+	}
+
+	public static boolean containsAddress(String string) {
+		String[] parts = string.split("\\s+");
+
+		for (String part : parts) {
+			if (isAddress(part)) return true;
+		}
+
+		return false;
+	}
+
+	public static boolean isAddress(String string) {
+		try {
+			new URL(string);
+			return true;
+		} catch (MalformedURLException e) {
+			return false;
+		}
 	}
 }

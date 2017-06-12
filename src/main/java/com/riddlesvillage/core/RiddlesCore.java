@@ -6,13 +6,15 @@ package com.riddlesvillage.core;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.riddlesvillage.core.chat.ChatFilters;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.internal.command.*;
 import com.riddlesvillage.core.internal.config.DatabaseConfig;
+import com.riddlesvillage.core.internal.config.MainConfig;
 import com.riddlesvillage.core.internal.listener.player.PlayerListeners;
 import com.riddlesvillage.core.net.Messenger;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import com.riddlesvillage.core.service.timer.Timer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -62,7 +64,8 @@ public final class RiddlesCore extends JavaPlugin {
 					"com.riddlesvillage.core.internal.config.DatabaseConfig"
 			);
 
-			settings.addLocale(CoreSettings.DEFAULT_LOCALE);
+			// Set up default language for players
+			settings.addLocale(MainConfig.getDefaultLocale());
 
 			// Internal event listeners
 			settings.registerListeners(this, PlayerListeners.get());
@@ -73,8 +76,8 @@ public final class RiddlesCore extends JavaPlugin {
 							.put("clearchat",	new ClearChatCommand())
 							.put("coins",		new CoinsCommand())
 							.put("debug",		new DebugCommand())
-							.put("iphistory",		new IpHistoryCommand())
-							.put("namehistory",		new NameHistoryCommand())
+							.put("iphistory",	new IpHistoryCommand())
+							.put("namehistory",	new NameHistoryCommand())
 							.put("god",			new GodCommand())
 							.put("premium",		new PremiumCommand())
 							.put("rank",		new RankCommand())
@@ -84,6 +87,12 @@ public final class RiddlesCore extends JavaPlugin {
 							.put("vanish",		new VanishCommand())
 							.build()
 			);
+
+			// Allow commands when commands are disabled
+			settings.addAllowedCommands(MainConfig.getAllowedCommands());
+
+			// Register default chat block filters
+			ChatFilters.getInstance();
 
 			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
