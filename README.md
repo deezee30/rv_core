@@ -145,7 +145,84 @@ situations where deserved, `setCoins(value, true)` should be called.
 
 #### Events
 
+##### `CoinValueModificationEvent`:
+> Called before a profile's coin value is bound to be changed.
+
+Example:
+```java
+@EventHandle(priority = EventPriority.HIGH)
+public void onCoinAdd(CoinValueModificationEvent event) {
+    // disable having more than 10,000 coins for players
+    if (event.getNewCoins() > 10000) {
+        event.setCancelled(true);
+    }
+}
+```
+
+##### `TokenValueModificationEvent`:
+> Called before a profile's token value is bound to be changed.
+
+Works the same way as `CoinValueModificationEvent`
+
+##### `PremiumStatusModificationEvent`:
+> Called before a profile's premium status is bound to be changed.
+
+```java
+@EventHandle(priority = EventPriority.HIGH)
+public void onPremiumStateChange(PremiumStatusModificationEvent event) {
+    boolean newState = event.isPremium();
+}
+```
+
+##### `CorePlayerDeathByPlayerEvent`:
+> Called when one live player kills another.
+
+**Settings:**
+| Method                       | Description |
+| ---------------------------- | ----------- |
+| `autoRespawn(boolean)`       | Whether or not the player should automatically respawn without a death screen |
+| `sendVictimMessage(boolean)` | Whether or not to send the victim a killing message |
+| `sendKillerMessage(boolean)` | Whether or not to send the victim a killing message |
+| `playSound(boolean)`         | Whether or not to play a sound for the killer |
+| `clearDrops(boolean)`        | Whether or not to clear the victim's item drops |
+| `clearExp(boolean)`          | Whether or not to clear the dropped experience |
+
+##### `CorePlayerJumpEvent`:
+> Called when a player jumps
+
+A single jump, no matter how high or if incomplete, will trigger this event exactly once.
+
+##### `CorePlayerPostLoadEvent`:
+> Called as soon as `CorePlayer` finishes loading
+
+**Note: This event may or may not be called in an asynchronous thread!**
+
+This event is called after the `CorePlayer` instance has been created and set up
+and the database statistics have been downloaded and initialized.
+
+This event should be used for creating new unique player instances if
+the class is a sub class of `AbstractCoreProfile`:
+
+```java
+@EventHandle(priority = EventPriority.HIGHEST)
+public void onPostLoad(CorePlayerPostLoadEvent event) {
+    CustomPlayer player = new CustomPlayer(event.getProfile());
+    if (event.isNew()) {
+        RiddlesCore.broadcast("&aWelcome, &6%s &ato the server!", player.getName());
+    }
+}
+```
+
 #### Ranks
+
+| Rank     | ID      | Color      | Permissions |
+| -------- |:-------:|:----------:|-------------|
+| Member   | `0`     | Gray       | Default access |
+| Helper   | `1`     | Aqua       | Bypass chat limitations |
+| Mod      | `5`     | Green      | Access to player management and restrictions, such as muting, banning, kicking, etc... |
+| Dev      | `10`    | Dark Green | Access to non-public areas of plugins |
+| Lead Dev | `10`    | Gold       | Access to non-public areas of plugins |
+| Admin    | `99999` | Blue       | Access to backend server commands and utilities |
 
 #### Premium
 
