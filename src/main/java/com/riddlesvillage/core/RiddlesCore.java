@@ -97,16 +97,6 @@ public final class RiddlesCore extends JavaPlugin {
 			// Initialize database connection and setup management
 			database.init(DatabaseConfig.getCredentials());
 
-			// Perform tasks after plugin initialized, ie next tick
-			new BukkitRunnable() {
-
-				@Override
-				public void run() {
-					// start server listener
-					messenger.cache.start();
-				}
-			}.runTask(this);
-
 			PluginDescriptionFile desc = getDescription();
 
 			log("~&3=========== &eRiddlesCore&3 ===========");
