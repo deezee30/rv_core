@@ -20,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
 import java.util.Optional;
@@ -34,7 +33,6 @@ public final class RiddlesCore extends JavaPlugin {
 	private static RiddlesCore instance;
 	private final Database database = Database.getInstance();
 	private final Timer loadTimer = new Timer();
-	private Messenger messenger = new Messenger(this);
 
 	@Override
 	public void onLoad() {
@@ -192,10 +190,6 @@ public final class RiddlesCore extends JavaPlugin {
 
 	public static CoreSettings getSettings() {
 		return settings;
-	}
-
-	public static Messenger getMessenger() {
-		return instance.messenger;
 	}
 
 	public static RiddlesCore getInstance() {
