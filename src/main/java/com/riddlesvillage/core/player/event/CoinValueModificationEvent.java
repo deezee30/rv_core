@@ -20,7 +20,6 @@ import org.bukkit.event.Cancellable;
  */
 public class CoinValueModificationEvent extends CoreProfileEvent implements Cancellable {
 
-	private final CoinsHolder player;
 	private final int oldCoins;
 	private final int changed;
 	private final ValueType type;
@@ -61,7 +60,6 @@ public class CoinValueModificationEvent extends CoreProfileEvent implements Canc
 		Validate.notNull(value);
 		Validate.isTrue(value.isInteger());
 
-		this.player = player;
 		this.oldCoins = oldCoins;
 		this.type = value.getType();
 		int changed = Integer.parseInt(value.toString());
@@ -85,7 +83,7 @@ public class CoinValueModificationEvent extends CoreProfileEvent implements Canc
 	 * @return The user that can hold the coins.
 	 */
 	public CoinsHolder getPlayer() {
-		return player;
+		return (CoinsHolder) getProfile();
 	}
 
 	/**

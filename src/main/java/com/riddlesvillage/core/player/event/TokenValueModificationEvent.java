@@ -20,11 +20,10 @@ import org.bukkit.event.Cancellable;
  */
 public class TokenValueModificationEvent extends CoreProfileEvent implements Cancellable {
 
-	private final	TokensHolder	player;
-	private final	int				oldTokens;
-	private final	int				changed;
-	private final	ValueType		type;
-	private			boolean			cancelled = false;
+	private final	int			oldTokens;
+	private final	int			changed;
+	private final	ValueType	type;
+	private			boolean		cancelled = false;
 
 	/**
 	 * Constructs a new {@code TokenValueModificationEvent}.
@@ -61,7 +60,6 @@ public class TokenValueModificationEvent extends CoreProfileEvent implements Can
 		Validate.notNull(value);
 		Validate.isTrue(value.isInteger());
 
-		this.player = player;
 		this.oldTokens = oldTokens;
 		this.type = value.getType();
 		int changed = Integer.parseInt(value.toString());
@@ -85,7 +83,7 @@ public class TokenValueModificationEvent extends CoreProfileEvent implements Can
 	 * @return The user that can hold the tokens.
 	 */
 	public TokensHolder getPlayer() {
-		return player;
+		return (TokensHolder) getProfile();
 	}
 
 	/**
