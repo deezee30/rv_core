@@ -178,6 +178,7 @@ public void onPremiumStateChange(PremiumStatusModificationEvent event) {
 > Called when one live player kills another.
 
 **Settings:**
+
 | Method                       | Description |
 | ---------------------------- | ----------- |
 | `autoRespawn(boolean)`       | Whether or not the player should automatically respawn without a death screen |
@@ -223,6 +224,12 @@ public void onPostLoad(CorePlayerPostLoadEvent event) {
 | Dev      | `10`    | Dark Green | Access to non-public areas of plugins |
 | Lead Dev | `10`    | Gold       | Access to non-public areas of plugins |
 | Admin    | `99999` | Blue       | Access to backend server commands and utilities |
+
+Obtainable via `AbstractCoreProfile#getRank()`
+
+`CorePlayer` provides helpful methods to distinguish between ranks.
+For example, to check if a player is a moderator, one can simply
+call `player.isMod()`.
 
 #### Premium
 
