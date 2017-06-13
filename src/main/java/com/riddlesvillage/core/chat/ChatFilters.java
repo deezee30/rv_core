@@ -21,6 +21,7 @@ public final class ChatFilters implements Iterable<ChatBlockFilter> {
 		addFilter(new MuteFilter());
 		addFilter(new AdvertisementFilter());
 		addFilter(new SpamFilter());
+		addFilter(new SingleCharacterFilter());
 	}
 
 	public void addFilter(ChatBlockFilter filter) {
