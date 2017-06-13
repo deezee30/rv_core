@@ -17,6 +17,7 @@ import com.riddlesvillage.core.player.statistic.*;
 import com.riddlesvillage.core.service.timer.Timer;
 import com.riddlesvillage.core.util.UUIDUtil;
 import org.bson.Document;
+import org.bukkit.Bukkit;
 
 import java.util.List;
 import java.util.Optional;
@@ -174,9 +175,12 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 	}
 
 	private void finishLoading(Optional<Document> document) {
-		onLoad(document);
-		if (isOnline()) played = true;
-		timer.forceStop();
+		// finish loading on the main thread
+		Bukkit.getScheduler().scheduleSyncDelayedTask(RiddlesCore.getInstance(), () -> {
+			onLoad(document);
+			if (isOnline()) played = true;
+			timer.forceStop();
+		});
 	}
 
 	protected abstract void onLoad(Optional<Document> document);
