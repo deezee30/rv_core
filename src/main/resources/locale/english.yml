@@ -45,6 +45,7 @@ chat:
   mute:
     no-ads: "&cYou are not allowed to advertise on the server"
     no-spam: "&cPlease don't exceed 5 messages per 20 seconds!"
+    no-single-character: "&cPlease enter a longer message."
     muted: "&cYou have been muted for violating the chat rules!"
     reminder: "&cYou can not talk at the moment"
     last-reminder: "&cCareful! One more of those and you will be muted!"
