@@ -83,7 +83,7 @@ public class EnhancedMap<K, V> extends LinkedHashMap<K, V> implements JSONAware 
 		// Create a new HashMap with entries backward to this instance
 		HashMap<K, V> tempMap = new HashMap<>(x);
 		for (; x > 0; --x) {
-			Map.Entry<K, V> entry = getEntry(x).get();
+			Map.Entry<K, V> entry = getEntry(x - 1).get();
 			tempMap.put(entry.getKey(), entry.getValue());
 		}
 
