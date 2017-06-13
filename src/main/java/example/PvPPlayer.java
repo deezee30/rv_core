@@ -19,7 +19,7 @@ import org.bson.Document;
 
 import java.util.Optional;
 
-public final class PvPPlayer extends AbstractCoreProfile {
+final class PvPPlayer extends AbstractCoreProfile {
 
 	// make field names in database with default values 0
 	private static final StatType KILL_STAT = StatType.create("kills", 0);
