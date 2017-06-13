@@ -21,17 +21,16 @@ import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.internal.config.MainConfig;
+import com.riddlesvillage.core.inventory.item.CoreItemStackList;
+import com.riddlesvillage.core.inventory.item.IndexedItem;
 import com.riddlesvillage.core.player.event.CorePlayerPostLoadEvent;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
+import com.riddlesvillage.core.player.manager.InventoryManager;
 import com.riddlesvillage.core.player.manager.ViolationManager;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
 import com.riddlesvillage.core.player.profile.CoreProfile;
-import com.riddlesvillage.core.scoreboard.ScoreboardFactory;
 import com.riddlesvillage.core.service.timer.Timer;
 import com.riddlesvillage.core.util.Firework;
-import com.riddlesvillage.core.player.manager.InventoryManager;
-import com.riddlesvillage.core.inventory.item.CoreItemStackList;
-import com.riddlesvillage.core.inventory.item.IndexedItem;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.Validate;
 import org.bson.Document;
@@ -59,7 +58,7 @@ import java.util.concurrent.TimeUnit;
  * player, per server.  Online player instances are stored
  * in {@link CorePlayerManager}.</p>
  */
-public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder {
+public class CorePlayer extends AbstractCoreProfile {
 
 	private static final RiddlesCore INSTANCE = RiddlesCore.getInstance();
 	private static final CoreSettings SETTINGS = RiddlesCore.getSettings();
@@ -72,9 +71,6 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 	private transient ViolationManager
 			violations		= new ViolationManager(this);
-
-	private transient ScoreboardHolder
-			sbHolder 		= this;
 
 	private transient EnhancedList<String>
 			ipHistory		= new EnhancedList<>(),
@@ -257,11 +253,6 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 	 * @return The delegated online {@code Player} instance.
 	 */
 	public Player getPlayer() {
-		return player;
-	}
-
-	@Override
-	public Player getBukkitPlayer() {
 		return player;
 	}
 
@@ -856,27 +847,6 @@ public class CorePlayer extends AbstractCoreProfile implements ScoreboardHolder 
 
 	public ViolationManager getViolationManager() {
 		return violations;
-	}
-
-	/**
-	 * Sets the holder for the {@link ScoreboardFactory}, which
-	 * is {@code null} by default.
-	 *
-	 * <p>The scoreboard holder will be in charge of what to show
-	 * on the scoreboard each time it updates.</p>
-	 *
-	 * @param	holder
-	 * 			The scoreboard holder to set.
-	 * @see		ScoreboardHolder
-	 * @see		ScoreboardFactory
-	 */
-	public void setScoreboardHolder(ScoreboardHolder holder) {
-		sbHolder = holder;
-	}
-
-	@Override
-	public ScoreboardFactory getScoreboardLayout() {
-		return equals(sbHolder) ? null : sbHolder.getScoreboardLayout();
 	}
 
 	// == Essential ====================================================== //
