@@ -53,6 +53,33 @@ public class Hologram implements IHologram {
         }
     }
 
+    public void display(Player player, String... replace) {
+        if (!holoPlayerListMap.containsKey(player)) {
+            holoPlayerListMap.remove(player);
+        }
+        List<EntityArmorStand> hologramEntityList = getHologramEntityList(replace);
+        holoPlayerListMap.put(player, hologramEntityList);
+        for (EntityArmorStand entityArmorStand : hologramEntityList) {
+            ((CraftPlayer)player).getHandle().playerConnection.sendPacket(new PacketPlayOutSpawnEntityLiving(entityArmorStand));
+        }
+    } 
+
+    @Override
+    public void display(Player[] players, String... replace) {
+        for (Player player : players) {
+            display(player, replace);
+        }
+    }
+
+    @Override
+    public void display(String... replace) {
+        Player[] players = new Player[Bukkit.getOnlinePlayers().size()];
+        for (int i = 0; i < players.length; i++) {
+            players[i] = new ArrayList<>(Bukkit.getOnlinePlayers()).get(i);
+        }
+        this.display(players, replace);
+    }   
+
     @Override
     public void hide(Player... players) {
        for (Player player : players) {
@@ -69,6 +96,30 @@ public class Hologram implements IHologram {
         List<EntityArmorStand> spawnEntityLivingList = new ArrayList<>();
         double increment = 0.0D;
         for (String lineString : this.lineStringList) {
+            WorldServer worldServer = ((CraftWorld)getLocation().getWorld()).getHandle();
+            EntityArmorStand entityArmorStand = new EntityArmorStand(worldServer);
+            entityArmorStand.setLocation(getLocation().getX(), getLocation().getY()-increment, getLocation().getZ(), 0, 0);
+            if (lineString.startsWith(ChatColor.BOLD.toString())) {
+                increment += 0.4;
+            } else {
+                increment += 0.3;
+            }
+            entityArmorStand.setCustomName(lineString);
+            entityArmorStand.setCustomNameVisible(true);
+            spawnEntityLivingList.add(entityArmorStand);
+        }
+        return spawnEntityLivingList;
+    }
+    
+  private List<EntityArmorStand> getHologramEntityList(String... replace) {
+        List<EntityArmorStand> spawnEntityLivingList = new ArrayList<>();
+        double increment = 0.0D;
+        for (String lineString : this.lineStringList) {
+            if (replace != null) {
+                for (int i = 0; i < replace.length; i++) {
+                    lineString = lineString.replaceAll("\\{"+ i + "}", replace[i]);
+                }
+            }
             WorldServer worldServer = ((CraftWorld)getLocation().getWorld()).getHandle();
             EntityArmorStand entityArmorStand = new EntityArmorStand(worldServer);
             entityArmorStand.setLocation(getLocation().getX(), getLocation().getY()-increment, getLocation().getZ(), 0, 0);
