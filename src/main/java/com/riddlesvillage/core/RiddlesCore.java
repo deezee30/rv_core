@@ -10,6 +10,7 @@ import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.internal.command.*;
 import com.riddlesvillage.core.internal.config.DatabaseConfig;
 import com.riddlesvillage.core.internal.config.MainConfig;
+import com.riddlesvillage.core.internal.listener.player.PlayerChat;
 import com.riddlesvillage.core.internal.listener.player.PlayerListeners;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
@@ -110,7 +111,7 @@ public final class RiddlesCore extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-
+		PlayerChat.getInstance().pasteChatMessages();
 
 		// Kick all players
 		for (CorePlayer player : PLAYER_MANAGER) {
