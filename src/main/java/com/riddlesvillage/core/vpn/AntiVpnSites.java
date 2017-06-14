@@ -16,4 +16,5 @@ public enum AntiVpnSites {
     public String getUrl() {
         return url;
     }
+
 }
