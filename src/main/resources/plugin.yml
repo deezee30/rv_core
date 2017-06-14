@@ -76,3 +76,7 @@ commands:
   namehistory:
     description: Shows a list of previously used names based on UUID
     aliases: [names, shownames, shownamehistory]
+
+  teleport:
+    description: teleports you to a player
+    aliases: [tp, etp, eteleport]

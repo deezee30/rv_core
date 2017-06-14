@@ -4,7 +4,7 @@
  * Created on 04 June 2017 at 3:46 PM.
  */
 
-package com.riddlesvillage.core.util;
+package com.riddlesvillage.core.title;
 
 import com.riddlesvillage.core.RiddlesCore;
 import org.bukkit.Bukkit;
@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 /**
  * @deprecated Write OOP API
  *
- * Created by matt1 on 3/13/2017.
+ * Created by matt1 on 3/13/2016.
  */
 @Deprecated
 public class TitleAPI {

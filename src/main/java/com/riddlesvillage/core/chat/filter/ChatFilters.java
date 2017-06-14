@@ -4,7 +4,7 @@
  * Created on 11 June 2017 at 8:59 PM.
  */
 
-package com.riddlesvillage.core.chat;
+package com.riddlesvillage.core.chat.filter;
 
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.Messaging;

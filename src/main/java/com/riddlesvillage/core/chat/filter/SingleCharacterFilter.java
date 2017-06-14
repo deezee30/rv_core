@@ -1,4 +1,4 @@
-package com.riddlesvillage.core.chat;
+package com.riddlesvillage.core.chat.filter;
 
 import com.riddlesvillage.core.player.CorePlayer;
 

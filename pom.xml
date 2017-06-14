@@ -46,6 +46,7 @@
                                     <include>org.mongodb:mongodb-driver-async</include>
                                     <include>org.mongodb:mongodb-driver-core</include>
                                     <include>org.mongodb:bson</include>
+                                    <include>redis.clients:jedis</include>
                                     <include>com.comphenix.protocol:ProtocolLib-API</include>
                                 </includes>
                             </artifactSet>
@@ -112,7 +113,14 @@
             <version>3.4.2</version>
         </dependency>
 
-        <!-- MongoDB Core Driver -->
+        <!--Jedis Client-->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <!--MongoDB Core Driver-->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-core</artifactId>

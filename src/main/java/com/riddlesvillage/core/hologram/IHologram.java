@@ -16,6 +16,10 @@ public interface IHologram {
     void hide(Player... players);
 
     void display(Player... players);
+    
+    void display(Player[] players, String... replace);
+    
+    void display(String... replace);
 
     void display();
 

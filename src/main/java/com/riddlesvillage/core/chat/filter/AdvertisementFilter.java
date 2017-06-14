@@ -4,7 +4,7 @@
  * Created on 11 June 2017 at 9:29 PM.
  */
 
-package com.riddlesvillage.core.chat;
+package com.riddlesvillage.core.chat.filter;
 
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.util.StringUtil;
