@@ -69,22 +69,22 @@ public final class RiddlesCore extends JavaPlugin {
 
 			// Register default RiddlesCore commands
 			settings.registerCommands(this, new ImmutableMap.Builder<String, CommandExecutor>()
-							.put("addspawn",	new AddSpawnCommand())
-							.put("clearchat",	new ClearChatCommand())
-							.put("coins",		new CoinsCommand())
-							.put("debug",		new DebugCommand())
-							.put("iphistory",	new IpHistoryCommand())
-							.put("namehistory",	new NameHistoryCommand())
-							.put("god",			new GodCommand())
-							.put("premium",		new PremiumCommand())
-							.put("rank",		new RankCommand())
-							.put("stats",		new StatsCommand())
-							.put("tokens",		new TokensCommand())
-							.put("tpspawn",		new TPSpawnCommand())
-							.put("vanish",		new VanishCommand())
-							.build()
+					.put("addspawn", new AddSpawnCommand())
+					.put("clearchat", new ClearChatCommand())
+					.put("coins", new CoinsCommand())
+					.put("debug", new DebugCommand())
+					.put("iphistory", new IpHistoryCommand())
+					.put("namehistory", new NameHistoryCommand())
+					.put("god", new GodCommand())
+					.put("premium", new PremiumCommand())
+					.put("rank", new RankCommand())
+					.put("teleport", new TeleportCommand())
+					.put("stats", new StatsCommand())
+					.put("tokens", new TokensCommand())
+					.put("tpspawn", new TPSpawnCommand())
+					.put("vanish", new VanishCommand())
+					.build()
 			);
-
 			// Allow commands when commands are disabled
 			settings.addAllowedCommands(MainConfig.getAllowedCommands());
 
