@@ -1,6 +1,5 @@
 package com.riddlesvillage.core.title;
 
-import com.riddlesvillage.core.util.TitleAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

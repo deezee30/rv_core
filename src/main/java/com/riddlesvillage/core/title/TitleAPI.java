@@ -16,13 +16,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import static com.riddlesvillage.core.util.MinecraftReflection.getNMSClass;
+
 /**
- * @deprecated Write OOP API
- *
  * Created by matt1 on 3/13/2016.
  */
-@Deprecated
 public class TitleAPI {
+
 	public static boolean useOldMethods = false;
 	public static String nmsver;
 
@@ -34,27 +34,22 @@ public class TitleAPI {
 		if (nmsver.equalsIgnoreCase("v1_8_R1") || nmsver.equalsIgnoreCase("v1_7_")) useOldMethods = true;
 	}
 
-	@Deprecated
 	public static void sendTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String message) {
 		sendTitle(player, fadeIn, stay, fadeOut, message, null);
 	}
 
-	@Deprecated
 	public static void sendSubtitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String message) {
 		sendTitle(player, fadeIn, stay, fadeOut, null, message);
 	}
 
-	@Deprecated
 	public static void sendFullTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle) {
 		sendTitle(player, fadeIn, stay, fadeOut, title, subtitle);
 	}
 
-	@Deprecated
 	public static Integer getPlayerProtocol(Player player) {
 		return 47;
 	}
 
-	@Deprecated
 	public static void sendPacket(Player player, Object packet) {
 		try {
 			Object handle = player.getClass().getMethod("getHandle").invoke(player);
@@ -65,18 +60,6 @@ public class TitleAPI {
 		}
 	}
 
-	@Deprecated
-	public static Class<?> getNMSClass(String name) {
-		String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-		try {
-			return Class.forName("net.minecraft.server." + version + "." + name);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Deprecated
 	public static void sendTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle) {
 		try {
 			Object e;
@@ -118,12 +101,10 @@ public class TitleAPI {
 		}
 	}
 
-	@Deprecated
 	public static void clearTitle(Player player) {
 		sendTitle(player, 0, 0, 0, "", "");
 	}
 
-	@Deprecated
 	public static void sendTabTitle(Player player, String header, String footer) {
 		if (header == null) header = "";
 		header = ChatColor.translateAlternateColorCodes('&', header);
@@ -145,7 +126,6 @@ public class TitleAPI {
 		}
 	}
 
-	@Deprecated
 	public static void sendActionBar(Player player, String message) {
 		try {
 			Class<?> c1 = Class.forName("org.bukkit.craftbukkit." + nmsver + ".entity.CraftPlayer");
@@ -176,7 +156,6 @@ public class TitleAPI {
 		}
 	}
 
-	@Deprecated
 	public static void sendActionBar(final Player player, final String message, int duration) {
 		sendActionBar(player, message);
 
@@ -201,12 +180,10 @@ public class TitleAPI {
 		}
 	}
 
-	@Deprecated
 	public static void sendActionBarToAllPlayers(String message) {
 		sendActionBarToAllPlayers(message, -1);
 	}
 
-	@Deprecated
 	public static void sendActionBarToAllPlayers(String message, int duration) {
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			sendActionBar(p, message, duration);

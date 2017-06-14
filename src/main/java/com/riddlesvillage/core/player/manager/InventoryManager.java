@@ -50,7 +50,7 @@ public class InventoryManager {
 
 	public static Inventory ci(CorePlayer player, int rows, String title) {
 		return Bukkit.getServer().createInventory(
-				player.getBukkitPlayer(),
+				player.getPlayer(),
 				Math.abs(rows * 9) > 54
 						? 54
 						: Math.abs(rows * 9),

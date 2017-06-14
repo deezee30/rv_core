@@ -19,6 +19,7 @@ public class TeleportCommand  implements CommandExecutor {
     private static final String             ERROR   = "player.error.not-found";
     private static final String             USAGE   = "/teleport <player>";
     private static final CorePlayerManager MANAGER = CorePlayer.PLAYER_MANAGER;
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         final boolean isPlayer = sender instanceof Player;

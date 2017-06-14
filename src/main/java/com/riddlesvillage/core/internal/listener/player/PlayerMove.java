@@ -19,6 +19,6 @@ final class PlayerMove implements Listener {
 		CorePlayer player = CorePlayer.PLAYER_MANAGER.get(event);
 		if (player == null || player.isMovable()) return;
 
-		player.getBukkitPlayer().teleport(event.getFrom());
+		player.getPlayer().teleport(event.getFrom());
 	}
 }

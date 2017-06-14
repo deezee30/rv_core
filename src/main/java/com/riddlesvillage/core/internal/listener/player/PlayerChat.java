@@ -4,15 +4,12 @@
 
 package com.riddlesvillage.core.internal.listener.player;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.RiddlesCore;
-import com.riddlesvillage.core.chat.ChatBlockFilter;
-import com.riddlesvillage.core.chat.ChatFilters;
+import com.riddlesvillage.core.chat.ChatMessage;
+import com.riddlesvillage.core.chat.ChatMessages;
+import com.riddlesvillage.core.chat.filter.ChatBlockFilter;
+import com.riddlesvillage.core.chat.filter.ChatFilters;
 import com.riddlesvillage.core.internal.config.MainConfig;
-import com.riddlesvillage.core.net.paster.PasteException;
-import com.riddlesvillage.core.net.paster.Paster;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.profile.CoreProfile;
 import org.bukkit.ChatColor;
@@ -23,49 +20,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
-public final class PlayerChat implements Listener {
-    private List<ChatMessage> chatMessageList;
-	private static PlayerChat instance;
-
-	public static PlayerChat getInstance() {
-	    if (instance == null) {
-	        instance = new PlayerChat();
-	    }
-	    return instance;
-	}
-
-	public PlayerChat() {
-	    instance = this;
-	    this.chatMessageList = new ArrayList<>();
-	}
-
-	public void pasteChatMessages() {
-		JsonObject jsonObject = new JsonObject();
-		JsonArray jsonElements = new JsonArray();
-		for (ChatMessage chatMessage : this.chatMessageList) {
-			jsonElements.add(chatMessage.toJsonObject());
-		}
-		jsonObject.add("messages", jsonElements);
-        try {
-            URL paste = Paster.hastebin(jsonObject.toString()).paste();
-            Messaging.log("Saved chat messages to %s", paste.toString());
-        } catch (PasteException e) {
-            e.printStackTrace();
-        }
-	}
+final class PlayerChat implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onChat(AsyncPlayerChatEvent event) {
 		CorePlayer player = CoreProfile.PLAYER_MANAGER.get(event);
 
-		chatMessageList.add(new ChatMessage(player, event.getMessage(), System.currentTimeMillis()));
 		// Allow only premiums and staff to chat during premium-chat mode
 		if (RiddlesCore.getSettings().isPremiumChat() && !(player.isPremium() || player.isMod())) {
 			player.sendMessage("chat.premium-only");
@@ -94,6 +57,9 @@ public final class PlayerChat implements Listener {
 					player.getViolationManager().getChatViolation().addViolation();
 			}
 		}
+
+		// Keep a log of all chat messages
+		ChatMessages.getInstance().add(new ChatMessage(player, msg, event.isCancelled()));
 
 		// Make sure custom chat format is enabled
 		if (MainConfig.doFormatChat()) {
@@ -126,28 +92,6 @@ public final class PlayerChat implements Listener {
 				&& !RiddlesCore.getSettings().getAllowedCommands().contains(command.toLowerCase())) {
 			event.setCancelled(true);
 			player.sendMessage("command.blocked", new String[] {"$command"}, command);
-		}
-	}
-
-	private class ChatMessage {
-		private CorePlayer sender;
-		private String message;
-		private long date;
-
-		public ChatMessage(CorePlayer sender, String message, long date) {
-			this.sender = sender;
-			this.message = message;
-			this.date = date;
-		}
-
-		public JsonObject toJsonObject() {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("sender", sender.getUuid().toString());
-			jsonObject.addProperty("message",  message);
-			jsonObject.addProperty("date",  date);
-			JsonObject object = new JsonObject();
-			object.add(UUID.randomUUID().toString(), jsonObject);
-			return object;
 		}
 	}
 }

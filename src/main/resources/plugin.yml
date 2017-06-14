@@ -78,5 +78,5 @@ commands:
     aliases: [names, shownames, shownamehistory]
 
   teleport:
-    description: teleports you to a player
+    description: Teleports you to a player
     aliases: [tp, etp, eteleport]

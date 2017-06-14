@@ -1,5 +1,7 @@
 package com.riddlesvillage.core.world;
 
+import com.riddlesvillage.core.RiddlesCore;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -14,20 +16,22 @@ public class RiddlesWorld {
     private boolean isLoaded;
 
     public RiddlesWorld(String worldName) {
-        this.worldName = worldName;
+        this.worldName = Validate.notNull(worldName);
     }
 
     public boolean deleteWorld(File worldFile) {
-        if (worldFile.exists()) {
+        if (Validate.notNull(worldFile).exists()) {
+
             File files[] = worldFile.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    deleteWorld(files[i]);
-                } else {
-                    files[i].delete();
-                }
-            }
-            this.isLoaded = false;
+			for (File file : files) {
+				if (file.isDirectory()) {
+					deleteWorld(file);
+				} else {
+					file.delete();
+				}
+			}
+
+            isLoaded = false;
         }
         return (worldFile.delete());
     }
@@ -36,20 +40,25 @@ public class RiddlesWorld {
         if (this.isLoaded)  {
             return Bukkit.getWorld(worldName);
         }
+
         return null;
     }
 
     public boolean unloadWorld() {
         World world = getWorld();
+
         if (world != null) {
             for (Player player : world.getPlayers()) {
                 player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
             }
+
             Bukkit.getServer().unloadWorld(world, false);
-            System.out.println(world.getName() + " unloaded!");
-            this.isLoaded = false;
+            RiddlesCore.log(world.getName() + " unloaded!");
+            isLoaded = false;
+
             return true;
         }
+
         return false;
     }
 

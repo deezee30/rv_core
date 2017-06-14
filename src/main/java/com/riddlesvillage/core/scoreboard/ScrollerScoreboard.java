@@ -69,8 +69,7 @@ public class ScrollerScoreboard implements IScoreboard {
 						? holder.getBukkitPlayer().getDisplayName()
 						: newTitle,
 				maxWidth,
-				spaceBetween,
-				'&'
+				spaceBetween
 		);
 
 		if (rows == null)
@@ -78,7 +77,7 @@ public class ScrollerScoreboard implements IScoreboard {
 
 		rows.clear();
 		for (Map.Entry<String, Integer> entry : newRows.entrySet()) {
-			rows.put(new Scroller(entry.getKey(), maxWidth, spaceBetween, '&'), entry.getValue());
+			rows.put(new Scroller(entry.getKey(), maxWidth, spaceBetween), entry.getValue());
 		}
 	}
 

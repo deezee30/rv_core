@@ -20,7 +20,7 @@ public class CorePlayerDeathByPlayerEvent extends CoreProfileEvent {
 
 	public CorePlayerDeathByPlayerEvent(PlayerDeathEvent event) {
 		super(CorePlayerManager.getInstance().get(event));
-		killer = CorePlayerManager.getInstance().get(getProfile().getBukkitPlayer().getKiller().getName());
+		killer = CorePlayerManager.getInstance().get(getProfile().getPlayer().getKiller().getName());
 		Validate.notNull(killer, "Killer doesn't exist!");
 	}
 
