@@ -99,6 +99,7 @@ public final class Scroller implements Serializable {
 	}
 
 	private StringBuilder getNext() {
-		return new StringBuilder(list.get(position++ % list.size()).substring(0));
+		//list.get(position++ % list.size()).substring(0)
+		return new StringBuilder(list.get(position++ % list.size()));
 	}
 }
