@@ -10,7 +10,7 @@ import org.bukkit.ChatColor;
 public enum Rank {
 
 	DEFAULT	(0,		"Member",	ChatColor.GRAY),
-	HELPER	(1,		"Helper",	ChatColor.AQUA),
+	HELPER	(4,		"Helper",	ChatColor.AQUA),
 	MOD		(5,		"Mod",		ChatColor.GREEN),
 	DEV		(10,	"Dev",		ChatColor.DARK_GREEN),
 	LEAD_DEV(10,	"Lead Dev",	ChatColor.GOLD),

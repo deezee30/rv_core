@@ -244,7 +244,7 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
 			RiddlesCore.log("Argument could not be passed: %s", e);
 			return this;
 		} catch (InvocationTargetException e) {
-			RiddlesCore.log("A error has occured durring invoking of method: %s", e);
+			RiddlesCore.log("A error has occurred during invoking of method: %s", e);
 			return this;
 		}
 	}
