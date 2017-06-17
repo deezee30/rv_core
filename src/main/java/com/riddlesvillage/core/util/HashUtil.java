@@ -6,8 +6,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,19 +13,18 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 public final class HashUtil {
 
 	private static final String        DEFAULT_ENCODING = "UTF-8";
-	private static final BASE64Encoder ENCODER          = new BASE64Encoder();
-	private static final BASE64Decoder DECODER          = new BASE64Decoder();
 
 	/* Disable initialization */
 	private HashUtil() {}
 
 	public static String toBase64(Object obj) {
 		try {
-			return ENCODER.encode(obj.toString().getBytes(DEFAULT_ENCODING));
+			return Base64.getEncoder().encodeToString(obj.toString().getBytes(DEFAULT_ENCODING));
 		} catch (UnsupportedEncodingException e) {
 			return null;
 		}
@@ -35,7 +32,7 @@ public final class HashUtil {
 
 	public static String fromBase64(Object obj) {
 		try {
-			return new String(DECODER.decodeBuffer(obj.toString()), DEFAULT_ENCODING);
+			return Base64.getEncoder().encodeToString(obj.toString().getBytes(DEFAULT_ENCODING));
 		} catch (IOException e) {
 			return null;
 		}

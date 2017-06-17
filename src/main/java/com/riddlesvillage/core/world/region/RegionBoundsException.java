@@ -7,27 +7,26 @@
 package com.riddlesvillage.core.world.region;
 
 import com.riddlesvillage.core.CoreException;
-import com.sun.istack.internal.NotNull;
 
 public class RegionBoundsException extends CoreException {
 
 	private static final long serialVersionUID = -2633695118196820017L;
 
-	public RegionBoundsException(@NotNull String message) {
+	public RegionBoundsException(String message) {
 		super(message);
 	}
 
-	public RegionBoundsException(@NotNull String message,
-								 @NotNull Throwable cause) {
+	public RegionBoundsException(String message,
+								 Throwable cause) {
 		super(message, cause);
 	}
 
-	public RegionBoundsException(@NotNull Throwable cause) {
+	public RegionBoundsException(Throwable cause) {
 		super(cause);
 	}
 
-	public RegionBoundsException(@NotNull String message,
-								 @NotNull Throwable cause,
+	public RegionBoundsException(String message,
+								  Throwable cause,
 								 boolean enableSuppression,
 								 boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
