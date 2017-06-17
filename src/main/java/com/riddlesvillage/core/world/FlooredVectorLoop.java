@@ -20,13 +20,13 @@ public interface FlooredVectorLoop {
 	 * Vector3D}s stored inside
 	 * (multi-) dimensional arrays or {@link
 	 * com.riddlesvillage.core.world.region.Region}s and provides an
-	 * ability to use each point or {@code Vector} that was found
+	 * ability to use each point or {@code Vector3D} that was found
 	 * in the set of {@code Vector}s.
 	 *
 	 * <p>  For example, the {@link
 	 * com.riddlesvillage.core.world.region.CuboidRegion} is a sub class of
 	 * {@code Region} which holds a fixed solid three-dimensional set
-	 * of {@code Vector}s.  This method returns each of those {@code
+	 * of {@code Vector3D}s.  This method returns each of those {@code
 	 * Vector}s if used correctly.</p>
 	 *
 	 * <p>  This method was specifically built for accessing stored
@@ -35,11 +35,11 @@ public interface FlooredVectorLoop {
 	 * which would work as follows (assuming {@code regionObnect} is
 	 * an instance of {@link com.riddlesvillage.core.world.region.Region}):
 	 * {@code
-	 * final List{@literal <}Vector{@literal >} points = new ArrayList<>(regionObject.getVolume());
+	 * final List{@literal <}Vector3D{@literal >} points = new ArrayList<>(regionObject.getVolume());
 	 * regionObject.loop(new FlooredVectorLoop() {
 	 *
 	 *     {@literal @}Override
-	 *     public void loop(Vector vector) {
+	 *     public void loop(Vector3D vector) {
 	 *         points.add(vector);
 	 *     }
 	 * });
