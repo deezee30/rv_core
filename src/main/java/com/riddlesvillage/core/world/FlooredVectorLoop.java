@@ -27,7 +27,7 @@ public interface FlooredVectorLoop {
 	 * com.riddlesvillage.core.world.region.CuboidRegion} is a sub class of
 	 * {@code Region} which holds a fixed solid three-dimensional set
 	 * of {@code Vector3D}s.  This method returns each of those {@code
-	 * Vector}s if used correctly.</p>
+	 * Vector3D}s if used correctly.</p>
 	 *
 	 * <p>  This method was specifically built for accessing stored
 	 * points inside a region, such as {@link
