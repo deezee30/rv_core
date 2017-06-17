@@ -15,8 +15,12 @@ import com.riddlesvillage.core.internal.listener.player.PlayerListeners;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import com.riddlesvillage.core.service.timer.Timer;
+import com.riddlesvillage.core.world.Vector3D;
+import com.riddlesvillage.core.world.region.FlagList;
+import com.riddlesvillage.core.world.region.Region;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -90,6 +94,10 @@ public final class RiddlesCore extends JavaPlugin {
 
 			// Register default chat block filters
 			settings.getChatFilters().registerDefaults();
+
+			ConfigurationSerialization.registerClass(Vector3D.class);
+			ConfigurationSerialization.registerClass(Region.class);
+			ConfigurationSerialization.registerClass(FlagList.class);
 
 			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
