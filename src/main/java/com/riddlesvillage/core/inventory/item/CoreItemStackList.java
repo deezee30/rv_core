@@ -4,13 +4,10 @@
 
 package com.riddlesvillage.core.inventory.item;
 
-import com.google.gson.Gson;
 import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.collect.EnhancedList;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 public final class CoreItemStackList extends EnhancedList<CoreItemStack> {
 
@@ -22,10 +19,6 @@ public final class CoreItemStackList extends EnhancedList<CoreItemStack> {
 
 	public CoreItemStackList(CoreItemStack... itemStacks) {
 		for (CoreItemStack is : itemStacks) add(is);
-	}
-
-	public CoreItemStackList(ItemStackListContainer container) {
-		addAll(container.items);
 	}
 
 	public CoreItemStack remove(Material material) {
@@ -71,25 +64,5 @@ public final class CoreItemStackList extends EnhancedList<CoreItemStack> {
 	@Override
 	public CoreItemStack[] toArray() {
 		return toArray(new CoreItemStack[size()]);
-	}
-
-	@Override
-	public String toJSONString() {
-		return new Gson().toJson(new ItemStackListContainer(this));
-	}
-
-	public static CoreItemStackList fromJSONString(String json) {
-		return new CoreItemStackList(new Gson().fromJson(json, ItemStackListContainer.class));
-	}
-
-	public static final class ItemStackListContainer {
-
-		private List<CoreItemStack> items;
-
-		public ItemStackListContainer() {}
-
-		public ItemStackListContainer(List<CoreItemStack> items) {
-			this.items = items;
-		}
 	}
 }

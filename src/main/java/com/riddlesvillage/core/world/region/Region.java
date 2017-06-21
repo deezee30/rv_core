@@ -10,28 +10,28 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonObject;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.google.gson.reflect.TypeToken;
 import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.packet.wrapper.WrapperPlayServerBlockChange;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.world.FlooredVectorLoop;
 import com.riddlesvillage.core.world.Vector3D;
+import com.riddlesvillage.core.world.region.flag.Flag;
+import com.riddlesvillage.core.world.region.flag.FlagMap;
+import com.riddlesvillage.core.world.region.type.RegionType;
 import org.apache.commons.lang3.Validate;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONAware;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Type;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -66,57 +66,36 @@ public abstract class Region implements
 
 	private static final long serialVersionUID = 3272199880401532227L;
 
-	private final World world;
-	private final FlagList flags;
+	private final String world;
+	private final FlagMap flags = new FlagMap();
 	private final int priority;
 
-	protected final transient int minX = Math.min(
-			getMinBounds().getFloorX(),
-			getMaxBounds().getFloorX()
-	);
+	protected transient int minX;
+	protected transient int minY;
+	protected transient int minZ;
+	protected transient int maxX;
+	protected transient int maxY;
+	protected transient int maxZ;
 
-	protected final transient int minY = Math.min(
-			getMinBounds().getFloorY(),
-			getMaxBounds().getFloorY()
-	);
-
-	protected final transient int minZ = Math.min(
-			getMinBounds().getFloorZ(),
-			getMaxBounds().getFloorZ()
-	);
-
-	protected final transient int maxX = Math.max(
-			getMinBounds().getFloorX(),
-			getMaxBounds().getFloorX()
-	);
-
-	protected final transient int maxY = Math.max(
-			getMinBounds().getFloorY(),
-			getMaxBounds().getFloorY()
-	);
-
-	protected final transient int maxZ = Math.max(
-			getMinBounds().getFloorZ(),
-			getMaxBounds().getFloorZ()
-	);
-
-	protected Region(World world) {
+	protected Region(String world) {
 		this(world, -1);
 	}
 
-	protected Region(World world, int priority) {
-		this(world, new FlagList(), priority);
+	protected Region(String world, int priority) {
+		this(world, Maps.newHashMap(), priority);
 	}
 
-	protected Region(World world, FlagList flags) {
+	protected Region(String world, Map<Flag, Boolean> flags) {
 		this(world, flags, -1);
 	}
 
-	protected Region(World world, FlagList flags, int priority) {
+	protected Region(String world, Map<Flag, Boolean> flags, int priority) {
 		this.world = Validate.notNull(world);
-		this.flags = Validate.notNull(flags);
+		if (flags != null) this.flags.putAll(flags);
 		this.priority = priority;
 	}
+
+	public abstract void init();
 
 	/**
 	 * @return The volume of the region in {@code int} units squared form.
@@ -134,6 +113,48 @@ public abstract class Region implements
 	 * 			if it's inside or outside the actual (non) polygonal region.
 	 */
 	public abstract Vector3D getMaxBounds();
+
+	public int getMinBoundX() {
+		return this.minX = Math.min(
+				getMinBounds().getFloorX(),
+				getMaxBounds().getFloorX()
+		);
+	}
+
+	public int getMinBoundY(){
+		return this.minY = Math.min(
+				getMinBounds().getFloorY(),
+				getMaxBounds().getFloorY()
+		);
+	}
+
+	public int getMinBoundZ() {
+		return this.minZ = Math.min(
+				getMinBounds().getFloorZ(),
+				getMaxBounds().getFloorZ()
+		);
+	}
+
+	public int getMaxBoundX() {
+		return this.maxX = Math.max(
+				getMinBounds().getFloorX(),
+				getMaxBounds().getFloorX()
+		);
+	}
+
+	public int getMaxBoundY() {
+		return this.maxY = Math.max(
+				getMinBounds().getFloorY(),
+				getMaxBounds().getFloorY()
+		);
+	}
+
+	public int getMaxBoundZ() {
+		return this.maxZ = Math.max(
+				getMinBounds().getFloorZ(),
+				getMaxBounds().getFloorZ()
+		);
+	}
 
 	/**
 	 * Checks if a {@link Vector3D} point is actually located inside the region
@@ -336,9 +357,26 @@ public abstract class Region implements
 	 * @param flag The registered flag to add
 	 * @return This region instance
 	 */
-	public final synchronized Region addFlag(Flag flag) {
-		flags.add(Validate.notNull(flag));
+	public final synchronized Region addFlag(Flag flag, boolean allow) {
+		if (Validate.notNull(flag).isAllowed() == allow) return this;
+
+		if (flags.containsKey(flag)) {
+			if (flags.get(flag) != allow) {
+				flags.put(flag, allow);
+			}
+		} else {
+			flags.put(flag, allow);
+		}
+
 		return this;
+	}
+
+	public ImmutableMap<Flag, Boolean> getFlags() {
+		return flags.getImmutableEntries();
+	}
+
+	public final synchronized boolean isAllowed(Flag flag) {
+		return flags.isAllowed(flag);
 	}
 
 	public final synchronized int getPriority() {
@@ -347,6 +385,15 @@ public abstract class Region implements
 
 	public final synchronized boolean hasPriority() {
 		return priority != -1;
+	}
+
+	public final synchronized boolean hasPriorityOver(Region other) {
+		if (!hasPriority()) return false;
+
+		Optional<Region> priority = Regions.getPrioritized(this, other);
+
+		return priority.isPresent() && priority.get().equals(this);
+
 	}
 
 	/**
@@ -393,18 +440,19 @@ public abstract class Region implements
 		}
 	}
 
-	public final World getWorld() {
+	public final String getWorld() {
 		return world;
 	}
 
 	public abstract ImmutableList<Vector3D> getPoints();
 
-	public abstract RegionType getRegionType();
+	public abstract RegionType getType();
 
 	public synchronized List<Chunk> getChunks() {
 		List<Chunk> res = new ArrayList<>();
 
-		World w = getWorld();
+		World w = Bukkit.getWorld(world);
+
 		int x1 = (int) getMinBounds().getX() & ~0xf;
 		int x2 = (int) getMaxBounds().getX() & ~0xf;
 		int z1 = (int) getMinBounds().getZ() & ~0xf;
@@ -534,14 +582,18 @@ public abstract class Region implements
 		return getPoints().iterator();
 	}
 
-	@Override
-	public final synchronized String toJSONString() {
-		return toJsonObject().toString();
+	public final synchronized String toJson() {
+		return Regions.REGION_GSON.toJson(this, type());
 	}
 
 	@Override
-	public final synchronized String toString() {
-		return toJSONString();
+	public final synchronized String toJSONString() {
+		return toJson();
+	}
+
+	@Override
+	public synchronized String toString() {
+		return toJson();
 	}
 
 	@Override
@@ -563,6 +615,7 @@ public abstract class Region implements
 	}
 
 	private EnhancedList<Block> toBlocks(List<Vector3D> points) {
+		World world = Bukkit.getWorld(this.world);
 		return points
 				.stream()
 				.map(vec -> world.getBlockAt(vec.toLocation(world)))
@@ -582,5 +635,7 @@ public abstract class Region implements
 		return changed;
 	}
 
-	public abstract JsonObject toJsonObject();
+	public static <R extends Region> Type type() {
+		return new TypeToken<R>() {}.getType();
+	}
 }

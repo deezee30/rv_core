@@ -7,10 +7,11 @@
 package com.riddlesvillage.core.collect;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.Validate;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
-import org.json.simple.JSONValue;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -18,6 +19,10 @@ import java.util.function.Predicate;
 public class EnhancedList<E> extends ArrayList<E> implements JSONAware {
 
 	private static final long serialVersionUID = 3550244475910399738L;
+	private final static Gson gson = new GsonBuilder()
+			.disableHtmlEscaping()
+			.serializeNulls()
+			.create();
 
 	public EnhancedList() {}
 
@@ -32,10 +37,6 @@ public class EnhancedList<E> extends ArrayList<E> implements JSONAware {
 
 	public EnhancedList(Collection<? extends E> c) {
 		super(c);
-	}
-
-	public EnhancedList(String jsonString) {
-		this((JSONArray) JSONValue.parse(jsonString));
 	}
 
 	public final boolean addIf(Predicate<E> check, E element) {
@@ -83,7 +84,7 @@ public class EnhancedList<E> extends ArrayList<E> implements JSONAware {
 
 		int len = size();
 		for (int x = 0; x < len; ++x) {
-			builder.append(get(x));
+			builder.append(get(x).toString());
 
 			// if concaterator == true, append the word "and" instead
 			// of the last separator to make the list more readable.
@@ -102,14 +103,22 @@ public class EnhancedList<E> extends ArrayList<E> implements JSONAware {
 		return builder.toString();
 	}
 
+	public Gson getGson() {
+		return gson;
+	}
+
+	public String toJson() {
+		return getGson().toJson(this);
+	}
+
 	@Override
-	public String toJSONString() {
-		return JSONArray.toJSONString(this);
+	public final String toJSONString() {
+		return toJson();
 	}
 
 	@Override
 	public String toString() {
-		return toJSONString();
+		return toJson();
 	}
 
 	public boolean equals(List<?> other) {
@@ -120,5 +129,13 @@ public class EnhancedList<E> extends ArrayList<E> implements JSONAware {
 		}
 
 		return true;
+	}
+
+	public static <T> EnhancedList<T> fromJson(String json) {
+		return fromJson(gson, json);
+	}
+
+	public static <T> EnhancedList<T> fromJson(Gson gson, String json) {
+		return gson.fromJson(json, new TypeToken<EnhancedList<T>>() {}.getType());
 	}
 }

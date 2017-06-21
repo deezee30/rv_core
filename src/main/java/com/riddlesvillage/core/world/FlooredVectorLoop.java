@@ -6,6 +6,8 @@
 
 package com.riddlesvillage.core.world;
 
+import com.riddlesvillage.core.world.region.type.CuboidRegion;
+
 /**
  * Used for looping through a set of three-dimensional points
  * in grid form, usually used in (multi-) dimensional arrays
@@ -24,7 +26,7 @@ public interface FlooredVectorLoop {
 	 * in the set of {@code Vector}s.
 	 *
 	 * <p>  For example, the {@link
-	 * com.riddlesvillage.core.world.region.CuboidRegion} is a sub class of
+	 * CuboidRegion} is a sub class of
 	 * {@code Region} which holds a fixed solid three-dimensional set
 	 * of {@code Vector3D}s.  This method returns each of those {@code
 	 * Vector3D}s if used correctly.</p>

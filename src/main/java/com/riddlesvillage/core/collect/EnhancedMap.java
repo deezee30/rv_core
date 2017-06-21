@@ -6,9 +6,12 @@
 
 package com.riddlesvillage.core.collect;
 
+import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.reflect.TypeParameter;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.Validate;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
@@ -20,6 +23,10 @@ import java.util.function.BiPredicate;
 public class EnhancedMap<K, V> extends LinkedHashMap<K, V> implements JSONAware {
 
 	private static final long serialVersionUID = -2780608617302194763L;
+	private final static Gson gson = new GsonBuilder()
+			.disableHtmlEscaping()
+			.serializeNulls()
+			.create();
 
 	public EnhancedMap() {}
 
@@ -117,26 +124,41 @@ public class EnhancedMap<K, V> extends LinkedHashMap<K, V> implements JSONAware 
 		throw null;
 	}
 
-	@Override
-	public final String toJSONString() {
-		return JSONObject.toJSONString(this);
+	public Gson getGson() {
+		return gson;
 	}
 
-	/**
-	 * Parses a {@code JSON} {@code String} to a {@code Map<String, Object>}.
-	 *
-	 * @param 	json The JSON String to parse.
-	 * @return 	The parsed json object in the form of a map.
-	 */
-	public static Map<String, Object> fromJson(String json) {
-		Validate.notNull(json);
-		return new Gson().fromJson(json, new TypeToken<Map<String, Object>>() {
-		}.getType());
+	public String toJson() {
+		return getGson().toJson(this);
+	}
+
+	@Override
+	public final String toJSONString() {
+		return toJson();
 	}
 
 	@Override
 	public String toString() {
-		return toJSONString();
+		return toJson();
+	}
+
+	public static <K, V> EnhancedMap<K, V> fromJson(String json) {
+		return fromJson(gson, json);
+	}
+
+	public static <K, V> EnhancedMap<K, V> fromJson(Gson gson, String json) {
+		return gson.fromJson(json, new TypeToken<EnhancedMap<K, V>>() {
+		}.getType());
+	}
+
+	@Beta
+	public static <K, V, M extends EnhancedMap<K, V>> TypeToken<M> mapToken(TypeToken<K> keyToken, TypeToken<V> valToken) {
+		return new TypeToken<M>() {
+		}
+				.where(new TypeParameter<K>() {
+				}, keyToken)
+				.where(new TypeParameter<V>() {
+				}, valToken);
 	}
 
 	public static <M extends Map<K, V>,

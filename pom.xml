@@ -51,7 +51,7 @@
                                 </includes>
                             </artifactSet>
                             <finalName>RiddlesCore</finalName>
-                            <!--<outputFile>${user.home}/Desktop/server/plugins/RiddlesCore.jar</outputFile>-->
+                            <outputFile>${user.home}/Desktop/server/plugins/RiddlesCore.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
@@ -90,7 +90,7 @@
 
     <dependencies>
 
-        <!-- Spigot JAR -->
+        <!-- Spigot API, Bukkit API, CraftBukkit and NMS -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
@@ -104,6 +104,7 @@
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib-API</artifactId>
             <version>4.2.1</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- MongoDB Async Driver -->

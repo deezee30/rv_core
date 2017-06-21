@@ -4,7 +4,9 @@
  * Created on 17 June 2017 at 1:15 AM.
  */
 
-package com.riddlesvillage.core.world.region;
+package com.riddlesvillage.core.world.region.type;
+
+import com.riddlesvillage.core.world.region.Region;
 
 public enum RegionType {
 

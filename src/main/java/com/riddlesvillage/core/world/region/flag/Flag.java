@@ -1,4 +1,6 @@
-package com.riddlesvillage.core.world.region;
+package com.riddlesvillage.core.world.region.flag;
+
+import com.riddlesvillage.core.collect.EnhancedList;
 
 public class Flag {
 
@@ -33,16 +35,16 @@ public class Flag {
 			VINE_GROWTH			= new Flag("VINE_GROWTH", true),
 			ENDERMAN_BUILD		= new Flag("ENDERMAN_BUILD", true);
 
-	private static FlagList ALL_FLAGS = new FlagList();
+	private static EnhancedList<Flag> ALL_FLAGS = new EnhancedList<>();
 
-	protected int id;
+	protected transient int id;
 	protected String flag;
-	protected boolean val;
+	protected transient boolean val;
 
-	private Flag(String flag, boolean def) {
+	private Flag(String flag, boolean val) {
 		id = ALL_FLAGS.size();
 		this.flag = flag.toUpperCase();
-		this.val = def;
+		this.val = val;
 		ALL_FLAGS.add(this);
 	}
 

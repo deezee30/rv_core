@@ -4,16 +4,17 @@
  * Created on 10 February 2015 at 6:57 PM.
  */
 
-package com.riddlesvillage.core.world.region;
+package com.riddlesvillage.core.world.region.type;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonObject;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.util.MathUtil;
 import com.riddlesvillage.core.world.Vector3D;
+import com.riddlesvillage.core.world.region.Region;
+import com.riddlesvillage.core.world.region.RegionBoundsException;
+import com.riddlesvillage.core.world.region.Regions;
 import org.apache.commons.lang3.Validate;
-import org.bukkit.World;
 
 import java.util.Map;
 
@@ -21,16 +22,14 @@ public class CylindricalRegion extends Region {
 
 	private static final long serialVersionUID = 2750518492398124058L;
 
-	private final Vector3D
-			base,
-			minBounds,
-			maxBounds;
-	private final int
-			radius,
-			height,
-			volume;
+	private final Vector3D base;
+	private final int radius, height;
 
-	public CylindricalRegion(World world,
+	// do not serialize these
+	private transient Vector3D minBounds, maxBounds;
+	private transient int volume;
+
+	public CylindricalRegion(String world,
 							 Vector3D base,
 							 int radius,
 							 int height) {
@@ -39,6 +38,11 @@ public class CylindricalRegion extends Region {
 		this.radius = radius = Math.abs(radius);
 		this.height = height = Math.abs(height);
 
+		init();
+	}
+
+	@Override
+	public void init() {
 		volume = MathUtil.round(Math.PI * Math.pow(radius, 2) * height);
 
 		minBounds = new Vector3D(
@@ -92,7 +96,7 @@ public class CylindricalRegion extends Region {
 	}
 
 	@Override
-	public RegionType getRegionType() {
+	public RegionType getType() {
 		return RegionType.CYLINDRICAL;
 	}
 
@@ -116,24 +120,11 @@ public class CylindricalRegion extends Region {
 	@Override
 	public Map<String, Object> serialize() {
 		return ImmutableMap.<String, Object>builder()
-				.put("type", getRegionType())
-				.put("world", getWorld().getName())
+				.put(Regions.TYPE_META, getType())
+				.put("world", getWorld())
 				.put("base_center", base)
 				.put("radius", radius)
 				.put("height", height)
 				.build();
-	}
-
-	@Override
-	public JsonObject toJsonObject() {
-		JsonObject json = new JsonObject();
-
-		json.addProperty("type", getRegionType().name());
-		json.addProperty("world", getWorld().getName());
-		json.add("base_center", base.toJsonObject());
-		json.addProperty("radius", radius);
-		json.addProperty("height", height);
-
-		return json;
 	}
 }

@@ -6,15 +6,28 @@
 
 package com.riddlesvillage.core.world.region;
 
-import com.google.common.collect.Lists;
-import com.riddlesvillage.core.collect.EnhancedList;
+import com.google.common.annotations.Beta;
+import com.google.common.collect.ImmutableList;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.riddlesvillage.core.RiddlesCore;
 import com.riddlesvillage.core.world.Vector3D;
+import com.riddlesvillage.core.world.region.type.RegionType;
+import com.riddlesvillage.core.world.region.type.RegionTypeAdapter;
 import org.apache.commons.lang3.Validate;
+import org.bukkit.Bukkit;
 
-import java.util.List;
 import java.util.Optional;
 
 public final class Regions {
+
+	public static final Gson REGION_GSON = new GsonBuilder()
+			.disableInnerClassSerialization()
+			.setPrettyPrinting()
+			.registerTypeAdapter(Region.class, RegionTypeAdapter.getInstance())
+			.create();
+
+	public static final String TYPE_META = RegionTypeAdapter.META_TYPE;
 
 	private Regions() {}
 
@@ -26,19 +39,17 @@ public final class Regions {
 	 * @return  Regions which contain this point
 	 * @see 	Region#contains(Vector3D)
 	 */
-	public static synchronized List<Region> getContaining(Vector3D point,
-														  Region... regions) {
+	public static synchronized RegionList getContaining(Vector3D point,
+														Region... regions) {
 		Validate.notNull(point);
 		Validate.notNull(regions);
 		Validate.notEmpty(regions);
 		Validate.noNullElements(regions);
 
-		EnhancedList<Region> contain = new EnhancedList<>(regions.length);
+		RegionList contain = new RegionList(regions.length);
 
-		new EnhancedList<>(regions)
-				.stream()
-				.filter(region -> region.contains(point))
-				.forEach(contain :: add);
+		for (Region region : regions)
+			contain.addIf(region.contains(point), region);
 
 		return contain;
 	}
@@ -49,9 +60,36 @@ public final class Regions {
 		return c == 0 ? Optional.empty() : Optional.of(c < 0 ? region1 : region2);
 	}
 
-	public static synchronized List<Region> getRegions() {
-		List<Region> regions = Lists.newArrayList();
+	public static synchronized ImmutableList<Region> getRegions(RegionCriteria criteria) {
+		return getManager().getRegions(criteria);
+	}
 
-		return regions;
+	public static synchronized ImmutableList<Region> getRegions() {
+		return getManager().getRegions();
+	}
+
+	public static synchronized void validateRegion(Region region) throws RegionException {
+		if (region.getType().equals(RegionType.CUSTOM))
+			throw new RegionException("Region type can not be CUSTOM");
+
+		if (Bukkit.getServer().getPluginManager().isPluginEnabled(RiddlesCore.getInstance())
+				&& Bukkit.getWorld(region.getWorld()) == null)
+			throw new RegionException("World %s doesn't exist", region.getWorld());
+
+		if (getRegions().contains(region))
+			throw new RegionException("Region already registered");
+
+		// TODO: Perform more checks
+	}
+
+	@Beta
+	public static synchronized Region fromJson(String json) {
+		Region reg = REGION_GSON.fromJson(json, Region.type());
+		reg.init();
+		return reg;
+	}
+
+	public static synchronized RegionManager getManager() {
+		return RegionManager.INSTANCE;
 	}
 }
