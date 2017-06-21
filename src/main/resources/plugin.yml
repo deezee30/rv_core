@@ -24,6 +24,8 @@ main: ${project.groupId}.${project.artifactId}.RiddlesCore
 authors: [Maulss, matt11matthew]
 prefix: Core
 
+softdepend: [ProtocolLib]
+
 commands:
   stats:
     description: Displays statistics of an implemented statistic holder
