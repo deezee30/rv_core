@@ -1,53 +1,81 @@
 package com.riddlesvillage.core.title;
 
-/**
- * Created by Matthew E on 6/14/2017.
- */
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
-public class TitleBuilder {
-    protected String title;
-    protected String subTitle;
-    protected int fadeIn;
-    protected int fadeOut;
-    protected int duration;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
-    public TitleBuilder() {
-    }
+public final class TitleBuilder implements ConfigurationSerializable {
 
-    public Title build() {
-        return new Title(title, subTitle, fadeIn, fadeOut, duration);
-    }
+	static {
+		ConfigurationSerialization.registerClass(TitleBuilder.class);
+	}
 
-    public TitleBuilder withTitle(String title) {
-        this.title = title;
-        return this;
-    }
+	private Optional<TitleMessage> title = Optional.empty();
+	private Optional<TitleMessage> subTitle = Optional.empty();
+	private boolean clear = false;
 
-    public TitleBuilder withSubTitle(String subTitle) {
-        this.subTitle = subTitle;
-        return this;
-    }
+	public TitleBuilder() {}
 
-    public TitleBuilder withFadeIn(int fadeIn) {
-        this.fadeIn = fadeIn;
-        return this;
-    }
+	public TitleBuilder(TitleMessage title,
+						TitleMessage subTitle) {
+		withTitle(title).withTitle(subTitle);
+	}
 
-    public TitleBuilder withFadeOut(int fadeOut) {
-        this.fadeOut = fadeOut;
-        return this;
-    }
+	public TitleBuilder withTitle(TitleMessage title) {
+		if (title.getType().equals(TitleMessage.Type.TITLE))
+			this.title = Optional.of(title);
+		else
+			this.subTitle = Optional.of(title);
 
-    public TitleBuilder withDuration(int duration) {
-        this.duration = duration;
-        return this;
-    }
+		return this;
+	}
 
-    /**
-     * Creates the title like {@link net.minecraft.server.v1_11_R1.PacketPlayOutTitle}
-     * @return
-     */
-    public static TitleBuilder createTitle() {
-        return new TitleBuilder();
-    }
+	public TitleBuilder clear(boolean clear) {
+		this.clear = clear;
+		return this;
+	}
+
+	public Title build() {
+		return new Title(title, subTitle, clear);
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		return build().serialize();
+	}
+
+	public static TitleBuilder deserialize(Map<String, Object> data) {
+		TitleBuilder builder = new TitleBuilder();
+
+		if (data.containsKey("title"))
+			builder.title = Optional.of((TitleMessage) data.get("title"));
+		if (data.containsKey("subTitle"))
+			builder.subTitle = Optional.of((TitleMessage) data.get("subTitle"));
+		builder.clear = (boolean) data.get("clear");
+
+		return builder;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TitleBuilder that = (TitleBuilder) o;
+		return Objects.equals(clear, that.clear) &&
+				Objects.equals(title, that.title) &&
+				Objects.equals(subTitle, that.subTitle);
+	}
+
+	@Override
+	public int hashCode() {
+		return build().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return build().toString();
+	}
 }

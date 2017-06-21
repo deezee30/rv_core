@@ -21,6 +21,7 @@ import static com.riddlesvillage.core.util.MinecraftReflection.getNMSClass;
 /**
  * Created by matt1 on 3/13/2016.
  */
+@Deprecated
 public class TitleAPI {
 
 	public static boolean useOldMethods = false;

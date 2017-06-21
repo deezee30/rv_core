@@ -1,27 +1,33 @@
 package example;
 
+import com.riddlesvillage.core.player.CorePlayer;
+import com.riddlesvillage.core.player.event.CorePlayerPostLoadEvent;
+import com.riddlesvillage.core.title.Title;
 import com.riddlesvillage.core.title.TitleBuilder;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import com.riddlesvillage.core.title.TitleMessage;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 
-/**
- * Created by Matthew E on 6/14/2017.
- */
 public class TitleExample implements Listener {
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        TitleBuilder.createTitle()
-                .withTitle(ChatColor.DARK_AQUA + ChatColor.BOLD.toString() + "Riddles Core")
-                .withSubTitle(ChatColor.GRAY + "Welcome to riddles core test")
-                .withFadeIn(10)
-                .withFadeOut(10)
-                .withDuration(20)
-                .build()
-                .send(player);
+    public void onPlayerJoin(CorePlayerPostLoadEvent event) {
+        CorePlayer player = event.getProfile();
+		Title title = new TitleBuilder()
+				.withTitle(new TitleMessage(TitleMessage.Type.TITLE)
+						.withMessage("&8Welcome, " + player.getDisplayName())
+						.after(40)
+						.fadeInFor(40)
+						.stayFor(80)
+						.fadeOutFor(40)
+				).withTitle(new TitleMessage(TitleMessage.Type.SUBTITLE)
+						.withMessage("&7Enjoy your time on &6RiddlesVillage!")
+						.after(60)
+						.fadeInFor(20)
+						.stayFor(40)
+						.fadeOutFor(20)
+				).build();
+
+		title.send(player);
     }
 }
