@@ -95,7 +95,41 @@ public abstract class Region implements
 		this.priority = priority;
 	}
 
-	public abstract void init();
+	public abstract void calculate();
+
+	public void init() {
+		calculate();
+
+		minX = Math.min(
+				getMinBounds().getFloorX(),
+				getMaxBounds().getFloorX()
+		);
+
+		minY = Math.min(
+				getMinBounds().getFloorY(),
+				getMaxBounds().getFloorY()
+		);
+
+		minZ = Math.min(
+				getMinBounds().getFloorZ(),
+				getMaxBounds().getFloorZ()
+		);
+
+		maxX = Math.max(
+				getMinBounds().getFloorX(),
+				getMaxBounds().getFloorX()
+		);
+
+		maxY = Math.max(
+				getMinBounds().getFloorY(),
+				getMaxBounds().getFloorY()
+		);
+
+		maxZ = Math.max(
+				getMinBounds().getFloorZ(),
+				getMaxBounds().getFloorZ()
+		);
+	}
 
 	/**
 	 * @return The volume of the region in {@code int} units squared form.
@@ -115,45 +149,27 @@ public abstract class Region implements
 	public abstract Vector3D getMaxBounds();
 
 	public int getMinBoundX() {
-		return this.minX = Math.min(
-				getMinBounds().getFloorX(),
-				getMaxBounds().getFloorX()
-		);
+		return minX;
 	}
 
 	public int getMinBoundY(){
-		return this.minY = Math.min(
-				getMinBounds().getFloorY(),
-				getMaxBounds().getFloorY()
-		);
+		return minY;
 	}
 
 	public int getMinBoundZ() {
-		return this.minZ = Math.min(
-				getMinBounds().getFloorZ(),
-				getMaxBounds().getFloorZ()
-		);
+		return minZ;
 	}
 
 	public int getMaxBoundX() {
-		return this.maxX = Math.max(
-				getMinBounds().getFloorX(),
-				getMaxBounds().getFloorX()
-		);
+		return maxX;
 	}
 
 	public int getMaxBoundY() {
-		return this.maxY = Math.max(
-				getMinBounds().getFloorY(),
-				getMaxBounds().getFloorY()
-		);
+		return maxY;
 	}
 
 	public int getMaxBoundZ() {
-		return this.maxZ = Math.max(
-				getMinBounds().getFloorZ(),
-				getMaxBounds().getFloorZ()
-		);
+		return maxZ;
 	}
 
 	/**
@@ -406,7 +422,7 @@ public abstract class Region implements
 	 * @see org.bukkit.entity.Player#sendBlockChange(Location,
 	 * org.bukkit.Material, byte)
 	 */
-	public synchronized void showCorners(Material material, long delay, CorePlayer... players) {
+	public synchronized void showEdges(Material material, long delay, CorePlayer... players) {
 		sendBlockUpdates(material, 0, players);
 
 		new BukkitRunnable() {
@@ -626,7 +642,7 @@ public abstract class Region implements
 		int changed = 0;
 
 		for (Block block : blocks) {
-			if (Math.random() <= chance) {
+			if (Math.random() <= chance && !block.getType().equals(material)) {
 				block.setType(material);
 				changed++;
 			}

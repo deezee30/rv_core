@@ -40,7 +40,7 @@ public class SphericalRegion extends Region {
 	}
 
 	@Override
-	public void init() {
+	public void calculate() {
 		volume		= MathUtil.round(4 * Math.PI * Math.pow(radius, 3) / 3);
 		minBounds	= center.clone().subtract(radius);
 		maxBounds	= center.clone().add(radius);

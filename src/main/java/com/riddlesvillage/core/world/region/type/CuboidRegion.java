@@ -8,7 +8,6 @@ package com.riddlesvillage.core.world.region.type;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.util.MathUtil;
 import com.riddlesvillage.core.world.Vector3D;
@@ -41,16 +40,13 @@ public class CuboidRegion extends Region {
 	}
 
 	@Override
-	public void init() {
+	public void calculate() {
 		points = new EnhancedList<>();
 
 		for (int x = (int) Math.min(min.getX(), max.getX()); x <= Math.max(min.getX(), max.getX()); x++)
 			for (int y = (int) Math.min(min.getY(), max.getY()); y <= Math.max(min.getY(), max.getY()); y++)
-				for (int z = (int) Math.min(min.getZ(), max.getZ()); z <= Math.max(min.getZ(), max.getZ()); z++) {
-					Vector3D v = new Vector3D(x, y, z);
-					points.add(v);
-					Messaging.debug(v.toString());
-				}
+				for (int z = (int) Math.min(min.getZ(), max.getZ()); z <= Math.max(min.getZ(), max.getZ()); z++)
+					points.add(new Vector3D(x, y, z));
 
 		width	= MathUtil.floor(max.getX() - min.getX() + 1);
 		height	= MathUtil.floor(max.getY() - min.getY() + 1);
@@ -110,14 +106,12 @@ public class CuboidRegion extends Region {
 			int x = vector.getFloorX();
 			int y = vector.getFloorY();
 			int z = vector.getFloorZ();
+
 			boolean edge = false;
 
-			if ((x == getMinX() || x == getMaxX()) &&
-					(y == getMinY() || y == getMaxY())) edge = true;
-			if ((z == getMinZ() || z == getMaxZ()) &&
-					(y == getMinY() || y == getMaxY())) edge = true;
-			if ((x == getMinX() || x == getMaxX()) &&
-					(z == getMinZ() || z == getMaxZ())) edge = true;
+			if ((x == minX || x == maxX) && (y == minY || y == maxY)) edge = true;
+			if ((z == minZ || z == maxZ) && (y == minY || y == maxY)) edge = true;
+			if ((x == minX || x == maxX) && (z == minZ || z == maxZ)) edge = true;
 
 			points.addIf(edge, vector);
 		});

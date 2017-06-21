@@ -42,7 +42,7 @@ public class CylindricalRegion extends Region {
 	}
 
 	@Override
-	public void init() {
+	public void calculate() {
 		volume = MathUtil.round(Math.PI * Math.pow(radius, 2) * height);
 
 		minBounds = new Vector3D(
