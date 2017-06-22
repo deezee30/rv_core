@@ -6,11 +6,14 @@
 
 package com.riddlesvillage.core.world.region.type;
 
+import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.util.MathUtil;
 import com.riddlesvillage.core.world.Vector3D;
+import com.riddlesvillage.core.world.Vector3DList;
 import com.riddlesvillage.core.world.region.Region;
 import com.riddlesvillage.core.world.region.RegionBoundsException;
 import com.riddlesvillage.core.world.region.Regions;
@@ -18,6 +21,7 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.Map;
 
+@Beta
 public class CylindricalRegion extends Region {
 
 	private static final long serialVersionUID = 2750518492398124058L;
@@ -26,6 +30,7 @@ public class CylindricalRegion extends Region {
 	private final int radius, height;
 
 	// do not serialize these
+	private transient Vector3DList points;
 	private transient Vector3D minBounds, maxBounds;
 	private transient int volume;
 
@@ -34,15 +39,22 @@ public class CylindricalRegion extends Region {
 							 int radius,
 							 int height) {
 		super(world);
-		this.base = Validate.notNull(base, "The base point can not be null");
-		this.radius = radius = Math.abs(radius);
-		this.height = height = Math.abs(height);
+		this.base = Validate.notNull(base, "The base point can not be null").floor();
+		this.radius = Math.abs(radius);
+		this.height = Math.abs(height);
 
 		init();
 	}
 
 	@Override
 	public void calculate() {
+		// TODO: calculate points
+		points = new Vector3DList();
+
+		// find points in region
+
+
+		// calculate dimensions
 		volume = MathUtil.round(Math.PI * Math.pow(radius, 2) * height);
 
 		minBounds = new Vector3D(
@@ -56,6 +68,8 @@ public class CylindricalRegion extends Region {
 				base.getY() + height,
 				base.getZ() + radius
 		);
+
+		Messaging.debug("CYLINDER: Measured volume: %s; Calculated volume: %s", points.size(), volume);
 	}
 
 	@Override
@@ -92,7 +106,7 @@ public class CylindricalRegion extends Region {
 
 	@Override
 	public ImmutableList<Vector3D> getPoints() {
-		throw new UnsupportedOperationException();
+		return points.getImmutableElements();
 	}
 
 	@Override

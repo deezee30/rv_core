@@ -6,11 +6,14 @@
 
 package com.riddlesvillage.core.world.region.type;
 
+import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.util.MathUtil;
 import com.riddlesvillage.core.world.Vector3D;
+import com.riddlesvillage.core.world.Vector3DList;
 import com.riddlesvillage.core.world.region.Region;
 import com.riddlesvillage.core.world.region.RegionBoundsException;
 import com.riddlesvillage.core.world.region.Regions;
@@ -18,6 +21,7 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.Map;
 
+@Beta
 public class SphericalRegion extends Region {
 
 	private static final long serialVersionUID = -5576209688378810728L;
@@ -26,6 +30,7 @@ public class SphericalRegion extends Region {
 	private final int radius;
 
 	// do not serialize these
+	private transient Vector3DList points;
 	private transient int volume;
 	private transient Vector3D minBounds, maxBounds;
 
@@ -33,17 +38,32 @@ public class SphericalRegion extends Region {
 						   Vector3D center,
 						   int radius) {
 		super(world);
-		this.center = Validate.notNull(center, "The center point can not be null");
-		this.radius = radius = Math.abs(radius);
+		this.center = Validate.notNull(center, "The center point can not be null").floor();
+		this.radius = Math.abs(radius);
 
 		init();
 	}
 
 	@Override
 	public void calculate() {
+		points = new Vector3DList();
+
+		int xCoord = (int) center.getX();
+		int yCoord = (int) center.getY();
+		int zCoord = (int) center.getZ();
+
+		// find points in region
+		for (int x = -radius; x <= radius; x++)
+			for (int z = -radius; z <= radius; z++)
+				for (int y = -radius; y <= radius; y++)
+					points.add(new Vector3D(xCoord + x, yCoord + y, zCoord + z));
+
+		// calculate dimensions
 		volume		= MathUtil.round(4 * Math.PI * Math.pow(radius, 3) / 3);
 		minBounds	= center.clone().subtract(radius);
 		maxBounds	= center.clone().add(radius);
+
+		Messaging.debug("SPHERE: Measured volume: %s; Calculated volume: %s", points.size(), volume);
 	}
 
 	@Override
@@ -78,7 +98,7 @@ public class SphericalRegion extends Region {
 
 	@Override
 	public ImmutableList<Vector3D> getPoints() {
-		throw new UnsupportedOperationException();
+		return points.getImmutableElements();
 	}
 
 	@Override

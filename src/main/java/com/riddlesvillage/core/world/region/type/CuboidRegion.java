@@ -8,9 +8,11 @@ package com.riddlesvillage.core.world.region.type;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.util.MathUtil;
 import com.riddlesvillage.core.world.Vector3D;
+import com.riddlesvillage.core.world.Vector3DList;
 import com.riddlesvillage.core.world.region.Region;
 import com.riddlesvillage.core.world.region.RegionBoundsException;
 import com.riddlesvillage.core.world.region.Regions;
@@ -25,7 +27,7 @@ public class CuboidRegion extends Region {
 	private final Vector3D min, max;
 
 	// do not serialize these
-	private transient EnhancedList<Vector3D> points;
+	private transient Vector3DList points;
 	private transient int volume, width, height, depth;
 
 	public CuboidRegion(String world,
@@ -41,17 +43,21 @@ public class CuboidRegion extends Region {
 
 	@Override
 	public void calculate() {
-		points = new EnhancedList<>();
+		points = new Vector3DList();
 
+		// find points in region
 		for (int x = (int) Math.min(min.getX(), max.getX()); x <= Math.max(min.getX(), max.getX()); x++)
 			for (int y = (int) Math.min(min.getY(), max.getY()); y <= Math.max(min.getY(), max.getY()); y++)
 				for (int z = (int) Math.min(min.getZ(), max.getZ()); z <= Math.max(min.getZ(), max.getZ()); z++)
 					points.add(new Vector3D(x, y, z));
 
+		// calculate dimensions
 		width	= MathUtil.floor(max.getX() - min.getX() + 1);
 		height	= MathUtil.floor(max.getY() - min.getY() + 1);
 		depth	= MathUtil.floor(max.getZ() - min.getZ() + 1);
 		volume	= width * height * depth;
+
+		Messaging.debug("CUBOID: Measured volume: %s; Calculated volume: %s", points.size(), volume);
 	}
 
 	@Override
