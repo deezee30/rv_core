@@ -12,5 +12,9 @@ public abstract class Gun {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public abstract void fire(Player shooter);
 }

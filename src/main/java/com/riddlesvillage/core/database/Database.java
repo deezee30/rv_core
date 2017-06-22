@@ -45,7 +45,7 @@ public final class Database implements Closeable {
         client = MongoClients.create(MongoClientSettings.builder()
 				.codecRegistry(REGISTRY)
 				.clusterSettings(ClusterSettings.builder()
-								.hosts(Collections.singletonList(new ServerAddress(credentials.getAddress())))
+								.hosts(Collections.singletonList(new ServerAddress(credentials.getAddress(), credentials.getPort())))
 								.build()
 				).build());
 

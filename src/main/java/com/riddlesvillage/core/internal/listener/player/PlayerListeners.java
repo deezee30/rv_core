@@ -4,6 +4,7 @@
 
 package com.riddlesvillage.core.internal.listener.player;
 
+import com.riddlesvillage.core.gun.GunManager;
 import org.bukkit.event.Listener;
 
 public final class PlayerListeners {
@@ -20,6 +21,7 @@ public final class PlayerListeners {
 				new PlayerFoodChange(),
 				new PlayerInventoryClick(),
 				new PlayerJump(),
+				new GunManager(),
 				new PlayerLogin(),
 				new PlayerLoginFullAllow(),
 				new PlayerLoginFullCheck(),

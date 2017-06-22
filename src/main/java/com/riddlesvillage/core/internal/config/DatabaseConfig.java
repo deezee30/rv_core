@@ -14,6 +14,7 @@ public final class DatabaseConfig extends CoreConfigFile {
 	public String database;
 	public String username;
 	public String password;
+	public int port;
 
 	private DatabaseConfig() {}
 
@@ -28,7 +29,8 @@ public final class DatabaseConfig extends CoreConfigFile {
 				"address",
 				"database",
 				"username",
-				"password"
+				"password",
+				"port"
 		};
 	}
 
@@ -37,7 +39,8 @@ public final class DatabaseConfig extends CoreConfigFile {
 				INSTANCE.address,
 				INSTANCE.database,
 				INSTANCE.username,
-				INSTANCE.password
+				INSTANCE.password,
+				INSTANCE.port
 		);
 	}
 }

@@ -18,15 +18,18 @@ public final class Credentials implements ConfigurationSerializable {
 	private final String database;
 	private final String user;
 	private final String pass;
+	private final int port;
 
 	public Credentials(String address,
 					   String database,
 					   String user,
-					   String pass) {
+					   String pass,
+					   int port) {
 		this.address  = Validate.notNull(address);
 		this.database = Validate.notNull(database);
 		this.user = Validate.notNull(user);
 		this.pass = Validate.notNull(pass);
+		this.port = Validate.notNull(port);
 	}
 
 	public Credentials(Map<String, Object> data) {
@@ -34,7 +37,8 @@ public final class Credentials implements ConfigurationSerializable {
 				(String) data.get("address"),
 				(String) data.get("database"),
 				(String) data.get("username"),
-				(String) data.get("password")
+				(String) data.get("password"),
+				(Integer) data.get("port")
 		);
 	}
 
@@ -60,6 +64,10 @@ public final class Credentials implements ConfigurationSerializable {
 		return user;
 	}
 
+	public int getPort() {
+		return port;
+	}
+
 	/**
 	 * @return The password of the database server.
 	 */
@@ -74,6 +82,7 @@ public final class Credentials implements ConfigurationSerializable {
 				.put("database", 	database)
 				.put("username",	user)
 				.put("password",	pass)
+				.put("port",	port)
 				.build();
 	}
 }

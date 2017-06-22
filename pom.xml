@@ -11,9 +11,9 @@
 
     <name>RiddlesCore</name>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <!--<properties>-->
+        <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
+    <!--</properties>-->
 
     <build>
         <defaultGoal>clean package</defaultGoal>
@@ -51,7 +51,7 @@
                                 </includes>
                             </artifactSet>
                             <finalName>RiddlesCore</finalName>
-                            <outputFile>${user.home}/Desktop/server/plugins/RiddlesCore.jar</outputFile>
+                            <!--<outputFile>${user.home}/Desktop/server/plugins/RiddlesCore.jar</outputFile>-->
                         </configuration>
                     </execution>
                 </executions>
