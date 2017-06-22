@@ -65,6 +65,7 @@ public abstract class Region implements
 		Iterable<Vector3D>, ConfigurationSerializable, JSONAware {
 
 	private static final long serialVersionUID = 3272199880401532227L;
+	private static final long MAX_BLOCK_CHANGE = 0x7fffffff;
 
 	private final String world;
 	private final FlagMap flags = new FlagMap();
@@ -642,6 +643,8 @@ public abstract class Region implements
 		int changed = 0;
 
 		for (Block block : blocks) {
+			if (changed == MAX_BLOCK_CHANGE) return changed;
+
 			if (Math.random() <= chance && !block.getType().equals(material)) {
 				block.setType(material);
 				changed++;
