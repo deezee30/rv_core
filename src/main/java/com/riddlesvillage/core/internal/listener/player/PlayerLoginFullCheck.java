@@ -15,7 +15,7 @@ import org.bukkit.event.Listener;
 
 final class PlayerLoginFullCheck implements Listener {
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerLogin(CorePlayerPostLoadEvent event) {
 		Bukkit.getScheduler().runTaskLater(Core.get(), () -> {
 			final CorePlayer player = event.getProfile();
