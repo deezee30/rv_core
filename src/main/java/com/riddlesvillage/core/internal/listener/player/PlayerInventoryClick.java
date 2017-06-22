@@ -6,7 +6,7 @@ package com.riddlesvillage.core.internal.listener.player;
 
 import com.riddlesvillage.core.CoreInventoryClickEvent;
 import com.riddlesvillage.core.CoreSettings;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.bukkit.Material;
@@ -33,7 +33,7 @@ final class PlayerInventoryClick implements Listener {
 		CorePlayer player = CorePlayerManager.getInstance().get(bPlayer.getName());
 		String locale = player.getLocale();
 
-		CoreSettings settings = RiddlesCore.getSettings();
+		CoreSettings settings = Core.getSettings();
 
 		for (Map.Entry<String, CoreInventoryClickEvent> entry : settings.getRegisteredInventories().entrySet()) {
 			if (event.getInventory().getName().equals(settings.get(locale, entry.getKey()))) {

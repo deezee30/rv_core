@@ -1,6 +1,6 @@
 package com.riddlesvillage.core.internal.command;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.Rank;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
@@ -27,14 +27,14 @@ public class TeleportCommand  implements CommandExecutor {
 
         switch (args.length) {
             case 0:
-             RiddlesCore.logIf(!isPlayer, "command.only-players");
+             Core.logIf(!isPlayer, "command.only-players");
                 break;
             case 1:
                 String victimName = args[0];
 
                 AbstractCoreProfile victim = MANAGER.getOrOffline(victimName);
                 if (!victim.hasPlayed()) {
-                    if (!RiddlesCore.logIf(!isPlayer, ERROR, new String[] {"$player"}, victimName)) {
+                    if (!Core.logIf(!isPlayer, ERROR, new String[] {"$player"}, victimName)) {
                         playerSender.sendMessage(ERROR, new String[] {"$player"}, victimName);
                     }
 
@@ -52,7 +52,7 @@ public class TeleportCommand  implements CommandExecutor {
                 break;
 
             default:
-                if (!RiddlesCore.logIf(!isPlayer, "command.usage", new String[] {"$usage"}, USAGE)) {
+                if (!Core.logIf(!isPlayer, "command.usage", new String[] {"$usage"}, USAGE)) {
                     playerSender.sendMessage("command.usage", new String[] {"$usage"}, USAGE);
                 }
         }

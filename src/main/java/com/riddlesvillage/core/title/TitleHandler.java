@@ -9,7 +9,7 @@ package com.riddlesvillage.core.title;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.packet.wrapper.WrapperPlayServerTitle;
 import com.riddlesvillage.core.player.CorePlayer;
 import net.md_5.bungee.api.ChatColor;
@@ -59,7 +59,7 @@ public final class TitleHandler {
 		if (message.getMessage().isPresent()) {
 			String locale = player.getLocale();
 			String path = message.getMessage().get();
-			String msg = RiddlesCore.getSettings().get(locale, path);
+			String msg = Core.getSettings().get(locale, path);
 
 			/*
 			 * Check if the path actually exists in the messages cache.
@@ -78,7 +78,7 @@ public final class TitleHandler {
 	}
 
 	public void handleTitleSendPacket(TitleMessage title, CorePlayer... players) {
-		Bukkit.getScheduler().runTaskLater(RiddlesCore.getInstance(), () -> {
+		Bukkit.getScheduler().runTaskLater(Core.get(), () -> {
 			boolean animated = title.isAnimated();
 
 			for (CorePlayer player : players) {

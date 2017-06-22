@@ -6,7 +6,7 @@
 
 package com.riddlesvillage.core.internal.command;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import com.riddlesvillage.core.player.Rank;
@@ -36,7 +36,7 @@ public final class RankCommand implements CommandExecutor {
 
 		switch (args.length) {
 			default:
-				RiddlesCore.log("command.usage", new String[] {"$usage"}, "/rank <player> <rank>");
+				Core.log("command.usage", new String[] {"$usage"}, "/rank <player> <rank>");
 			case 0:
 				break;
 			case 2:
@@ -47,15 +47,15 @@ public final class RankCommand implements CommandExecutor {
 
 					String targetName = args[0];
 					MANAGER.getOrOffline(targetName).setRank(rank);
-					RiddlesCore.log("%s's rank has been set to %s", targetName, rankName);
+					Core.log("%s's rank has been set to %s", targetName, rankName);
 
 					return true;
 				} catch (IllegalArgumentException e) {
-					RiddlesCore.log("%s is not a valid rank", rankName);
+					Core.log("%s is not a valid rank", rankName);
 					break;
 				}
 		}
-		RiddlesCore.log("Available ranks: " + StringUtil.getStringFromStringList(Arrays.stream(Rank.values()).map(Rank::getName).collect(Collectors.toList())));
+		Core.log("Available ranks: " + StringUtil.getStringFromStringList(Arrays.stream(Rank.values()).map(Rank:: getName).collect(Collectors.toList())));
 
 		return true;
 	}

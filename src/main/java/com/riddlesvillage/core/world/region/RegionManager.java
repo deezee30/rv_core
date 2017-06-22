@@ -8,7 +8,7 @@ package com.riddlesvillage.core.world.region;
 
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.file.FileUtil;
 import com.riddlesvillage.core.util.StringUtil;
 import com.riddlesvillage.core.world.region.type.RegionType;
@@ -24,7 +24,7 @@ public final class RegionManager {
 
 	static final RegionManager INSTANCE = new RegionManager();
 	private static final int MIN_REGION_FILE_SIZE = 8;
-	private static final String REGION_FILE= RiddlesCore.getInstance().getDataFolder()
+	private static final String REGION_FILE= Core.get().getDataFolder()
 			+ File.separator
 			+ "regions.json";
 	private final RegionList regions = new RegionList();
@@ -95,7 +95,7 @@ public final class RegionManager {
 		String json = regions.toJson();
 
 		// perform IO saves async
-		Bukkit.getScheduler().runTaskAsynchronously(RiddlesCore.getInstance(), () -> {
+		Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
 			if (!Messaging.debugIf(
 					!file.exists(),
 					"Did not save %s regions, file doesn't exist!",
@@ -139,7 +139,7 @@ public final class RegionManager {
 
 		// if it doesn't exist, try create it and log
 		try {
-			RiddlesCore.logIf(
+			Core.logIf(
 					!file.exists() && file.createNewFile(),
 					"Created new file '%s'",
 					REGION_FILE

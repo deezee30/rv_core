@@ -5,7 +5,7 @@
 package com.riddlesvillage.core.player.manager;
 
 import com.google.common.collect.ImmutableList;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.inventory.item.IndexedItem;
 import com.riddlesvillage.core.inventory.item.ItemBuilder;
@@ -24,7 +24,7 @@ public class InventoryManager {
 	}
 
 	public void createLocaleMenu() {
-		ImmutableList<String> locales = RiddlesCore.getSettings().getLocales();
+		ImmutableList<String> locales = Core.getSettings().getLocales();
 
 		Inventory inv = ci(
 				player,
@@ -54,7 +54,7 @@ public class InventoryManager {
 				Math.abs(rows * 9) > 54
 						? 54
 						: Math.abs(rows * 9),
-				RiddlesCore.getSettings().get(player.getLocale(), title)
+				Core.getSettings().get(player.getLocale(), title)
 		);
 	}
 

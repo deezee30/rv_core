@@ -14,7 +14,7 @@ import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.WriteModel;
 import com.riddlesvillage.core.CoreSettings;
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
@@ -60,8 +60,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class CorePlayer extends AbstractCoreProfile {
 
-	private static final RiddlesCore INSTANCE = RiddlesCore.getInstance();
-	private static final CoreSettings SETTINGS = RiddlesCore.getSettings();
+	private static final Core INSTANCE = Core.get();
+	private static final CoreSettings SETTINGS = Core.getSettings();
 	private static final MongoCollection<Document> COLLECTION = Database.getMainCollection();
 
 	private transient final Player player;
@@ -158,7 +158,7 @@ public class CorePlayer extends AbstractCoreProfile {
 			DatabaseAPI.bulkWrite(
 					COLLECTION,
 					operations,
-					(bulkWriteResult, throwable) -> RiddlesCore.logIf(
+					(bulkWriteResult, throwable) -> Core.logIf(
 							throwable != null,
 							"Bulk update failed for '%s' (login): %s",
 							getName(),
@@ -604,7 +604,7 @@ public class CorePlayer extends AbstractCoreProfile {
 				DataOperator.$SET,
 				DataInfo.LOCALE,
 				locale,
-				(updateResult, throwable) -> RiddlesCore.logIf(
+				(updateResult, throwable) -> Core.logIf(
 						!updateResult.wasAcknowledged(),
 						"%s's locale (%s) update was unacknowledged: ",
 						getName(),
@@ -872,7 +872,7 @@ public class CorePlayer extends AbstractCoreProfile {
 		DatabaseAPI.bulkWrite(
 				COLLECTION,
 				operations,
-				(bulkWriteResult, throwable) -> RiddlesCore.logIf(
+				(bulkWriteResult, throwable) -> Core.logIf(
 						throwable != null,
 						"Bulk update failed for %s (destroy): %s",
 						getName(),

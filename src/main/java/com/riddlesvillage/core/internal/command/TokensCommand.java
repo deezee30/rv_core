@@ -1,6 +1,6 @@
 package com.riddlesvillage.core.internal.command;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
@@ -31,7 +31,7 @@ public final class TokensCommand implements CommandExecutor {
 		switch (args.length) {
 			case 0:
 				if (!isPlayer) {
-					RiddlesCore.log("command.usage", new String[] {"$usage"}, "/tokens <name> (<give|take|set> <amount>)");
+					Core.log("command.usage", new String[] {"$usage"}, "/tokens <name> (<give|take|set> <amount>)");
 					return true;
 				}
 
@@ -58,7 +58,7 @@ public final class TokensCommand implements CommandExecutor {
 									new String[] {"$player"},
 									targetName
 							);
-						else RiddlesCore.log("player.error.not-found", new String[] {"$player"}, targetName);
+						else Core.log("player.error.not-found", new String[] {"$player"}, targetName);
 
 					} else {
 						int tokens = offlinePlayer.getTokens();
@@ -75,14 +75,14 @@ public final class TokensCommand implements CommandExecutor {
 							);
 							senderPlayer.sendMessage("border");
 						} else {
-							RiddlesCore.log("border");
-							RiddlesCore.log(
+							Core.log("border");
+							Core.log(
 									"tokens.notify-other",
 									new String[] {"$player" , "$tokens"},
 									targetName,
 									tokens
 							);
-							RiddlesCore.log("border");
+							Core.log("border");
 						}
 					}
 				} else {
@@ -100,14 +100,14 @@ public final class TokensCommand implements CommandExecutor {
 						);
 						senderPlayer.sendMessage("border");
 					} else {
-						RiddlesCore.log("border");
-						RiddlesCore.log(
+						Core.log("border");
+						Core.log(
 								"tokens.notify-other",
 								new String[] {"$player" , "$tokens"},
 								targetName,
 								tokens
 						);
-						RiddlesCore.log("border");
+						Core.log("border");
 					}
 				}
 
@@ -124,7 +124,7 @@ public final class TokensCommand implements CommandExecutor {
 
 				if (!(giveSetTake.equals("give") || giveSetTake.equals("take") || giveSetTake.equals("set"))) {
 					if (isPlayer) CoreProfile.PLAYER_MANAGER.get(sender.getName()).sendMessage("command.not-found");
-					else RiddlesCore.log("command.not-found");
+					else Core.log("command.not-found");
 					break;
 				}
 
@@ -132,7 +132,7 @@ public final class TokensCommand implements CommandExecutor {
 					amount = Math.abs(Integer.parseInt(args[2]));
 				} catch (NumberFormatException e) {
 					if (isPlayer) CoreProfile.PLAYER_MANAGER.get(sender.getName()).sendMessage("command.invalid-value");
-					else RiddlesCore.log("command.invalid-value");
+					else Core.log("command.invalid-value");
 				}
 
 				if (amount == -1) return true;
@@ -159,7 +159,7 @@ public final class TokensCommand implements CommandExecutor {
 								DataOperator.$SET,
 								DataInfo.TOKENS,
 								newTokens,
-								(updateResult, throwable) -> RiddlesCore.logIf(
+								(updateResult, throwable) -> Core.logIf(
 										!updateResult.wasAcknowledged(),
 										"Failed updating %s's token value to %s: %s",
 										offlinePlayer.getName(),
@@ -174,7 +174,7 @@ public final class TokensCommand implements CommandExecutor {
 									new String[] {"$player"},
 									targetName
 							);
-						else RiddlesCore.log("player.error.not-found", new String[] {"$player"}, targetName);
+						else Core.log("player.error.not-found", new String[] {"$player"}, targetName);
 
 						return true;
 					}
@@ -192,7 +192,7 @@ public final class TokensCommand implements CommandExecutor {
 							targetName
 					);
 				} else {
-					RiddlesCore.log(
+					Core.log(
 							"tokens." + value.getType().toString().toLowerCase(),
 							new String[] {"$tokens" , "$player"},
 							value.getValue(),
@@ -203,7 +203,7 @@ public final class TokensCommand implements CommandExecutor {
 				break;
 			default:
 				if (isPlayer) CoreProfile.PLAYER_MANAGER.get(sender.getName()).sendMessage("command.not-found");
-				else RiddlesCore.log("command.not-found");
+				else Core.log("command.not-found");
 
 				break;
 		}

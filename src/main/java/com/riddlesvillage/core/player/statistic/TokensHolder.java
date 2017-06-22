@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.player.statistic;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
@@ -114,7 +114,7 @@ public interface TokensHolder extends CoreProfile {
 					DataOperator.$SET,
 					DataInfo.TOKENS,
 					newTokens,
-					(updateResult, throwable) -> RiddlesCore.logIf(
+					(updateResult, throwable) -> Core.logIf(
 							!updateResult.wasAcknowledged(),
 							"Failed updating %s's token value to %s: %s",
 							getName(),

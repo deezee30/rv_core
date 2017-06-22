@@ -1,6 +1,6 @@
 package com.riddlesvillage.core.internal.command;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.internal.config.SpawnsConfig;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
@@ -19,7 +19,7 @@ public final class TPSpawnCommand implements CommandExecutor {
 
 		final CorePlayer player = CorePlayerManager.getInstance().get(sender.getName());
 		if (player == null) {
-			RiddlesCore.log("command.only-players");
+			Core.log("command.only-players");
 			return true;
 		}
 

@@ -5,7 +5,7 @@
 package com.riddlesvillage.core.internal.config;
 
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
 import org.bukkit.Bukkit;
@@ -27,7 +27,7 @@ public final class SpawnsConfig extends CoreConfigFile {
 
 		// Scheduling this task for the next available tick in order to wait for all
 		// The worlds to be loaded, otherwise Bukkit.getWorld(String) would return null
-		Bukkit.getScheduler().runTaskLater(RiddlesCore.getInstance(), () -> {
+		Bukkit.getScheduler().runTaskLater(Core.get(), () -> {
 			final FileConfiguration config = getFileConfig();
 
 			try {
@@ -55,7 +55,7 @@ public final class SpawnsConfig extends CoreConfigFile {
 				));
 			}
 
-			RiddlesCore.log("Loaded &e%s spawns&r: &e%s", spawns.size(), new EnhancedList<>(spawns.keySet()).toReadableList("&r, &e", true));
+			Core.log("Loaded &e%s spawns&r: &e%s", spawns.size(), new EnhancedList<>(spawns.keySet()).toReadableList("&r, &e", true));
 		}, 0L);
 	}
 

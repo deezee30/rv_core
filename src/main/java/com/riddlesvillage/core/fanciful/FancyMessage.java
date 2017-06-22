@@ -2,7 +2,7 @@ package com.riddlesvillage.core.fanciful;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonWriter;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.util.ArrayWrapper;
 import com.riddlesvillage.core.util.MinecraftReflection;
@@ -80,9 +80,9 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
 				nmsPacketPlayOutChatConstructor = MinecraftReflection.getNMSClass("PacketPlayOutChat").getDeclaredConstructor(MinecraftReflection.getNMSClass("IChatBaseComponent"));
 				nmsPacketPlayOutChatConstructor.setAccessible(true);
 			} catch (NoSuchMethodException e) {
-				RiddlesCore.log("Could not find Minecraft method or constructor: %s", e);
+				Core.log("Could not find Minecraft method or constructor: %s", e);
 			} catch (SecurityException e) {
-				RiddlesCore.log("Could not access constructor: %s", e);
+				Core.log("Could not access constructor: %s", e);
 			}
 		}
 	}
@@ -238,13 +238,13 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
 			Object achievement = Reflection.getMethod(MinecraftReflection.getOBCClass("CraftStatistic"), "getNMSAchievement", Achievement.class).invoke(null, which);
 			return achievementTooltip((String) Reflection.getField(MinecraftReflection.getNMSClass("Achievement"), "name").get(achievement));
 		} catch (IllegalAccessException e) {
-			RiddlesCore.log("Could not access method: %s", e);
+			Core.log("Could not access method: %s", e);
 			return this;
 		} catch (IllegalArgumentException e) {
-			RiddlesCore.log("Argument could not be passed: %s", e);
+			Core.log("Argument could not be passed: %s", e);
 			return this;
 		} catch (InvocationTargetException e) {
-			RiddlesCore.log("A error has occurred during invoking of method: %s", e);
+			Core.log("A error has occurred during invoking of method: %s", e);
 			return this;
 		}
 	}
@@ -267,13 +267,13 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
 			Object statistic = Reflection.getMethod(MinecraftReflection.getOBCClass("CraftStatistic"), "getNMSStatistic", Statistic.class).invoke(null, which);
 			return achievementTooltip((String) Reflection.getField(MinecraftReflection.getNMSClass("Statistic"), "name").get(statistic));
 		} catch (IllegalAccessException e) {
-			RiddlesCore.log("Could not access method: %s", e);
+			Core.log("Could not access method: %s", e);
 			return this;
 		} catch (IllegalArgumentException e) {
-			RiddlesCore.log("Argument could not be passed: %s", e);
+			Core.log("Argument could not be passed: %s", e);
 			return this;
 		} catch (InvocationTargetException e) {
-			RiddlesCore.log("A error has occured durring invoking of method: %s", e);
+			Core.log("A error has occured durring invoking of method: %s", e);
 			return this;
 		}
 	}
@@ -300,13 +300,13 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
 			Object statistic = Reflection.getMethod(MinecraftReflection.getOBCClass("CraftStatistic"), "getMaterialStatistic", Statistic.class, Material.class).invoke(null, which, item);
 			return achievementTooltip((String) Reflection.getField(MinecraftReflection.getNMSClass("Statistic"), "name").get(statistic));
 		} catch (IllegalAccessException e) {
-			RiddlesCore.log("Could not access method: %s", e);
+			Core.log("Could not access method: %s", e);
 			return this;
 		} catch (IllegalArgumentException e) {
-			RiddlesCore.log("Argument could not be passed: %s", e);
+			Core.log("Argument could not be passed: %s", e);
 			return this;
 		} catch (InvocationTargetException e) {
-			RiddlesCore.log("A error has occured durring invoking of method: %s", e);
+			Core.log("A error has occured durring invoking of method: %s", e);
 			return this;
 		}
 	}
@@ -333,13 +333,13 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
 			Object statistic = Reflection.getMethod(MinecraftReflection.getOBCClass("CraftStatistic"), "getEntityStatistic", Statistic.class, EntityType.class).invoke(null, which, entity);
 			return achievementTooltip((String) Reflection.getField(MinecraftReflection.getNMSClass("Statistic"), "name").get(statistic));
 		} catch (IllegalAccessException e) {
-			RiddlesCore.log("Could not access method: %s", e);
+			Core.log("Could not access method: %s", e);
 			return this;
 		} catch (IllegalArgumentException e) {
-			RiddlesCore.log("Argument could not be passed: %s", e);
+			Core.log("Argument could not be passed: %s", e);
 			return this;
 		} catch (InvocationTargetException e) {
-			RiddlesCore.log("A error has occured durring invoking of method: %s", e);
+			Core.log("A error has occured durring invoking of method: %s", e);
 			return this;
 		}
 	}
@@ -474,7 +474,7 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
 					result.messageParts.add(new MessagePart(TextualComponent.rawText("\n")));
 				}
 			} catch (CloneNotSupportedException e) {
-				RiddlesCore.log("Failed to clone object", e);
+				Core.log("Failed to clone object", e);
 				return this;
 			}
 		}

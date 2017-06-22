@@ -6,7 +6,7 @@
 
 package com.riddlesvillage.core.database.data;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.database.StatType;
 import com.riddlesvillage.core.player.Rank;
 
@@ -26,7 +26,7 @@ public enum DataInfo implements StatType {
 	TOKENS		("tokens",			0),
 	RANK		("rank",			Rank.DEFAULT),
 	PREMIUM		("premium",			false),
-	LOCALE		("locale",			RiddlesCore.getSettings().getDefaultLocale());
+	LOCALE		("locale",			Core.getSettings().getDefaultLocale());
 
 	private final String stat;
 	private final Object def;

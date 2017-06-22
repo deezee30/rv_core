@@ -6,7 +6,7 @@
 
 package com.riddlesvillage.core.chat.filter;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.internal.config.MainConfig;
 import com.riddlesvillage.core.player.CorePlayer;
@@ -64,6 +64,6 @@ class SpamFilter implements ChatBlockFilter {
 					else count.put(name, c - 1);
 				}
 			}
-		}.runTaskLater(RiddlesCore.getInstance(), 20 * 20);
+		}.runTaskLater(Core.get(), 20 * 20);
 	}
 }

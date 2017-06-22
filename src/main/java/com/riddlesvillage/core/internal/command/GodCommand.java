@@ -6,7 +6,7 @@
 
 package com.riddlesvillage.core.internal.command;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.bukkit.command.Command;
@@ -32,10 +32,10 @@ public final class GodCommand implements CommandExecutor {
 		switch (args.length) {
 			default:
 				if (isPlayer)	player.sendMessage("command.usage", new String[] {"usage"}, "/god (<player>)");
-				else			RiddlesCore.log("command.usage", new String[] {"usage"}, "/god <player>");
+				else			Core.log("command.usage", new String[] {"usage"}, "/god <player>");
 				return true;
 			case 0:
-				if (!isPlayer)	RiddlesCore.log("command.usage", new String[] {"usage"}, "/god <player>");
+				if (!isPlayer)	Core.log("command.usage", new String[] {"usage"}, "/god <player>");
 				else {
 					player.sendMessage("god." + (player.setDamageable(!player.isDamageable()) ? "disable" : "enable"));
 				}
@@ -46,7 +46,7 @@ public final class GodCommand implements CommandExecutor {
 				CorePlayer target = CorePlayerManager.getInstance().get(targetName);
 				if (target == null) {
 					if (isPlayer)	player.sendMessage("player.error.not-found", new String[]{"$player"}, targetName);
-					else			RiddlesCore.log("player.error.not-found", new String[]{"$player"}, targetName);
+					else			Core.log("player.error.not-found", new String[] {"$player"}, targetName);
 					return true;
 				}
 
@@ -57,7 +57,7 @@ public final class GodCommand implements CommandExecutor {
 
 				target.sendMessage(msg);
 				if (isPlayer)	player.sendMessage(msg);
-				else			RiddlesCore.log(msg);
+				else			Core.log(msg);
 		}
 
 		return true;

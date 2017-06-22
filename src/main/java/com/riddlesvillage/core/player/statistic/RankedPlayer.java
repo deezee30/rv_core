@@ -6,7 +6,7 @@
 
 package com.riddlesvillage.core.player.statistic;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
@@ -54,7 +54,7 @@ public interface RankedPlayer extends CoreProfile {
 				DataOperator.$SET,
 				DataInfo.RANK,
 				rank,
-				(updateResult, throwable) -> RiddlesCore.logIf(
+				(updateResult, throwable) -> Core.logIf(
 						!updateResult.wasAcknowledged(),
 						"%s's rank update to %s was unacknowledged: %s",
 						getName(),

@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.packet.wrapper.WrapperPlayServerBlockChange;
 import com.riddlesvillage.core.player.CorePlayer;
@@ -432,7 +432,7 @@ public abstract class Region implements
 			public void run() {
 				sendBlockUpdates(null, -1, players);
 			}
-		}.runTaskLater(RiddlesCore.getInstance(), delay);
+		}.runTaskLater(Core.get(), delay);
 	}
 
 	private synchronized void sendBlockUpdates(Material material, int data, CorePlayer... players) {

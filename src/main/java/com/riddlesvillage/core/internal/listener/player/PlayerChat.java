@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.internal.listener.player;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.chat.ChatMessage;
 import com.riddlesvillage.core.chat.ChatMessages;
 import com.riddlesvillage.core.chat.filter.ChatBlockFilter;
@@ -30,7 +30,7 @@ final class PlayerChat implements Listener {
 		CorePlayer player = CoreProfile.PLAYER_MANAGER.get(event);
 
 		// Allow only premiums and staff to chat during premium-chat mode
-		if (RiddlesCore.getSettings().isPremiumChat() && !(player.isPremium() || player.isMod())) {
+		if (Core.getSettings().isPremiumChat() && !(player.isPremium() || player.isMod())) {
 			player.sendMessage("chat.premium-only");
 			event.setCancelled(true);
 			return;
@@ -76,7 +76,7 @@ final class PlayerChat implements Listener {
 			}
 
 			event.setFormat(String.format(
-					ChatColor.translateAlternateColorCodes('&', RiddlesCore.getSettings().get(player.getLocale(), "chat.format")),
+					ChatColor.translateAlternateColorCodes('&', Core.getSettings().get(player.getLocale(), "chat.format")),
 					player.getRank().getDisplayName(),
 					player.getDisplayName(),
 					msg
@@ -89,7 +89,7 @@ final class PlayerChat implements Listener {
 		CorePlayer player = CorePlayer.PLAYER_MANAGER.get(event);
 		String command = event.getMessage().substring(1).split(" ")[0];
 		if (player.isCommandsBlocked()
-				&& !RiddlesCore.getSettings().getAllowedCommands().contains(command.toLowerCase())) {
+				&& !Core.getSettings().getAllowedCommands().contains(command.toLowerCase())) {
 			event.setCancelled(true);
 			player.sendMessage("command.blocked", new String[] {"$command"}, command);
 		}

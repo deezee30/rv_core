@@ -7,7 +7,7 @@ package com.riddlesvillage.core.player;
 import com.google.common.base.Strings;
 import com.mongodb.async.client.MongoCollection;
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
@@ -41,7 +41,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 			public void run() {
 				CACHED_PROFILES.forEach(profile -> profile.refreshStats());
 			}
-		}.runTaskTimerAsynchronously(RiddlesCore.getInstance(), 600L, 600L);
+		}.runTaskTimerAsynchronously(Core.get(), 600L, 600L);
 	}
 
 	private Optional<Consumer<OfflineCorePlayer>>

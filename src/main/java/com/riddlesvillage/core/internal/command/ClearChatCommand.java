@@ -6,7 +6,7 @@
 
 package com.riddlesvillage.core.internal.command;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.internal.config.MainConfig;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
@@ -45,9 +45,9 @@ public final class ClearChatCommand implements CommandExecutor {
 
 	private void clearChat(CommandSender sender) {
 		for (int i = 0; i < MainConfig.getClearChatLines(); i++) {
-			RiddlesCore.broadcast("~");
+			Core.broadcast("~");
 		}
 
-		RiddlesCore.broadcast("chat.clear", new String[]{"$player"}, sender.getName());
+		Core.broadcast("chat.clear", new String[] {"$player"}, sender.getName());
 	}
 }

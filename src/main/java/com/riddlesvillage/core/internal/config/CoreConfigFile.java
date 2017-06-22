@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.internal.config;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.file.ConfigFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,6 +18,6 @@ abstract class CoreConfigFile extends ConfigFile {
 
 	@Override
 	protected final JavaPlugin getPluginInstance() {
-		return RiddlesCore.getInstance();
+		return Core.get();
 	}
 }

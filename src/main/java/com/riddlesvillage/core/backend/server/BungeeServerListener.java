@@ -3,7 +3,7 @@ package com.riddlesvillage.core.backend.server;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -37,10 +37,10 @@ public class BungeeServerListener implements PluginMessageListener {
         this.playerCountMap = new HashMap<>();
         this.maxPlayerCountMap = new HashMap<>();
         this.serverList = new ArrayList<>();
-        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(RiddlesCore.getInstance(), "BungeeCord");
-        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(RiddlesCore.getInstance(), "BungeeCord", this);
+        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(Core.get(), "BungeeCord");
+        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(Core.get(), "BungeeCord", this);
         Messaging.debug("&7[&aBungeeListener&7] &7Now listening on BungeeCord messages.");
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(RiddlesCore.getInstance(), () -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Core.get(), () -> {
             long startTime = System.currentTimeMillis();
             Messaging.debug("&7[&aBungeeListener&7] &7Updating cache...");
 

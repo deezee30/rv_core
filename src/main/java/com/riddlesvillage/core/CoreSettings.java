@@ -62,7 +62,7 @@ public final class CoreSettings {
 
 	public void setPremiumChat(boolean premiumChat) {
 		this.premiumChat.set(premiumChat);
-		RiddlesCore.broadcast("premiumchat." + (premiumChat ? "enable" : "disable"));
+		Core.broadcast("premiumchat." + (premiumChat ? "enable" : "disable"));
 	}
 
 	public void addChatFilter(ChatBlockFilter filter) {
@@ -232,14 +232,14 @@ public final class CoreSettings {
 	}
 
 	public void tryPasteLocales() {
-		Bukkit.getScheduler().runTaskAsynchronously(RiddlesCore.getInstance(), () -> {
+		Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
 			StringBuilder sb = new StringBuilder();
 			String oldLocale = null;
-			for (Map.Entry<String, String> msg : RiddlesCore.getSettings().getAllMessages().entrySet()) {
+			for (Map.Entry<String, String> msg : Core.getSettings().getAllMessages().entrySet()) {
 				String[] parts = msg.getKey().split("\\.");
 				String locale = parts[0];
 				String path = StringUtils.join(ArrayUtils.subarray(parts, 1, parts.length + 1), ".");
-				String message = RiddlesCore.getSettings().get(locale, path);
+				String message = Core.getSettings().get(locale, path);
 
 				if (message != null && !message.equalsIgnoreCase("null")) {
 					if (message.startsWith("MemorySection")) continue;

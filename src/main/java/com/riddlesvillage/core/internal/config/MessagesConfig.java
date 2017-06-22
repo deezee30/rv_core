@@ -6,7 +6,7 @@ package com.riddlesvillage.core.internal.config;
 
 import com.riddlesvillage.core.CoreSettings;
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.file.ConfigFile;
 import com.riddlesvillage.core.internal.ConsoleOutput;
 import org.bukkit.Bukkit;
@@ -16,8 +16,8 @@ import java.io.File;
 
 public final class MessagesConfig {
 
-	private static final RiddlesCore PLUGIN_INSTANCE = RiddlesCore.getInstance();
-	private static final CoreSettings SETTINGS = RiddlesCore.getSettings();
+	private static final Core PLUGIN_INSTANCE = Core.get();
+	private static final CoreSettings SETTINGS = Core.getSettings();
 
 	static {
 		String defaultLocale = SETTINGS.getDefaultLocale();

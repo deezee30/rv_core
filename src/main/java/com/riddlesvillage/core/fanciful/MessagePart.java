@@ -3,7 +3,7 @@ package com.riddlesvillage.core.fanciful;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.gson.stream.JsonWriter;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -100,7 +100,7 @@ final class MessagePart implements JsonRepresentedObject, ConfigurationSerializa
 			}
 			json.endObject();
 		} catch(IOException e){
-			RiddlesCore.log("A problem occured during writing of JSON string: " + e.getMessage());
+			Core.log("A problem occured during writing of JSON string: " + e.getMessage());
 		}
 	}
 

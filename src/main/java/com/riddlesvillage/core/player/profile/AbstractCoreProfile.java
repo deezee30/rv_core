@@ -7,7 +7,7 @@ package com.riddlesvillage.core.player.profile;
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.CoreException;
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
@@ -151,7 +151,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 		}
 
 		DatabaseAPI.retrieveDocument(Database.getMainCollection(), data, value, (document, throwable) -> {
-			RiddlesCore.logIf(throwable != null, "Error loading '%s' ('%s'):", name, uuid, throwable);
+			Core.logIf(throwable != null, "Error loading '%s' ('%s'):", name, uuid, throwable);
 
 			Optional<Document> downloadedDoc = Optional.ofNullable(document);
 			if (downloadedDoc.isPresent()) {
@@ -176,7 +176,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 
 	private void finishLoading(Optional<Document> document) {
 		// finish loading on the main thread
-		Bukkit.getScheduler().scheduleSyncDelayedTask(RiddlesCore.getInstance(), () -> {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Core.get(), () -> {
 			onLoad(document);
 			if (isOnline()) played = true;
 			timer.forceStop();
@@ -188,7 +188,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 	protected void refreshStats() {
 		// Async download custom stats from database
 		DatabaseAPI.retrieveDocument(getCollection(), DataInfo.UUID, uuid, ((result, t) -> {
-			RiddlesCore.logIf(t != null, "Error loading '%s' ('%s'): %s", name, uuid, t);
+			Core.logIf(t != null, "Error loading '%s' ('%s'): %s", name, uuid, t);
 			finishLoading(Optional.ofNullable(result));
 		}));
 	}

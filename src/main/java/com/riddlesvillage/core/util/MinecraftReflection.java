@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.util;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -46,11 +46,11 @@ public final class MinecraftReflection {
 	 */
 	public synchronized static String getVersion() {
 		if (versionString == null) {
-			if (RiddlesCore.getInstance().getServer() == null) {
+			if (Core.get().getServer() == null) {
 				// The server hasn't started, static initializer call?
 				return null;
 			}
-			String name = RiddlesCore.getInstance().getServer().getClass().getPackage().getName();
+			String name = Core.get().getServer().getClass().getPackage().getName();
 			versionString = name.substring(name.lastIndexOf('.') + 1) + ".";
 		}
 

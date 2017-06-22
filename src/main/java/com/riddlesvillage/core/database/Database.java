@@ -5,7 +5,7 @@ import com.mongodb.ServerAddress;
 import com.mongodb.async.client.*;
 import com.mongodb.connection.ClusterSettings;
 import com.riddlesvillage.core.CoreException;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.database.data.Credentials;
 import com.riddlesvillage.core.database.data.RankCodec;
 import org.bson.Document;
@@ -40,7 +40,7 @@ public final class Database implements Closeable {
     public void init(Credentials credentials) throws CoreException {
         if (client != null) throw new CoreException("Database connection already established");
 
-        RiddlesCore.log("Database connection pool is being created...");
+        Core.log("Database connection pool is being created...");
 
         client = MongoClients.create(MongoClientSettings.builder()
 				.codecRegistry(REGISTRY)
@@ -52,7 +52,7 @@ public final class Database implements Closeable {
         database = client.getDatabase("riddlesvillage");
         playerData = database.getCollection("player_data");
 
-        RiddlesCore.log("Database connected successfully to %s", credentials.getAddress());
+        Core.log("Database connected successfully to %s", credentials.getAddress());
 
         // Create Async Mongo Access Threads
         List<MongoAccessThread> accessThreads = Lists.newArrayList();
@@ -63,7 +63,7 @@ public final class Database implements Closeable {
         IntStream.range(0, count - 1).forEach(c -> accessThreads.add(new MongoAccessThread()));
         accessThreads.forEach(Thread::start);
 
-        RiddlesCore.log("%s Mongo access threads started", count);
+        Core.log("%s Mongo access threads started", count);
     }
 
     @Override

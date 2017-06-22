@@ -1,7 +1,7 @@
 package com.riddlesvillage.core.internal.command;
 
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
@@ -32,7 +32,7 @@ public class NameHistoryCommand implements CommandExecutor {
 
         switch (args.length) {
             case 0:
-                if (!RiddlesCore.logIf(!isPlayer, "command.only-players")) {
+                if (!Core.logIf(!isPlayer, "command.only-players")) {
                     List<String> l = playerSender.getNameHistory();
                     playerSender.sendMessages(l.toArray(new String[l.size()]));
                 }
@@ -54,14 +54,14 @@ public class NameHistoryCommand implements CommandExecutor {
                             l.forEach(s -> Messaging.log(s));
                         }
                     } else {
-                        if (!RiddlesCore.logIf(!isPlayer, ERROR)) {
+                        if (!Core.logIf(!isPlayer, ERROR)) {
                             playerSender.sendMessage(ERROR);
                         }
                     }
                 }
                 break;
             default:
-                if (!RiddlesCore.logIf(!isPlayer, "command.usage", new String[]{"$usage"}, USAGE)) {
+                if (!Core.logIf(!isPlayer, "command.usage", new String[] {"$usage"}, USAGE)) {
                     playerSender.sendMessage("command.usage", new String[]{"$usage"}, USAGE);
                 }
         }

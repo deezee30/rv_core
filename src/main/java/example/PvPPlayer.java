@@ -7,7 +7,7 @@
 package example;
 
 import com.mongodb.async.client.MongoCollection;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.StatType;
@@ -48,10 +48,10 @@ final class PvPPlayer extends AbstractCoreProfile {
 
 			// ... load the rest of the player based on given data ...
 
-			RiddlesCore.log("Fully loaded PvPPlayer %s!", getName());
+			Core.log("Fully loaded PvPPlayer %s!", getName());
 		} else {
 			// handle error
-			RiddlesCore.log("Failed player lookup!");
+			Core.log("Failed player lookup!");
 		}
 	}
 
@@ -75,7 +75,7 @@ final class PvPPlayer extends AbstractCoreProfile {
 				DataOperator.$INC,
 				KILL_STAT,
 				1,
-				(updateResult, throwable) -> RiddlesCore.logIf(
+				(updateResult, throwable) -> Core.logIf(
 						!updateResult.wasAcknowledged(),
 						"Failed incrementing %s's kills: %s",
 						getName(),
@@ -97,7 +97,7 @@ final class PvPPlayer extends AbstractCoreProfile {
 				DataOperator.$INC,
 				DEATH_STAT,
 				1,
-				(updateResult, throwable) -> RiddlesCore.logIf(
+				(updateResult, throwable) -> Core.logIf(
 						!updateResult.wasAcknowledged(),
 						"Failed incrementing %s's deaths: %s",
 						getName(),

@@ -5,7 +5,7 @@
 package com.riddlesvillage.core.internal.listener.player;
 
 import com.riddlesvillage.core.internal.AutoRespawnTask;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.event.CorePlayerDeathByPlayerEvent;
 import org.bukkit.Bukkit;
@@ -58,7 +58,7 @@ final class PlayerDeath implements Listener {
 		}
 
 		if (event.doAutoRespawn()) {
-			new AutoRespawnTask(bukVictim).runTaskLater(RiddlesCore.getInstance(), 0L);
+			new AutoRespawnTask(bukVictim).runTaskLater(Core.get(), 0L);
 		}
 	}
 }

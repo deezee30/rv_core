@@ -1,6 +1,6 @@
 package com.riddlesvillage.core.internal.command;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -31,11 +31,11 @@ public final class PremiumCommand implements CommandExecutor {
 				AbstractCoreProfile profile = PLAYER_MANAGER.getOrOffline(target);
 
 				if (!profile.hasPlayed()) {
-					RiddlesCore.log("player.error.not-found", new String[] {"$player"}, target);
+					Core.log("player.error.not-found", new String[] {"$player"}, target);
 					break;
 				}
 
-				RiddlesCore.log(
+				Core.log(
 						"premium.notify",
 						new String[] {"$user" , "$premium"},
 						target,
@@ -50,29 +50,29 @@ public final class PremiumCommand implements CommandExecutor {
 					AbstractCoreProfile profile = PLAYER_MANAGER.getOrOffline(target);
 
 					if (!profile.hasPlayed()) {
-						RiddlesCore.log("player.error.not-found", new String[] {"$player"}, target);
+						Core.log("player.error.not-found", new String[] {"$player"}, target);
 						break;
 					}
 
 					if (Boolean.parseBoolean(trueFalse)) {
 						if (profile.isPremium()) {
-							RiddlesCore.log("premium.already-true", new String[] {"$user"}, profile);
+							Core.log("premium.already-true", new String[] {"$user"}, profile);
 						} else {
 							profile.setPremium(true);
-							RiddlesCore.log("premium.promoted", new String[] {"$user"}, target);
+							Core.log("premium.promoted", new String[] {"$user"}, target);
 						}
 					} else {
 						if (profile.isPremium()) {
 							profile.setPremium(false);
-							RiddlesCore.log("premium.demoted", new String[] {"$user"}, target);
+							Core.log("premium.demoted", new String[] {"$user"}, target);
 						} else {
-							RiddlesCore.log("premium.already-false", new String[] {"$user"}, profile);
+							Core.log("premium.already-false", new String[] {"$user"}, profile);
 						}
 					}
 
 					break;
 				} else {
-					RiddlesCore.log(
+					Core.log(
 							"command.usage",
 							new String[] {"$usage"},
 							"/premium <playername> <true|false>"
@@ -81,7 +81,7 @@ public final class PremiumCommand implements CommandExecutor {
 					break;
 				}
 			} default:
-				RiddlesCore.log(
+				Core.log(
 						"command.usage",
 						new String[] {"$usage"},
 						"/premium <playername> (<true|false>)"

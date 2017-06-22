@@ -10,7 +10,7 @@ import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.world.Vector3D;
 import com.riddlesvillage.core.world.region.type.RegionType;
 import com.riddlesvillage.core.world.region.type.RegionTypeAdapter;
@@ -72,7 +72,7 @@ public final class Regions {
 		if (region.getType().equals(RegionType.CUSTOM))
 			throw new RegionException("Region type can not be CUSTOM");
 
-		if (Bukkit.getServer().getPluginManager().isPluginEnabled(RiddlesCore.getInstance())
+		if (Bukkit.getServer().getPluginManager().isPluginEnabled(Core.get())
 				&& Bukkit.getWorld(region.getWorld()) == null)
 			throw new RegionException("World %s doesn't exist", region.getWorld());
 

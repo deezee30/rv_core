@@ -33,10 +33,10 @@ import java.util.concurrent.*;
 
 import static com.riddlesvillage.core.player.CorePlayer.PLAYER_MANAGER;
 
-public final class RiddlesCore extends JavaPlugin {
+public final class Core extends JavaPlugin {
 
 	private static final CoreSettings settings = new CoreSettings();
-	private static RiddlesCore instance;
+	private static Core instance;
 	private final Database database = Database.getInstance();
 	private final Timer loadTimer = new Timer();
 
@@ -206,7 +206,7 @@ public final class RiddlesCore extends JavaPlugin {
 		return settings;
 	}
 
-	public static RiddlesCore getInstance() {
+	public static Core get() {
 		return instance;
 	}
 }

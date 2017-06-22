@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.internal.listener.player;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,7 +19,7 @@ final class PlayerDropItem implements Listener {
 		String locale = CorePlayer.createIfAbsent(event.getPlayer()).getLocale();
 		ItemStack stack = event.getItemDrop().getItemStack();
 
-		RiddlesCore.getSettings().getLoginItems().keySet().stream()
+		Core.getSettings().getLoginItems().keySet().stream()
 				.filter(item -> stack.equals(item.buildWithLocaleSupport(locale)))
 				.forEach(item -> event.setCancelled(true));
 	}

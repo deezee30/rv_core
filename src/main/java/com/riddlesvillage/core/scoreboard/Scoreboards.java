@@ -6,7 +6,7 @@
 
 package com.riddlesvillage.core.scoreboard;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.scoreboard.handler.CoreScoreboardHandler;
 import com.riddlesvillage.core.scoreboard.handler.IScoreboardHandler;
@@ -46,7 +46,7 @@ public final class Scoreboards {
 					cancel();
 				}
 			}
-		}.runTaskTimer(RiddlesCore.getInstance(), refreshRateTicks, refreshRateTicks);
+		}.runTaskTimer(Core.get(), refreshRateTicks, refreshRateTicks);
 
 		return board;
 	}

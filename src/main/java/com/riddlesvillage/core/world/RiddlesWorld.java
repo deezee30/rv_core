@@ -1,6 +1,6 @@
 package com.riddlesvillage.core.world;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -53,7 +53,7 @@ public class RiddlesWorld {
             }
 
             Bukkit.getServer().unloadWorld(world, false);
-            RiddlesCore.log(world.getName() + " unloaded!");
+            Core.log(world.getName() + " unloaded!");
             isLoaded = false;
 
             return true;

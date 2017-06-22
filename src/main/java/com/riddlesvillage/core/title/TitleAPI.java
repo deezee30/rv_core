@@ -6,7 +6,7 @@
 
 package com.riddlesvillage.core.title;
 
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -166,7 +166,7 @@ public class TitleAPI {
 				public void run() {
 					sendActionBar(player, "");
 				}
-			}.runTaskLater(RiddlesCore.getInstance(), duration + 1);
+			}.runTaskLater(Core.get(), duration + 1);
 		}
 
 		// Re-sends the messages every 3 seconds so it doesn't go away from the player's screen.
@@ -177,7 +177,7 @@ public class TitleAPI {
 				public void run() {
 					sendActionBar(player, message);
 				}
-			}.runTaskLater(RiddlesCore.getInstance(), (long) sched);
+			}.runTaskLater(Core.get(), (long) sched);
 		}
 	}
 

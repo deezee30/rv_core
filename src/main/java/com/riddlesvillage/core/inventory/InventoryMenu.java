@@ -6,7 +6,7 @@ package com.riddlesvillage.core.inventory;
 
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.CoreInventoryClickEvent;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.inventory.item.IndexedItem;
@@ -32,7 +32,7 @@ public final class InventoryMenu implements Serializable {
 
 	public InventoryMenu(String titlePath, CoreInventoryClickEvent event) {
 		this.titlePath = titlePath;
-		RiddlesCore.getSettings().registerInventory(titlePath, event);
+		Core.getSettings().registerInventory(titlePath, event);
 	}
 
 	public void setRows(int rows) {
@@ -62,7 +62,7 @@ public final class InventoryMenu implements Serializable {
 			Inventory inv = Bukkit.createInventory(
 					p,
 					getApplicableRows() * ELEMENTS_PER_ROW,
-					RiddlesCore.getSettings().get(locale, titlePath)
+					Core.getSettings().get(locale, titlePath)
 			);
 
 			for (IndexedItem item : items) {

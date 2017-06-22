@@ -6,7 +6,7 @@ package com.riddlesvillage.core.inventory.item;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.riddlesvillage.core.RiddlesCore;
+import com.riddlesvillage.core.Core;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -122,7 +122,7 @@ public class ItemBuilder implements Cloneable {
 	}
 
 	public ItemStack build() {
-		return buildWithLocaleSupport(RiddlesCore.getSettings().getDefaultLocale());
+		return buildWithLocaleSupport(Core.getSettings().getDefaultLocale());
 	}
 
 	public ItemStack buildWithLocaleSupport(String locale) {
@@ -134,13 +134,13 @@ public class ItemBuilder implements Cloneable {
 		ItemMeta meta = item.getItemMeta();
 		if (meta != null) {
 			if (title != null) {
-				meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7" + RiddlesCore.getSettings().get(locale, title)));
+				meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7" + Core.getSettings().get(locale, title)));
 			}
 
 			if (!lore.isEmpty()) {
 				List<String> lore = Lists.newLinkedList();
 				for (String l : this.lore) {
-					String l0 = RiddlesCore.getSettings().get(locale, l);
+					String l0 = Core.getSettings().get(locale, l);
 					if (l0 == null) l0 = "%n";
 					Collections.addAll(lore, ChatColor.translateAlternateColorCodes('&', "&7" + l0).split(Pattern.quote("%n")));
 				}
