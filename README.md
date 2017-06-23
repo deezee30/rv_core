@@ -217,9 +217,9 @@ public void onPostLoad(CorePlayerPostLoadEvent event) {
 #### Ranks
 
 | Rank     | ID      | Color      | Permissions |
-| -------- |:-------:|:----------:|-------------|
+| -------- |:-------:|:----------:| ----------- |
 | Member   | `0`     | Gray       | Default access |
-| Helper   | `1`     | Aqua       | Bypass chat limitations |
+| Helper   | `4`     | Aqua       | Bypass chat limitations |
 | Mod      | `5`     | Green      | Access to player management and restrictions, such as muting, banning, kicking, etc... |
 | Dev      | `10`    | Dark Green | Access to non-public areas of plugins |
 | Lead Dev | `10`    | Gold       | Access to non-public areas of plugins |
@@ -235,7 +235,28 @@ call `player.isMod()`.
 
 #### Violations
 
+#### Chat Blocking Filters
+
 ### Database
+
+### Regions
+
+#### Vector3D
+
+#### Flags
+
+#### RegionCriteria
+
+#### Serialization
+
+#### Types of default regions:
+
+| Type        | Class                     | Info |
+| ----------- | ------------------------- | ---- |
+| Cuboid      | `CuboidRegion.class`      | Standard quadrilateral region with min and max vectors |
+| Spherical   | `SphericalRegion.class`   | Spherical region with a defined center a radius |
+| Cylindrical | `CylindricalRegion.class` | Cylindrical region with a center point at the base and a defined radius and height extending from the base |
+| Pyramidal   | `PyramidalRegion.class`   | A complex pyramind that may or may not be inverted with odd dimensions |
 
 ### Command API
 
@@ -249,9 +270,53 @@ call `player.isMod()`.
 
 ### Titles
 
+The title API is based on a builder design with each `TitleMessage`
+object resembling either an actual **title __or__ a subtitle**.
+Each `TitleMessage` has its own animation timings attached to them
+so the titles can appear in their own pace independently.
+
+Here is a basic example of how to build a title and send it when a
+player joins the server:
+
+```java
+public class TitleExample implements Listener {
+
+    @EventHandler
+    public void onPlayerJoin(CorePlayerPostLoadEvent event) {
+        CorePlayer player = event.getProfile();
+		Title title = new TitleBuilder()
+				.withTitle(new TitleMessage(TitleMessage.Type.TITLE)
+						.withMessage("&8Welcome, " + player.getDisplayName())
+						.after(40)
+						.fadeInFor(40)
+						.stayFor(80)
+						.fadeOutFor(40)
+				).withTitle(new TitleMessage(TitleMessage.Type.SUBTITLE)
+						.withMessage("&7Enjoy your time on &6RiddlesVillage!")
+						.after(60)
+						.fadeInFor(20)
+						.stayFor(40)
+						.fadeOutFor(20)
+				).build();
+
+		title.send(player);
+    }
+}
+```
+
+> Notice how the subtitle comes in `20` ticks after the title.
+
 ### Server Ping
 
 ### Holograms
+
+### Guns
+
+### Fanciful messages
+
+### jnbt
+
+### Packets
 
 ### Utilities
 
@@ -270,7 +335,7 @@ Make sure to add the private repo:
 ```xml
 <repository>
     <id>riddlesvillage</id>
-    <url>https://repo.riddlesvillage.com/content/groups/private/</url>
+    <url>https://nrm.riddlesvillage.com/content/groups/private/</url>
 </repository>
 ```
 

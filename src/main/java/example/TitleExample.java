@@ -12,7 +12,7 @@ public class TitleExample implements Listener {
 
     @EventHandler
     public void onPlayerJoin(CorePlayerPostLoadEvent event) {
-        CorePlayer player = event.getProfile();
+        CorePlayer player = event.getPlayer();
 		Title title = new TitleBuilder()
 				.withTitle(new TitleMessage(TitleMessage.Type.TITLE)
 						.withMessage("&8Welcome, " + player.getDisplayName())
