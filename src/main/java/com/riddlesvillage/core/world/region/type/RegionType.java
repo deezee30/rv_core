@@ -13,7 +13,7 @@ public enum RegionType {
 	CUBOID(CuboidRegion.class),
 	SPHERICAL(SphericalRegion.class),
 	CYLINDRICAL(CylindricalRegion.class),
-	PYRAMID(PyramidRegion.class),
+	PYRAMID(PyramidalRegion.class),
 	POLYGONAL(null),
 	CUSTOM(null);
 

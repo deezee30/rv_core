@@ -21,7 +21,7 @@ import org.apache.commons.lang3.Validate;
 import java.util.Map;
 
 @Beta
-public class PyramidRegion extends Region {
+public class PyramidalRegion extends Region {
 
 	private static final long serialVersionUID = 1459749783605187047L;
 
@@ -33,18 +33,18 @@ public class PyramidRegion extends Region {
 	private transient Vector3D minBounds, maxBounds;
 	private transient int volume;
 
-	protected PyramidRegion(String world,
-							Vector3D base,
-							int radius) {
+	protected PyramidalRegion(String world,
+							  Vector3D base,
+							  int radius) {
 		super(world);
 		this.base = Validate.notNull(base, "The base point can not be null").floor();
 
 		init();
 	}
 
-	protected PyramidRegion(String world,
-							Vector3D base,
-							Vector3D peak) {
+	protected PyramidalRegion(String world,
+							  Vector3D base,
+							  Vector3D peak) {
 		super(world);
 		this.base = Validate.notNull(base, "The base point can not be null").floor();
 
