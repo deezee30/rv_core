@@ -502,6 +502,14 @@ public class Vector3D implements Cloneable, Serializable, ConfigurationSerializa
 		return "Vector[x=" + x + ",y=" + y + ",z=" + z + "]";
 	}
 
+	public Location toLocation(World world) {
+		return new Location(world, x, y, z);
+	}
+
+	public static Vector3D fromLocation(Location location) {
+		return new Vector3D(location.getX(), location.getY(), location.getZ());
+	}
+
 	/**
 	 * Get the threshold used for {@link #equals(java.lang.Object)}.
 	 *
@@ -509,10 +517,6 @@ public class Vector3D implements Cloneable, Serializable, ConfigurationSerializa
 	 */
 	public static double getEpsilon() {
 		return epsilon;
-	}
-
-	public Location toLocation(World world) {
-		return new Location(world, x, y, z);
 	}
 
 	/**

@@ -13,6 +13,7 @@ import com.riddlesvillage.core.world.region.Regions;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class FlagMap extends EnhancedMap<Flag, Boolean> implements ConfigurationSerializable {
 
@@ -54,8 +55,10 @@ public class FlagMap extends EnhancedMap<Flag, Boolean> implements Configuration
 
 	public static FlagMap deserialize(Map<String, Object> data) {
 		FlagMap map = new FlagMap();
-		for (Map.Entry<String, Object> entry : data.entrySet())
-			map.put(Flag.from(entry.getKey()), (boolean) entry.getValue());
+		for (Map.Entry<String, Object> entry : data.entrySet()) {
+			Optional<Flag> flag = Flag.from(entry.getKey());
+			map.putIf(flag.isPresent(), flag.get(), (boolean) entry.getValue());
+		}
 		return map;
 	}
 

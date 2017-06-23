@@ -196,8 +196,6 @@ A single jump, no matter how high or if incomplete, will trigger this event exac
 ##### `CorePlayerPostLoadEvent`:
 > Called as soon as `CorePlayer` finishes loading
 
-**Note: This event may or may not be called in an asynchronous thread!**
-
 This event is called after the `CorePlayer` instance has been created and set up
 and the database statistics have been downloaded and initialized.
 
@@ -233,23 +231,85 @@ call `player.isMod()`.
 
 #### Premium
 
+...
+
 #### Violations
+
+...
 
 #### Chat Blocking Filters
 
+...
+
 ### Database
+
+...
 
 ### Regions
 
+...
+
 #### Vector3D
+
+...
 
 #### Flags
 
+...
+
+> **Note:** Flags only apply to registered regions
+
+##### Default flags
+
+| Flag              | Default | Associated event                     | Info                                                         |
+| ----------------- |:-------:| ------------------------------------ | ------------------------------------------------------------ |
+| BUILD             | `true`  | `BlockPlaceEvent.class`              | Natural placing of blocks                                               |
+| BREAK             | `true`  | `BlockBreakEvent.class`              | Natural breaking of blocks                                              |
+| CHAT              | `true`  | `AsyncPlayerChatEvent.class`         | Chatting                                                     |
+| COMMAND           | `true`  | `PlayerCommandPreprocessEvent.class` | Dispatching commands                                         |
+| PVP               | `true`  | `CorePlayerDamagePlayerEvent.class`  | Player vs Player damage                                      |
+| PVE               | `true`  | `CorePlayerDamageEntityEvent.class`  | Player vs Environment (mobs) damage                          |
+| ALL_DAMAGE        | `true`  | `EntityDamageEvent.class`            | Any sort of damage                                           |
+| BLOCK_INTERACT    | `true`  | `PlayerInteractEvent.class`          | Right clicling on blocks                                     |
+| ITEM_INTERACT     | `true`  | `PlayerInteractEvent.class`          | Right clicking on items in hand                              |
+| ENTITY_INTERACT   | `true`  | `PlayerInteractAtEntityEvent.class`  | Right clicking on physical entities                          |
+| ENDERMAN_INTERACT | `true`  | `EntityChangeBlockEvent.class`       | Endermen placing/breaking blocks                             |
+| ITEM_SPAWN        | `true`  | `EntitySpawnEvent.class`             | Spawning of physical item entities                           |
+| EXP_SPAWN         | `true`  | `EntitySpawnEvent.class`             | Spawning of experience orb entities                          |
+| ANIMAL_SPAWN      | `true`  | `EntitySpawnEvent.class`             | Spawning of animals (passive)                                |
+| MONSTER_SPAWN     | `true`  | `EntitySpawnEvent.class`             | Spawning of monsters (aggressive)                            |
+| EXPLOSION         | `true`  | `ExplosionPrimeEvent.class`          | Explosions                                                   |
+| HEALTH_REGEN      | `true`  | `EntityRegainHealthEvent.class`      | Natural regeneration of health (peaceful + satiated)         |
+| HUNGER_LOSS       | `true`  | `FoodLevelChangeEvent.class`         | Changing food level                                          |
+| POTION_SPLASH     | `true`  | `PotionSplashEvent.class`            | Any type of potion splashing                                 |
+| BLOCK_BURN        | `true`  | `BlockBurnEvent.class`               | Block grief as a result of fire (Not the spreading of fire)  |
+| VEHICLE_PLACE     | `true`  | `EntitySpawnEvent.class`             | Manual placing of vehicles                                   |
+| VEHICLE_DESTROY   | `true`  | `VehicleDestroyEvent.class`          | Manual destroying of vehicles                                |
+| SLEEP             | `true`  | `PlayerBedEnterEvent.class`          | Player entering bed                                          |
+| BLOCK_FORM        | `true`  | `BlockFormEvent.class`               | Block forming based on world conditions (ie: snow, ice)      |
+| BLOCK_FADE        | `true`  | `BlockFadeEvent.class`               | Block fading based on world conditions (ie: snow, ice, fire) |
+| BLOCK_MOVE        | `true`  | `BlockFromToEvent.class`             | Liquids or dragon egg moving                                 |
+| BLOCK_SPREAD      | `true`  | `BlockSpreadEvent.class`             | Spreading of blocks (ie: fire, mycel, grass, mushrooms)      |
+
+##### Custom flags
+
+...
+
 #### RegionCriteria
+
+...
 
 #### Serialization
 
-#### Types of default regions:
+##### JSON
+
+...
+
+##### YAML
+
+...
+
+#### Types of default regions
 
 | Type        | Class                     | Info |
 | ----------- | ------------------------- | ---- |
@@ -257,16 +317,32 @@ call `player.isMod()`.
 | Spherical   | `SphericalRegion.class`   | Spherical region with a defined center a radius |
 | Cylindrical | `CylindricalRegion.class` | Cylindrical region with a center point at the base and a defined radius and height extending from the base |
 | Pyramidal   | `PyramidalRegion.class`   | A complex pyramind that may or may not be inverted with odd dimensions |
+| Polygonal   | `null`                    | Any custom type of complex polygon |
+| Custom      | `null`                    | Implemented for special cases |
+
+#### Joining regions together
+
+...
 
 ### Command API
 
+...
+
 ### Configuration files
+
+...
 
 ### Inventory GUI
 
+...
+
 ### Boss bars
 
+...
+
 ### Scoreboard
+
+...
 
 ### Titles
 
@@ -308,23 +384,41 @@ public class TitleExample implements Listener {
 
 ### Server Ping
 
+...
+
 ### Holograms
+
+...
 
 ### Guns
 
+...
+
 ### Fanciful messages
+
+...
 
 ### jnbt
 
+...
+
 ### Packets
+
+...
 
 ### Utilities
 
 #### HTTP connections
 
+...
+
 #### Pasters
 
+...
+
 #### URL shorteners
+
+...
 
 ---
 
@@ -378,7 +472,8 @@ depend: [RiddlesCore]
 ---
 
 ## License
-None
+
+...
 
 ---
 
