@@ -97,6 +97,14 @@
             <version>1.11-R0.1-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/spigot-1.11-R0.1-SNAPSHOT.jar</systemPath>
+
+            <!-- Exclude old commons-lang -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- ProtocolLib -->

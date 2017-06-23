@@ -36,7 +36,7 @@ public class FlagMap extends EnhancedMap<Flag, Boolean> implements Configuration
 
 	public boolean isAllowed(Flag flag) {
 		Boolean val = get(flag);
-		return val == null ? flag.isAllowed() : val;
+		return val == null ? true : val;
 	}
 
 	@Override

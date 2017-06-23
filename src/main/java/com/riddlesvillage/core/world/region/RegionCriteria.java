@@ -7,13 +7,17 @@
 package com.riddlesvillage.core.world.region;
 
 import com.riddlesvillage.core.collect.EnhancedList;
+import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.world.Vector3D;
+import com.riddlesvillage.core.world.region.flag.Flag;
+import com.riddlesvillage.core.world.region.flag.FlagMap;
 import com.riddlesvillage.core.world.region.type.RegionType;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.World;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -25,6 +29,7 @@ public final class RegionCriteria implements Iterable<Region> {
 	private Optional<List<Predicate<Region>>> predicates = Optional.empty();
 	private Optional<List<RegionType>> types = Optional.empty();
 	private Optional<List<Vector3D>> coords = Optional.empty();
+	private Optional<Map<Flag, Optional<Boolean>>> flags = Optional.empty();
 
 	public RegionCriteria() {}
 
@@ -54,6 +59,23 @@ public final class RegionCriteria implements Iterable<Region> {
 
 	public RegionCriteria at(Vector3D... coords) {
 		this.coords = Optional.of(new EnhancedList<>(Validate.noNullElements(coords)));
+		return this;
+	}
+
+	public RegionCriteria withFlags(FlagMap flags) {
+		EnhancedMap<Flag, Optional<Boolean>> flagMap = new EnhancedMap<>();
+		for (Map.Entry<Flag, Boolean> entry : flags.entrySet())
+			flagMap.put(entry.getKey(), Optional.ofNullable(entry.getValue()));
+		this.flags = Optional.of(flagMap);
+		return this;
+	}
+
+	public RegionCriteria withFlags(Flag... flags) {
+		EnhancedMap<Flag, Optional<Boolean>> flagMap = new EnhancedMap<>();
+		for (Flag flag : flags) {
+			flagMap.put(flag, Optional.empty());
+		}
+		this.flags = Optional.of(flagMap);
 		return this;
 	}
 
@@ -89,6 +111,15 @@ public final class RegionCriteria implements Iterable<Region> {
 							region
 					))
 			);
+
+		if (flags.isPresent()) {
+			forEach(region -> flags.get()
+					.forEach((flag, allow) -> regions.removeIf(
+								!region.hasFlag(flag) || (allow.isPresent()
+										&& region.isAllowed(flag) != allow.get()), region
+					))
+			);
+		}
 
 		return regions;
 	}

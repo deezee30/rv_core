@@ -17,7 +17,7 @@ import com.riddlesvillage.core.player.CorePlayer;
  * the {@code CorePlayer} object as quickly after instantiation
  * as possible should use this event for doing so.</p>
  */
-public class CorePlayerPostLoadEvent extends CoreProfileEvent {
+public class CorePlayerPostLoadEvent extends CorePlayerEvent {
 
 	private final boolean newComer;
 
@@ -32,11 +32,6 @@ public class CorePlayerPostLoadEvent extends CoreProfileEvent {
 	public CorePlayerPostLoadEvent(CorePlayer player, boolean newComer) {
 		super(player);
 		this.newComer = newComer;
-	}
-
-	@Override
-	public final CorePlayer getProfile() {
-		return (CorePlayer) super.getProfile();
 	}
 
 	/**

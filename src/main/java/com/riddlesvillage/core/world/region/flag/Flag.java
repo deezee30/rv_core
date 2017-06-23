@@ -1,63 +1,73 @@
 package com.riddlesvillage.core.world.region.flag;
 
 import com.riddlesvillage.core.collect.EnhancedList;
+import com.riddlesvillage.core.player.event.CorePlayerDamageEntityEvent;
+import com.riddlesvillage.core.player.event.CorePlayerDamagePlayerEvent;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.player.*;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
 
-public class Flag {
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Optional;
+import java.util.function.Predicate;
 
-	public static Flag
-			BUILD				= new Flag("BUILD", true),
-			BREAK				= new Flag("BREAK", true),
-			TALK				= new Flag("TALK", true),
-			COMMAND				= new Flag("COMMAND", true),
-			PVP					= new Flag("PVP", true),
-			PVE					= new Flag("PVE", true),
-			DAMAGE				= new Flag("DAMAGE", true),
-			BLOCK_INTERACTION	= new Flag("BLOCK_INTERACTION", true),
-			ITEM_INTERACTION	= new Flag("ITEM_INTERACTION", true),
-			ENTITY_INTERACTION	= new Flag("ENTITY_INTERACTION", true),
-			ITEM_DROP			= new Flag("ITEM_DROP", true),
-			EXP_DROP			= new Flag("EXP_DROP", true),
-			PASSIVE_MOB_SPAWN	= new Flag("PASSIVE_MOB_SPAWN", true),
-			NEUTRAL_MOB_SPAWN	= new Flag("NEUTRAL_MOB_SPAWN", true),
-			AGGRESSIVE_MOB_SPAWN= new Flag("AGGRESSIVE_MOB_SPAWN", true),
-			EXPLOSION			= new Flag("EXPLOSION", true),
-			HEALTH_REGENERATION = new Flag("HEALTH_REGENERATION", true),
-			HUNGER_LOSS			= new Flag("HUNGER_LOSS", true),
-			POTION_SPLASH		= new Flag("POTION_SPLASH", true),
-			LIGHTER				= new Flag("LIGHTER", true),
-			VEHICLE_PLACE		= new Flag("VEHICLE_PLACE", true),
-			VEHICLE_DESTROY		= new Flag("VEHICLE_DESTROY", true),
-			SLEEP				= new Flag("SLEEP", true),
-			BLOCK_FREEZE		= new Flag("BLOCK_FREEZE", true),
-			BLOCK_MELT			= new Flag("BLOCK_MELT", true),
-			GRASS_SPREAD		= new Flag("GRASS_SPREAD", true),
-			MYCELIUM_SPREAD		= new Flag("MYCELIUM_SPREAD", true),
-			VINE_GROWTH			= new Flag("VINE_GROWTH", true),
-			ENDERMAN_BUILD		= new Flag("ENDERMAN_BUILD", true);
+public class Flag<E extends Event & Cancellable> {
 
-	private static EnhancedList<Flag> ALL_FLAGS = new EnhancedList<>();
+	private static final EnhancedList<Flag> ALL_FLAGS = new EnhancedList<>();
 
-	protected transient int id;
+	public static final Flag
+			BUILD				= new Flag<>(BlockPlaceEvent.class),
+			BREAK				= new Flag<>(BlockBreakEvent.class),
+			TALK				= new Flag<>(AsyncPlayerChatEvent.class),
+			COMMAND				= new Flag<>(PlayerCommandPreprocessEvent.class),
+			PVP					= new Flag<>(CorePlayerDamagePlayerEvent.class),
+			PVE					= new Flag<>(CorePlayerDamageEntityEvent.class),
+			ALL_DAMAGE			= new Flag<>(EntityDamageEvent.class),
+			BLOCK_INTERACTION	= new Flag<>(PlayerInteractEvent.class, e -> e.getAction().equals(Action.LEFT_CLICK_BLOCK)),
+			ITEM_INTERACTION	= new Flag<>(PlayerInteractEvent.class, PlayerInteractEvent::hasItem),
+			ENTITY_INTERACTION	= new Flag<>(PlayerInteractAtEntityEvent.class),
+			ITEM_SPAWN			= new Flag<>(EntitySpawnEvent.class, e -> e.getEntityType().equals(EntityType.DROPPED_ITEM)),
+			EXP_SPAWN			= new Flag<>(EntitySpawnEvent.class, e -> e.getEntityType().equals(EntityType.EXPERIENCE_ORB)),
+			PASSIVE_MOB_SPAWN	= new Flag<>(EntitySpawnEvent.class, e -> e.getEntity() instanceof Animals),
+			AGGRESSIVE_MOB_SPAWN= new Flag<>(EntitySpawnEvent.class, e -> e.getEntity() instanceof Monster),
+			EXPLOSION			= new Flag<>(ExplosionPrimeEvent.class),
+			HEALTH_REGENERATION = new Flag<>(EntityRegainHealthEvent.class),
+			HUNGER_LOSS			= new Flag<>(FoodLevelChangeEvent.class),
+			POTION_SPLASH		= new Flag<>(PotionSplashEvent.class),
+			BLOCK_BURN			= new Flag<>(BlockBurnEvent.class),
+			VEHICLE_PLACE		= new Flag<>(EntitySpawnEvent.class, e -> e.getEntity() instanceof Vehicle),
+			VEHICLE_DESTROY		= new Flag<>(VehicleDestroyEvent.class),
+			SLEEP				= new Flag<>(PlayerBedEnterEvent.class),
+			BLOCK_FORM			= new Flag<>(BlockFormEvent.class),
+			BLOCK_FADE			= new Flag<>(BlockFadeEvent.class),
+			BLOCK_MOVE			= new Flag<>(BlockFromToEvent.class),
+			BLOCK_SPREAD		= new Flag<>(BlockSpreadEvent.class),
+			ENDERMAN_INTERACT	= new Flag<>(EntityChangeBlockEvent.class, e -> e.getEntityType().equals(EntityType.ENDERMAN));
+
 	protected String flag;
-	protected transient boolean val;
+	protected Class<E> event;
+	protected Optional<Predicate<E>> predicate;
 
-	private Flag(String flag, boolean val) {
-		id = ALL_FLAGS.size();
-		this.flag = flag.toUpperCase();
-		this.val = val;
-		ALL_FLAGS.add(this);
+	private Flag(Class<E> event) {
+		this(event, null);
 	}
 
-	public int getId() {
-		return id;
+	private Flag(Class<E> event, Predicate<E> predicate) {
+		this.event = event;
+		this.predicate = Optional.ofNullable(predicate);
+		ALL_FLAGS.add(this);
 	}
 
 	public String getFlag() {
 		return flag;
-	}
-
-	public boolean isAllowed() {
-		return val;
 	}
 
 	@Override
@@ -79,7 +89,29 @@ public class Flag {
 		return ALL_FLAGS.get(id);
 	}
 
-	public static Flag create(String flag, boolean def) {
-		return new Flag(flag, def);
+	public static <E extends Event & Cancellable> Flag create(String flag, Class<E> event) {
+		return create(flag, event, null);
+	}
+
+	public static <E extends Event & Cancellable> Flag create(
+			String flag,
+			Class<E> event,
+			Predicate<E> predicate) {
+		Flag f = new Flag<>(event, predicate);
+		f.flag = flag;
+		return f;
+	}
+
+	static {
+		try {
+			for (Field field : Flag.class.getDeclaredFields()) {
+				if (Modifier.isStatic(field.getModifiers()) && Modifier.isPublic(field.getModifiers())) {
+					Flag flag = (Flag) field.get(null);
+					flag.flag = field.getName();
+				}
+			}
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 }

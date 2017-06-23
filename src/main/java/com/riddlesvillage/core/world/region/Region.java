@@ -375,8 +375,6 @@ public abstract class Region implements
 	 * @return This region instance
 	 */
 	public final synchronized Region addFlag(Flag flag, boolean allow) {
-		if (Validate.notNull(flag).isAllowed() == allow) return this;
-
 		if (flags.containsKey(flag)) {
 			if (flags.get(flag) != allow) {
 				flags.put(flag, allow);
@@ -390,6 +388,10 @@ public abstract class Region implements
 
 	public ImmutableMap<Flag, Boolean> getFlags() {
 		return flags.getImmutableEntries();
+	}
+
+	public final synchronized boolean hasFlag(Flag flag) {
+		return flags.containsKey(flag);
 	}
 
 	public final synchronized boolean isAllowed(Flag flag) {

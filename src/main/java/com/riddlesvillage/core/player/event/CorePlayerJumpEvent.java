@@ -9,14 +9,9 @@ package com.riddlesvillage.core.player.event;
 import com.riddlesvillage.core.player.CorePlayer;
 import org.bukkit.entity.Player;
 
-public class CorePlayerJumpEvent extends CoreProfileEvent {
+public class CorePlayerJumpEvent extends CorePlayerEvent {
 
 	public CorePlayerJumpEvent(Player player) {
 		super(CorePlayer.createIfAbsent(player));
-	}
-
-	@Override
-	public final CorePlayer getProfile() {
-		return (CorePlayer) super.getProfile();
 	}
 }

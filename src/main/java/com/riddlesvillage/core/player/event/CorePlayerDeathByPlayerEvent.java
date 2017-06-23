@@ -5,10 +5,11 @@ package com.riddlesvillage.core.player.event;
 
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-public class CorePlayerDeathByPlayerEvent extends CoreProfileEvent {
+public class CorePlayerDeathByPlayerEvent extends CorePlayerEvent {
 
 	private final CorePlayer killer;
 	private boolean autoRespawn = true;
@@ -21,12 +22,8 @@ public class CorePlayerDeathByPlayerEvent extends CoreProfileEvent {
 	public CorePlayerDeathByPlayerEvent(PlayerDeathEvent event) {
 		super(CorePlayerManager.getInstance().get(event));
 		killer = CorePlayerManager.getInstance().get(getProfile().getPlayer().getKiller().getName());
+		event.setDeathMessage(ChatColor.translateAlternateColorCodes('&', event.getDeathMessage()));
 		Validate.notNull(killer, "Killer doesn't exist!");
-	}
-
-	@Override
-	public CorePlayer getProfile() {
-		return (CorePlayer) super.getProfile();
 	}
 
 	public CorePlayer getKiller() {
