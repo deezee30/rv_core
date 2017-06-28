@@ -32,7 +32,7 @@ public final class RegionCriteria {
 
     public RegionCriteria() {}
 
-    public RegionCriteria inWorlds(final World... worlds) {
+    public RegionCriteria in(final World... worlds) {
         EnhancedList<String> worldList = new EnhancedList<>(worlds.length);
         for (World world : worlds)
             if (world != null) worldList.add(world.getName());

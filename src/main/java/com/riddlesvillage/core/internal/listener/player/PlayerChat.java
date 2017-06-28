@@ -88,8 +88,7 @@ final class PlayerChat implements Listener {
     public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
         CorePlayer player = CorePlayer.PLAYER_MANAGER.get(event);
         String command = event.getMessage().substring(1).split(" ")[0];
-        if (player.isCommandsBlocked()
-                && !Core.getSettings().getAllowedCommands().contains(command.toLowerCase())) {
+        if (player.isCommandsBlocked() && !Core.getSettings().isCommandAllowed(command)) {
             event.setCancelled(true);
             player.sendMessage("command.blocked", new String[] {"$command"}, command);
         }

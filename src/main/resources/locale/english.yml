@@ -164,6 +164,11 @@ god:
   enable: "God mode has been enabled"
   disable: "God mode has been disabled"
 
+region:
+  flag:
+    no-chat: "You are not allowed to talk here"
+    no-command: "Entering this command is forbidden here"
+
 ##########################################################
 # +----------------------------------------------------+ #
 # |      End of configuration file "messages.yml"      | #

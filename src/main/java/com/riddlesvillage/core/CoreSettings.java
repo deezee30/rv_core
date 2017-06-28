@@ -32,7 +32,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
@@ -79,11 +78,15 @@ public final class CoreSettings {
     }
 
     public void addAllowedCommand(final String command) {
-        allowedCommands.add(command.toLowerCase(Locale.ENGLISH));
+        allowedCommands.add(command);
     }
 
     public ImmutableList<String> getAllowedCommands() {
         return allowedCommands.getImmutableElements();
+    }
+
+    public boolean isCommandAllowed(String command) {
+        return allowedCommands.contains(command);
     }
 
     public void addLoginItem(final IndexedItem item) {

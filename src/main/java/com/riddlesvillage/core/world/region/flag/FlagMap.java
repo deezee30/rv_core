@@ -57,7 +57,7 @@ public class FlagMap extends EnhancedMap<Flag, Boolean> implements Configuration
     public Map<String, Object> serialize() {
         Map<String, Object> map = Maps.newHashMap();
         for (Map.Entry<Flag, Boolean> entry : entrySet())
-            map.put(entry.getKey().flag, entry.getValue());
+            map.put(entry.getKey().flagName, entry.getValue());
         return map;
     }
 
