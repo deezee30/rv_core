@@ -16,156 +16,160 @@ import java.util.List;
 
 public abstract class ConfigFile {
 
-	private final File config;
-	private final FileConfiguration fileConfig;
+    private final File config;
+    private final FileConfiguration fileConfig;
 
-	protected ConfigFile() {
-		this(true);
-	}
+    protected ConfigFile() {
+        this(true);
+    }
 
-	protected ConfigFile(boolean instaLoad) {
-		Validate.notNull(getPluginInstance());
-		Validate.notNull(getConfigName());
-		Validate.notEmpty(getConfigName());
+    protected ConfigFile(final boolean instaLoad) {
+        Validate.notNull(getPluginInstance());
+        Validate.notNull(getConfigName());
+        Validate.notEmpty(getConfigName());
 
-		config = new File(getPluginInstance().getDataFolder(), getConfigName());
+        config = new File(getPluginInstance().getDataFolder(), getConfigName());
 
-		/*
-		 * Checks whether the configuration file is present.
-		 * If it's not, then generate it.
-		 */
-		check(config, getPluginInstance().getResource(getConfigName()));
-		fileConfig = new YamlConfiguration();
+        /*
+         * Checks whether the configuration file is present.
+         * If it's not, then generate it.
+         */
+        check(config, getPluginInstance().getResource(getConfigName()));
+        fileConfig = new YamlConfiguration();
 
-		if (instaLoad) load();
-	}
+        if (instaLoad) load();
+    }
 
-	/**
-	 * Loads the configuration file and loads all the values
-	 * according to their paths specified in the parameters
-	 * of the inherited methods.
-	 */
-	public final void load() {
-		List<Object> values = Lists.newArrayList();
+    /**
+     * Loads the configuration file and loads all the values
+     * according to their paths specified in the parameters
+     * of the inherited methods.
+     */
+    public final void load() {
+        List<Object> values = Lists.newArrayList();
 
-		try {
-			fileConfig.load(config);
+        try {
+            fileConfig.load(config);
 
-			String[] paths = getPaths();
-			for (String path : paths) {
+            String[] paths = getPaths();
+            for (String path : paths) {
 
-				// obtain individual value from path, default is null
-				// if null is the case then it will not be accessed
-				Object value = fileConfig.get(path, null);
-				if (value == null) {
-					Messaging.debug("Path '%s' resulted in a null value in config %s", path, config.getPath());
-				} else {
-					values.add(value);
-				}
-			}
+                // obtain individual value from path, default is null
+                // if null is the case then it will not be accessed
+                Object value = fileConfig.get(path, null);
+                if (value == null) {
+                    Messaging.debug("Path '%s' resulted in a null value in config %s", path, config.getPath());
+                } else {
+                    values.add(value);
+                }
+            }
 
-			EnhancedList<Field> usableFields = new EnhancedList<>();
+            EnhancedList<Field> usableFields = new EnhancedList<>();
 
-			Field[] fields = getClass().getFields();
-			for (Field field : fields) {
+            Field[] fields = getClass().getFields();
+            for (Field field : fields) {
 
-				// make sure the fields are not final, not static and not transient
-				int mod = field.getModifiers();
-				if (!Modifier.isFinal(mod)
-						&& !Modifier.isStatic(mod)
-						&& !Modifier.isTransient(mod)) {
-					usableFields.add(field);
-				}
-			}
+                // make sure the fields are not final, not static and not transient
+                int mod = field.getModifiers();
+                if (!Modifier.isFinal(mod)
+                        && !Modifier.isStatic(mod)
+                        && !Modifier.isTransient(mod)) {
+                    usableFields.add(field);
+                }
+            }
 
-			int usableFieldsLen = usableFields.size();
-			int pathsLen = paths.length;
-			int valuesLen = values.size();
+            int usableFieldsLen = usableFields.size();
+            int pathsLen = paths.length;
+            int valuesLen = values.size();
 
-			// output an error and stop the task if the amount of usable
-			// fields doesn't equal to the amount of non-null paths
-			if (usableFieldsLen != pathsLen) {
-				Messaging.log(
-						"File '%s' was not loaded for plugin '%s' because the " +
-						"amount of fields (%s) does not equal to the amount of paths (%s). " +
-						"Total fields: %s",
-						getConfigName(),
-						getPluginInstance().getDescription().getName(),
-						usableFieldsLen,
-						pathsLen,
-						fields.length
-				);
-				return;
-			}
+            // output an error and stop the task if the amount of usable
+            // fields doesn't equal to the amount of non-null paths
+            if (usableFieldsLen != pathsLen) {
+                Messaging.log(
+                        "File '%s' was not loaded for plugin '%s' because the " +
+                        "amount of fields (%s) does not equal to the amount of paths (%s). " +
+                        "Total fields: %s",
+                        getConfigName(),
+                        getPluginInstance().getDescription().getName(),
+                        usableFieldsLen,
+                        pathsLen,
+                        fields.length
+                );
+                return;
+            }
 
-			for (int x = 0; x < valuesLen; x++) {
-				Field field = usableFields.get(x);
-				Object value = values.get(x);
+            for (int x = 0; x < valuesLen; x++) {
+                Field field = usableFields.get(x);
+                Object value = values.get(x);
 
-				try {
-					field.set(this, value);
-				} catch (Exception e) {
-					Messaging.log(
-							"An error occurred while attempting to set the value " +
-							"'%s' to field '%s' from file '%s' for plugin '%s': %s",
-							value,
-							field.getName(),
-							getConfigName(),
-							getPluginInstance().getDescription().getName(),
-							e.getMessage()
-					);
-				}
-			}
+                try {
+                    field.set(this, value);
+                } catch (Exception e) {
+                    Messaging.log(
+                            "An error occurred while attempting to set the value " +
+                            "'%s' to field '%s' from file '%s' for plugin '%s': %s",
+                            value,
+                            field.getName(),
+                            getConfigName(),
+                            getPluginInstance().getDescription().getName(),
+                            e.getMessage()
+                    );
+                }
+            }
 
-			Messaging.log(
-					"Loaded &e%s %s&r from file '&e%s&r'",
-					valuesLen,
-					StringUtil.checkPlural("value", "values", valuesLen),
-					config.getPath()
-			);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+            Messaging.log(
+                    "Loaded &e%s %s&r from file '&e%s&r'",
+                    valuesLen,
+                    StringUtil.checkPlural("value", "values", valuesLen),
+                    config.getPath()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	protected abstract JavaPlugin getPluginInstance();
+    public File getConfig() {
+        return config;
+    }
 
-	protected abstract String getConfigName();
+    public FileConfiguration getFileConfig() {
+        return fileConfig;
+    }
 
-	protected abstract String[] getPaths();
+    protected abstract JavaPlugin getPluginInstance();
 
-	protected final File getConfig() {
-		return config;
-	}
+    protected abstract String getConfigName();
 
-	protected final FileConfiguration getFileConfig() {
-		return fileConfig;
-	}
+    protected abstract String[] getPaths();
 
-	/**
-	 * Checks if File exists. If not, regenerates configuration
-	 * file.
-	 *
-	 * <p>In case the file needs to be generated, all parent
-	 * directories are also made.</p>
-	 *
-	 * @param f The file object to check.
-	 * @param i The resource file.
-	 */
-	public static void check(File f, InputStream i) {
-		try {
-			if (!f.exists()) {
-				f.getParentFile().mkdirs();
+    /**
+     * Checks if File exists. If not, regenerates configuration
+     * file.
+     *
+     * <p>In case the file needs to be generated, all parent
+     * directories are also made.</p>
+     *
+     * @param f The file object to check.
+     * @param i The resource file.
+     */
+    public static void check(final File f,
+                             final InputStream i) {
+        Validate.notNull(f);
+        Validate.notNull(i);
 
-				OutputStream out = new FileOutputStream(f);
-				byte[] buf = new byte[1024];
-				int len;
-				while ((len = i.read(buf)) > 0) out.write(buf, 0, len);
-				out.close();
-				i.close();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        try {
+            if (!f.exists()) {
+                f.getParentFile().mkdirs();
+
+                OutputStream out = new FileOutputStream(f);
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = i.read(buf)) > 0) out.write(buf, 0, len);
+                out.close();
+                i.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public class CorePlayerJumpEvent extends CorePlayerEvent {
 
-	public CorePlayerJumpEvent(Player player) {
-		super(CorePlayer.createIfAbsent(player));
-	}
+    public CorePlayerJumpEvent(final Player player) {
+        super(CorePlayer.createIfAbsent(player));
+    }
 }

@@ -10,19 +10,24 @@ import com.riddlesvillage.core.CoreException;
 
 public class RegionException extends CoreException {
 
-	public RegionException(String message, Object... components) {
-		super(message, components);
-	}
+    public RegionException(String message,
+                           Object... components) {
+        super(message, components);
+    }
 
-	public RegionException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public RegionException(String message,
+                           Throwable cause) {
+        super(message, cause);
+    }
 
-	public RegionException(Throwable cause) {
-		super(cause);
-	}
+    public RegionException(Throwable cause) {
+        super(cause);
+    }
 
-	public RegionException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
+    public RegionException(String message,
+                           Throwable cause,
+                           boolean enableSuppression,
+                           boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

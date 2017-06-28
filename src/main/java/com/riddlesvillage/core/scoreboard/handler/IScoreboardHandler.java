@@ -8,7 +8,7 @@ package com.riddlesvillage.core.scoreboard.handler;
 
 public interface IScoreboardHandler extends Cloneable {
 
-	IScoreboardHandler refresh();
+    IScoreboardHandler refresh();
 
-	void destroy();
+    void destroy();
 }

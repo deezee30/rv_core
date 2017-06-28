@@ -14,13 +14,13 @@ import org.bukkit.inventory.ItemStack;
 
 final class PlayerDropItem implements Listener {
 
-	@EventHandler (priority = EventPriority.HIGH)
-	public void onPlayerItemDrop(PlayerDropItemEvent event) {
-		String locale = CorePlayer.createIfAbsent(event.getPlayer()).getLocale();
-		ItemStack stack = event.getItemDrop().getItemStack();
+    @EventHandler (priority = EventPriority.HIGH)
+    public void onPlayerItemDrop(PlayerDropItemEvent event) {
+        String locale = CorePlayer.createIfAbsent(event.getPlayer()).getLocale();
+        ItemStack stack = event.getItemDrop().getItemStack();
 
-		Core.getSettings().getLoginItems().keySet().stream()
-				.filter(item -> stack.equals(item.buildWithLocaleSupport(locale)))
-				.forEach(item -> event.setCancelled(true));
-	}
+        Core.getSettings().getLoginItems().keySet().stream()
+                .filter(item -> stack.equals(item.buildWithLocaleSupport(locale)))
+                .forEach(item -> event.setCancelled(true));
+    }
 }

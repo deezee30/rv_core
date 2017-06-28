@@ -7,7 +7,7 @@ import org.bukkit.entity.Snowball;
 /**
  * Created by Matthew E on 6/22/2017.
  */
-public class PistolGun extends Gun {
+class PistolGun extends Gun {
     public PistolGun() {
         super("pistol");
     }

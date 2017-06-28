@@ -10,14 +10,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 abstract class CoreConfigFile extends ConfigFile {
 
-	public CoreConfigFile() {}
+    public CoreConfigFile() {}
 
-	public CoreConfigFile(boolean instaLoad) {
-		super(instaLoad);
-	}
+    public CoreConfigFile(boolean instaLoad) {
+        super(instaLoad);
+    }
 
-	@Override
-	protected final JavaPlugin getPluginInstance() {
-		return Core.get();
-	}
+    @Override
+    protected final JavaPlugin getPluginInstance() {
+        return Core.get();
+    }
 }

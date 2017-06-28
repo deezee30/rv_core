@@ -8,41 +8,131 @@ package com.riddlesvillage.core.chat;
 
 import com.google.gson.JsonObject;
 import com.riddlesvillage.core.player.CorePlayer;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.json.simple.JSONAware;
 
 import java.io.Serializable;
-import java.util.UUID;
 
+/**
+ * The type Chat message.
+ */
 public class ChatMessage implements Serializable, JSONAware {
 
-	private final CorePlayer sender;
-	private final String message;
-	private final long date;
-	private final boolean cancelled;
+    private final CorePlayer sender;
+    private final String message;
+    private final long date;
+    private final boolean cancelled;
 
-	public ChatMessage(CorePlayer sender, String message, boolean cancelled) {
-		this.sender = sender;
-		this.message = message;
-		this.date = System.currentTimeMillis();
-		this.cancelled = cancelled;
-	}
+    /**
+     * Instantiates a new Chat message.
+     *
+     * @param sender    the sender of the message
+     * @param message   the message
+     * @param cancelled whether or not the message
+     *                  was cancelled as a result of
+     *                  {@link com.riddlesvillage.core.chat.filter.ChatBlockFilter}s
+     */
+    public ChatMessage(final CorePlayer sender,
+                       final String message,
+                       final boolean cancelled) {
+        this.sender = sender;
+        this.message = message;
+        this.date = System.currentTimeMillis();
+        this.cancelled = cancelled;
+    }
 
-	public JsonObject toJsonObject() {
-		JsonObject jsonObject = new JsonObject();
+    /**
+     * Gets the sender.
+     *
+     * @return the sender
+     */
+    public CorePlayer getSender() {
+        return sender;
+    }
 
-		jsonObject.addProperty("sender", sender.getUuid().toString());
-		jsonObject.addProperty("message", message);
-		jsonObject.addProperty("date", date);
-		jsonObject.addProperty("cancelled", cancelled);
+    /**
+     * Gets the message.
+     *
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
 
-		JsonObject object = new JsonObject();
-		object.add(UUID.randomUUID().toString(), jsonObject);
+    /**
+     * Gets date.
+     *
+     * @return the date
+     */
+    public long getDate() {
+        return date;
+    }
 
-		return object;
-	}
+    /**
+     * Is cancelled boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isCancelled() {
+        return cancelled;
+    }
 
-	@Override
-	public String toJSONString() {
-		return toJsonObject().toString();
-	}
+    /**
+     * To json object json object.
+     *
+     * @return the json object
+     */
+    public JsonObject toJsonObject() {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("sender", sender.getUuid().toString());
+        jsonObject.addProperty("message", message);
+        jsonObject.addProperty("date", date);
+        jsonObject.addProperty("cancelled", cancelled);
+
+        return jsonObject;
+    }
+
+    @Override
+    public String toJSONString() {
+        return toJsonObject().toString();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("sender", sender)
+                .append("message", message)
+                .append("date", date)
+                .append("cancelled", cancelled)
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ChatMessage that = (ChatMessage) o;
+
+        return new EqualsBuilder()
+                .append(date, that.date)
+                .append(cancelled, that.cancelled)
+                .append(sender, that.sender)
+                .append(message, that.message)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(sender)
+                .append(message)
+                .append(date)
+                .append(cancelled)
+                .toHashCode();
+    }
 }

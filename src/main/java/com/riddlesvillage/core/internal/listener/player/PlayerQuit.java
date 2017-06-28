@@ -13,10 +13,10 @@ import static com.riddlesvillage.core.player.CorePlayer.PLAYER_MANAGER;
 
 final class PlayerQuit implements Listener {
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		event.setQuitMessage(null);
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        event.setQuitMessage(null);
 
-		PLAYER_MANAGER.get(event).destroy();
-	}
+        PLAYER_MANAGER.get(event).destroy();
+    }
 }

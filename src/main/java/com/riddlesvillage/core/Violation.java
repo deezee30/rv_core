@@ -6,74 +6,78 @@
 
 package com.riddlesvillage.core;
 
+import org.apache.commons.lang3.Validate;
+
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Violation<Target> extends TimerTask {
 
-	private final Target target;
-	private final int toleration;
-	private Timer timer;
-	private volatile int violations = 0;
+    private Timer timer;
+    private final Target target;
+    private final int toleration;
+    private volatile int violations = 0;
 
-	protected Violation(Target target, int toleration) {
-		this.target = target;
-		this.toleration = toleration;
-	}
+    protected Violation(final Target target,
+                        final int toleration) {
+        this.target = Validate.notNull(target);
+        this.toleration = toleration;
+    }
 
-	@Override
-	public final void run() {
-		if (violations != 0) {
-			violations--;
-			onViolationDecrease(target);
-		}
-	}
+    @Override
+    public final void run() {
+        if (violations != 0) {
+            violations--;
+            onViolationDecrease(target);
+        }
+    }
 
-	public abstract void onMaxViolations(Target target);
+    public abstract void onMaxViolations(final Target target);
 
-	public abstract void onViolation(Target target);
+    public abstract void onViolation(final Target target);
 
-	public void onViolationDecrease(Target target) {}
+    public void onViolationDecrease(final Target target) {}
 
-	public final void enableCooldown(int time, TimeUnit units) {
-		if (timer != null) timer.cancel();
+    public final void enableCooldown(final int time,
+                                     final TimeUnit units) {
+        if (timer != null) timer.cancel();
 
-		long millis = units.toMillis(time);
-		timer = new Timer();
-		timer.scheduleAtFixedRate(this, millis, millis);
-	}
+        long millis = units.toMillis(time);
+        timer = new Timer();
+        timer.scheduleAtFixedRate(this, millis, millis);
+    }
 
-	public final boolean addViolation() {
-		boolean tolerated = ++violations != toleration;
+    public final boolean addViolation() {
+        boolean tolerated = ++violations != toleration;
 
-		if (tolerated) {
-			onViolation(target);
-		} else {
-			onMaxViolations(target);
-			clear();
-		}
+        if (tolerated) {
+            onViolation(target);
+        } else {
+            onMaxViolations(target);
+            clear();
+        }
 
-		return tolerated;
-	}
+        return tolerated;
+    }
 
-	public final int getViolations() {
-		return violations;
-	}
+    public final int getRemainingViolations() {
+        return toleration - violations;
+    }
 
-	public final int getRemainingViolations() {
-		return toleration - violations;
-	}
+    public final void clear() {
+        violations = 0;
+    }
 
-	public final void clear() {
-		violations = 0;
-	}
+    public Target getTarget() {
+        return target;
+    }
 
-	public Target getTarget() {
-		return target;
-	}
+    public int getToleration() {
+        return toleration;
+    }
 
-	public int getToleration() {
-		return toleration;
-	}
+    public int getViolations() {
+        return violations;
+    }
 }

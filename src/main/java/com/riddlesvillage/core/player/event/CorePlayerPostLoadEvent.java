@@ -19,32 +19,33 @@ import com.riddlesvillage.core.player.CorePlayer;
  */
 public class CorePlayerPostLoadEvent extends CorePlayerEvent {
 
-	private final boolean newComer;
+    private final boolean newComer;
 
-	/**
-	 * Calls the load event for {@code CorePlayer} implementations.
-	 *
-	 * @param	player
-	 * 			The player associated.
-	 * @param	newComer
-	 * 			Whether or not he is a newcomer.
-	 */
-	public CorePlayerPostLoadEvent(CorePlayer player, boolean newComer) {
-		super(player);
-		this.newComer = newComer;
-	}
+    /**
+     * Calls the load event for {@code CorePlayer} implementations.
+     *
+     * @param	player
+     * 			The player associated.
+     * @param	newComer
+     * 			Whether or not he is a newcomer.
+     */
+    public CorePlayerPostLoadEvent(final CorePlayer player,
+                                   final boolean newComer) {
+        super(player);
+        this.newComer = newComer;
+    }
 
-	/**
-	 * Returns whether or not this is the first time the player
-	 * joined the server.
-	 *
-	 * <p>The player's newcomer status is dependent on if he
-	 * exists in the global database table or not.</p>
-	 *
-	 * @return	{@code true} if it's the player's first time
-	 * 			joining. {@code false} if not.
-	 */
-	public final boolean isNew() {
-		return newComer;
-	}
+    /**
+     * Returns whether or not this is the first time the player
+     * joined the server.
+     *
+     * <p>The player's newcomer status is dependent on if he
+     * exists in the global database table or not.</p>
+     *
+     * @return	{@code true} if it's the player's first time
+     * 			joining. {@code false} if not.
+     */
+    public final boolean isNew() {
+        return newComer;
+    }
 }

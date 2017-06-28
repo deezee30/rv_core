@@ -21,24 +21,24 @@ import org.bukkit.event.HandlerList;
  */
 public abstract class CoreProfileEvent extends Event {
 
-	private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
 
-	private final CoreProfile profile;
+    private final CoreProfile profile;
 
-	protected CoreProfileEvent(CoreProfile profile) {
-		this.profile = Validate.notNull(profile);
-	}
+    protected CoreProfileEvent(final CoreProfile profile) {
+        this.profile = Validate.notNull(profile);
+    }
 
-	public CoreProfile getProfile() {
-		return profile;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public CoreProfile getProfile() {
+        return profile;
+    }
 }

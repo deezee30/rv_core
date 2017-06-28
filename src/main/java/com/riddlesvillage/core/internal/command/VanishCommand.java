@@ -15,29 +15,29 @@ import org.bukkit.command.CommandSender;
 
 public final class VanishCommand implements CommandExecutor {
 
-	@Override
-	public boolean onCommand(CommandSender sender,
-							 Command command,
-							 String label,
-							 String[] args) {
-		CorePlayer player = CorePlayerManager.getInstance().get(sender.getName());
-		if (player == null) {
-			Core.log("command.only-players");
-			return true;
-		}
+    @Override
+    public boolean onCommand(CommandSender sender,
+                             Command command,
+                             String label,
+                             String[] args) {
+        CorePlayer player = CorePlayerManager.getInstance().get(sender.getName());
+        if (player == null) {
+            Core.log("command.only-players");
+            return true;
+        }
 
-		if (!player.isAdmin()) {
-			player.sendMessage("player.error.no-permission");
-			return true;
-		}
+        if (!player.isAdmin()) {
+            player.sendMessage("player.error.no-permission");
+            return true;
+        }
 
-		if (args.length != 0) {
-			player.sendMessage("command.usage", new String[]{"$usage"}, "/vanish");
-			return true;
-		}
+        if (args.length != 0) {
+            player.sendMessage("command.usage", new String[]{"$usage"}, "/vanish");
+            return true;
+        }
 
-		player.toggleVanish(false);
+        player.toggleVanish(false);
 
-		return true;
-	}
+        return true;
+    }
 }

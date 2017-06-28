@@ -11,35 +11,35 @@ import java.util.Map;
 
 public class Hastebin extends Paster {
 
-	private static final String URL = "https://hastebin.com/";
+    private static final String URL = "https://hastebin.com/";
 
-	Hastebin(String content) {
-		super(content);
-	}
+    Hastebin(final String content) {
+        super(content);
+    }
 
-	@Override
-	protected URL process() throws Exception {
-		HttpsURLConnection connection = null;
-		try {
-			URL url = new URL(URL + "documents");
-			connection = (HttpsURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-			connection.setRequestProperty("Content-Type", "text/plain");
-			connection.setRequestProperty("charset", "utf-8");
-			connection.setDoInput(true);
-			connection.setDoOutput(true);
+    @Override
+    protected URL process() throws Exception {
+        HttpsURLConnection connection = null;
+        try {
+            URL url = new URL(URL + "documents");
+            connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            connection.setRequestProperty("Content-Type", "text/plain");
+            connection.setRequestProperty("charset", "utf-8");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
 
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-			wr.writeBytes(getContent());
-			wr.flush();
-			wr.close();
+            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+            wr.writeBytes(getContent());
+            wr.flush();
+            wr.close();
 
-			BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			Map<String, Object> jsonMap = EnhancedMap.fromJson(rd.readLine());
-			return new URL(URL + jsonMap.get("key"));
-		} finally {
-			if (connection != null) connection.disconnect();
-		}
-	}
+            BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            Map<String, Object> jsonMap = EnhancedMap.fromJson(rd.readLine());
+            return new URL(URL + jsonMap.get("key"));
+        } finally {
+            if (connection != null) connection.disconnect();
+        }
+    }
 }

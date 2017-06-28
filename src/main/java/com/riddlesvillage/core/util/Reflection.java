@@ -95,7 +95,8 @@ public final class Reflection {
 	 * @return  A field object with the specified name declared by the specified class
 	 * @see     Class#getDeclaredField(String)
 	 */
-	public synchronized static Field getField(Class<?> clazz, String name) {
+	public synchronized static Field getField(Class<?> clazz,
+											  String name) {
 		Map<String, Field> loaded;
 		if (!loadedFields.containsKey(clazz)) {
 			loaded = new HashMap<>();
@@ -146,7 +147,9 @@ public final class Reflection {
 	 *
 	 * @return  A method object with the specified name declared by the specified class
 	 */
-	public synchronized static Method getMethod(Class<?> clazz, String name, Class<?>... args) {
+	public synchronized static Method getMethod(Class<?> clazz,
+												String name,
+												Class<?>... args) {
 		if (!loadedMethods.containsKey(clazz)) {
 			loadedMethods.put(clazz, new HashMap<>());
 		}

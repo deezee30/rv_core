@@ -10,11 +10,12 @@ import com.riddlesvillage.core.Violation;
 
 public abstract class CorePlayerViolation extends Violation<CorePlayer> {
 
-	protected CorePlayerViolation(CorePlayer player, int toleration) {
-		super(player, toleration);
-	}
+    protected CorePlayerViolation(final CorePlayer player,
+                                  final int toleration) {
+        super(player, toleration);
+    }
 
-	public final CorePlayer getPlayer() {
-		return getTarget();
-	}
+    public final CorePlayer getPlayer() {
+        return getTarget();
+    }
 }

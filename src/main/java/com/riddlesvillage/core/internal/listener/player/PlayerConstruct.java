@@ -14,18 +14,18 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 final class PlayerConstruct implements Listener {
 
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onBlockPlace(BlockPlaceEvent event) {
-		Player bPlayer = event.getPlayer();
-		if (!CorePlayer.createIfAbsent(bPlayer).isConstructable()) {
-			event.setCancelled(true);
-		}
-	}
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Player bPlayer = event.getPlayer();
+        if (!CorePlayer.createIfAbsent(bPlayer).isConstructable()) {
+            event.setCancelled(true);
+        }
+    }
 
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onBlockBreak(BlockBreakEvent event) {
-		if (!CorePlayer.createIfAbsent(event.getPlayer()).isConstructable()) {
-			event.setCancelled(true);
-		}
-	}
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (!CorePlayer.createIfAbsent(event.getPlayer()).isConstructable()) {
+            event.setCancelled(true);
+        }
+    }
 }

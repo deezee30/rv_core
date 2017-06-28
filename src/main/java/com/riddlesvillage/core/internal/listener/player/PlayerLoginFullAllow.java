@@ -11,10 +11,10 @@ import org.bukkit.event.player.PlayerLoginEvent;
 
 final class PlayerLoginFullAllow implements Listener {
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerLogin(PlayerLoginEvent event) {
-		if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-			event.allow();
-		}
-	}
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            event.allow();
+        }
+    }
 }

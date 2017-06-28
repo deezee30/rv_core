@@ -15,10 +15,10 @@ public class SingleUpdateQuery<UpdateResult> extends Query<UpdateResult> {
      * @param newDocument     New Document to replace
      * @param doAfterOptional Consumer task to do after query is complete.
      */
-    public SingleUpdateQuery(MongoCollection<Document> collection,
-                             Bson searchQuery,
-                             Bson newDocument,
-                             SingleResultCallback<UpdateResult> doAfterOptional) {
+    public SingleUpdateQuery(final MongoCollection<Document> collection,
+                             final Bson searchQuery,
+                             final Bson newDocument,
+                             final SingleResultCallback<UpdateResult> doAfterOptional) {
         super(collection, searchQuery, doAfterOptional);
         this.newDocument = newDocument;
     }

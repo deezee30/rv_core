@@ -12,6 +12,7 @@ import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.file.FileUtil;
 import com.riddlesvillage.core.util.StringUtil;
 import com.riddlesvillage.core.world.region.type.RegionType;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -22,149 +23,159 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class RegionManager {
 
-	static final RegionManager INSTANCE = new RegionManager();
-	private static final int MIN_REGION_FILE_SIZE = 8;
-	private static final String REGION_FILE= Core.get().getDataFolder()
-			+ File.separator
-			+ "regions.json";
-	private final RegionList regions = new RegionList();
-	private boolean loaded = false;
+    static final RegionManager INSTANCE = new RegionManager();
+    private static final int MIN_REGION_FILE_SIZE = 8;
+    private static final String REGION_FILE= Core.get().getDataFolder()
+            + File.separator
+            + "regions.json";
+    private final RegionList regions = new RegionList();
+    private boolean loaded = false;
 
-	private RegionManager() {}
+    private RegionManager() {}
 
-	public Region register(Region region) throws RegionException {
-		return register(region, false);
-	}
+    public Region register(Region region) throws RegionException {
+        return register(region, false);
+    }
 
-	public Region register(Region region, boolean save) throws RegionException {
-		Regions.validateRegion(region);
+    public Region register(Region region, boolean save) throws RegionException {
+        Regions.validateRegion(region);
 
-		regions.add(region);
+        regions.add(region);
 
-		Messaging.debug(
-				"Registered %s region #%s: %s",
-				region.getType(),
-				regions.indexOf(region),
-				region
-		);
+        Messaging.debug(
+                "Registered %s region #%s: %s",
+                region.getType(),
+                regions.indexOf(region),
+                region
+        );
 
-		if (save) save(new File(REGION_FILE));
+        if (save) save(new File(REGION_FILE));
 
-		return region;
-	}
+        return region;
+    }
 
-	public RegionList register(RegionList regions) throws RegionException {
-		return register(regions, false);
-	}
+    public RegionList register(RegionList regions) throws RegionException {
+        return register(regions, false);
+    }
 
-	public RegionList register(RegionList regions, boolean save) throws RegionException {
-		for (Region reg : regions)
-			register(reg);
+    public RegionList register(RegionList regions, boolean save) throws RegionException {
+        for (Region reg : regions)
+            register(reg);
 
-		if (save) save(new File(REGION_FILE));
+        if (save) save(new File(REGION_FILE));
 
-		return regions;
-	}
+        return regions;
+    }
 
-	public RegionList load(File file) throws RegionLoadException {
-		RegionList loaded = new RegionList();
+    public boolean isRegistered(Region region) {
+        return regions.contains(region);
+    }
 
-		if (!file.exists()) {
-			throw new RegionLoadException("Did not load regions, file '%s' doesn't exist!", file);
-		}
+    public RegionList load(File file) throws RegionLoadException {
+        Validate.notNull(file);
+        RegionList loaded = new RegionList();
 
-		String content;
+        if (!file.exists()) {
+            throw new RegionLoadException("Did not load regions, file '%s' doesn't exist!", file);
+        }
 
-		try {
-			content = FileUtil.read(file);
-		} catch (IOException e) {
-			throw new RegionLoadException(e);
-		}
+        String content;
 
-		// size of file may depend on encoding, so check for a min possible region size
-		if (content == null || content.length() <= MIN_REGION_FILE_SIZE) return loaded;
+        try {
+            content = FileUtil.read(file);
+        } catch (IOException e) {
+            throw new RegionLoadException(e);
+        }
 
-		// regions seem to be ok
-		loaded.addAll(RegionList.fromJson(content));
+        // size of file may depend on encoding, so check for a min possible region size
+        if (content == null || content.length() <= MIN_REGION_FILE_SIZE) return loaded;
 
-		return loaded;
-	}
+        // regions seem to be ok
+        loaded.addAll(RegionList.fromJson(content));
 
-	public void save(File file) throws RegionException {
-		AtomicReference<Throwable> oops = new AtomicReference<>();
-		String json = regions.toJson();
+        return loaded;
+    }
 
-		// perform IO saves async
-		Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
-			if (!Messaging.debugIf(
-					!file.exists(),
-					"Did not save %s regions, file doesn't exist!",
-					regions.size())) {
+    public void save(File file) throws RegionException {
+        Validate.notNull(file);
+        AtomicReference<Throwable> oops = new AtomicReference<>();
+        String json = regions.toJson();
 
-				try {
-					FileUtil.write(file, json);
-				} catch (IOException e) {
-					oops.set(e);
-				}
+        // perform IO saves async
+        Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
+            if (!Messaging.debugIf(
+                    !file.exists(),
+                    "Did not save %s regions, file doesn't exist!",
+                    regions.size())) {
 
-				Messaging.debug("Saved %s regions", StringUtil.checkPlural("region", "regions", regions.size()));
-			}
-		});
+                try {
+                    FileUtil.write(file, json);
+                } catch (IOException e) {
+                    oops.set(e);
+                }
 
-		if (oops.get() != null) throw new RegionException(oops.get());
-	}
+                Messaging.debug(
+                        "Saved %s %s",
+                        regions.size(),
+                        StringUtil.checkPlural("region", "regions", regions.size())
+                );
+            }
+        });
 
-	public ImmutableList<Region> getRegions(RegionCriteria criteria) {
-		return criteria.in(regions).search().getImmutableElements();
-	}
+        if (oops.get() != null) throw new RegionException(oops.get());
+    }
 
-	public ImmutableList<Region> getRegions() {
-		return INSTANCE.regions.getImmutableElements();
-	}
+    public ImmutableList<Region> getRegions(RegionCriteria criteria) {
+        return criteria.searchIn(regions).getImmutableElements();
+    }
 
-	public int init() throws RegionLoadException {
-		// first of all, check if init has already been called
-		if (loaded) {
-			throw new RegionLoadException("Default regions have already been loaded");
-		}
+    public ImmutableList<Region> getRegions() {
+        return INSTANCE.regions.getImmutableElements();
+    }
 
-		// register all configuration serializables
-		for (RegionType type : RegionType.values()) {
-			Class<? extends ConfigurationSerializable> clazz = type.getDefaultClass();
-			if (clazz != null)	ConfigurationSerialization.registerClass(clazz);
-		}
+    public int init() throws RegionLoadException {
+        // first of all, check if init has already been called
+        if (loaded) {
+            throw new RegionLoadException("Default regions have already been loaded");
+        }
 
-		// default region file
-		File file = new File(REGION_FILE);
+        // register all configuration serializables
+        for (RegionType type : RegionType.values()) {
+            Class<? extends ConfigurationSerializable> clazz = type.getDefaultClass();
+            if (clazz != null)	ConfigurationSerialization.registerClass(clazz);
+        }
 
-		// if it doesn't exist, try create it and log
-		try {
-			Core.logIf(
-					!file.exists() && file.createNewFile(),
-					"Created new file '%s'",
-					REGION_FILE
-			);
-		} catch (IOException e) {
-			throw new RegionLoadException(e);
-		}
+        // default region file
+        File file = new File(REGION_FILE);
 
-		// load the regions from the file if possible
-		RegionList regions = load(file);
+        // if it doesn't exist, try create it and log
+        try {
+            Core.logIf(
+                    !file.exists() && file.createNewFile(),
+                    "Created new file '%s'",
+                    REGION_FILE
+            );
+        } catch (IOException e) {
+            throw new RegionLoadException(e);
+        }
 
-		// try register all regions
-		try {
-			register(regions);
-		} catch (RegionException e) {
-			throw new RegionLoadException(e);
-		}
+        // load the regions from the file if possible
+        RegionList regions = load(file);
 
-		// load complete
-		loaded = true;
+        // try register all regions
+        try {
+            register(regions);
+        } catch (RegionException e) {
+            throw new RegionLoadException(e);
+        }
 
-		return regions.size();
-	}
+        // load complete
+        loaded = true;
 
-	public boolean isLoaded() {
-		return loaded;
-	}
+        return regions.size();
+    }
+
+    public boolean isLoaded() {
+        return loaded;
+    }
 }

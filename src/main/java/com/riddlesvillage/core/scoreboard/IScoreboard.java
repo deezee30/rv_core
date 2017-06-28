@@ -12,15 +12,15 @@ import java.util.Map;
 
 public interface IScoreboard {
 
-	String getTitle();
+    String getTitle();
 
-	Map<String, Integer> getRows();
+    Map<String, Integer> getRows();
 
-	ScoreboardHolder getHolder();
+    ScoreboardHolder getHolder();
 
-	void update();
+    void update();
 
-	default int getMaxWidth() {
-		return Scoreboards.MAX_WIDTH;
-	}
+    default int getMaxWidth() {
+        return Scoreboards.MAX_WIDTH;
+    }
 }

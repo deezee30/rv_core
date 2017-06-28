@@ -46,8 +46,6 @@
                                     <include>org.mongodb:mongodb-driver-async</include>
                                     <include>org.mongodb:mongodb-driver-core</include>
                                     <include>org.mongodb:bson</include>
-                                    <include>redis.clients:jedis</include>
-                                    <include>com.comphenix.protocol:ProtocolLib-API</include>
                                 </includes>
                             </artifactSet>
                             <finalName>RiddlesCore</finalName>

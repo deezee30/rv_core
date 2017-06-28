@@ -5,11 +5,7 @@
 package com.riddlesvillage.core.util;
 
 import com.riddlesvillage.core.Core;
-import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -114,21 +110,5 @@ public final class MinecraftReflection {
 		}
 		loadedOBCClasses.put(className, clazz);
 		return clazz;
-	}
-
-	public static void sendPacket(Player p, Object packet) {
-		try {
-			Object nmsPlayer = Reflection.getHandle(p);
-			Field con_field = nmsPlayer.getClass().getField("playerConnection");
-			Object con = con_field.get(nmsPlayer);
-			Method packet_method = Reflection.getMethod(con.getClass(), "sendPacket", getNMSClass("Packet"));
-			packet_method.invoke(con, packet);
-		} catch (SecurityException
-				| IllegalArgumentException
-				| IllegalAccessException
-				| NoSuchFieldException
-				| InvocationTargetException e) {
-			e.printStackTrace();
-		}
 	}
 }

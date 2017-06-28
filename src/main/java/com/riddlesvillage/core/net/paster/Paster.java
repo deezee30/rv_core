@@ -13,43 +13,43 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class Paster extends TimedCallableTask<URL> {
 
-	private final String content;
+    private final String content;
 
-	protected Paster(String content) {
-		this.content = Validate.notNull(content);
-	}
+    protected Paster(final String content) {
+        this.content = Validate.notNull(content);
+    }
 
-	public final URL paste() throws PasteException {
-		ListenableFuture<URL> future = ServiceExecutor.getCachedExecutor().submit(this);
-		try {
-			return future.get();
-		} catch (InterruptedException | ExecutionException e) {
-			throw new PasteException(e);
-		}
-	}
+    public String getContent() {
+        return content;
+    }
 
-	@Override
-	public final URL call() throws Exception {
-		return executeAndThen(() -> Messaging.debug(
-				"Content pasted in %sms: %s",
-				getTimer().getTime(TimeUnit.MILLISECONDS),
-				getT()
-		));
-	}
+    public final URL paste() throws PasteException {
+        ListenableFuture<URL> future = ServiceExecutor.getCachedExecutor().submit(this);
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new PasteException(e);
+        }
+    }
 
-	protected final String getContent() {
-		return content;
-	}
+    @Override
+    public final URL call() throws Exception {
+        return executeAndThen(() -> Messaging.debug(
+                "Content pasted in %sms: %s",
+                getTimer().getTime(TimeUnit.MILLISECONDS),
+                getT()
+        ));
+    }
 
-	public static Gist gist(Map<String, String> files) {
-		return new Gist(files);
-	}
+    public static Gist gist(final Map<String, String> files) {
+        return new Gist(Validate.notNull(files));
+    }
 
-	public static Hastebin hastebin(String content) {
-		return new Hastebin(content);
-	}
+    public static Hastebin hastebin(String content) {
+        return new Hastebin(Validate.notNull(content));
+    }
 
-	public static Pastebin pastebin(String content) {
-		return new Pastebin(content);
-	}
+    public static Pastebin pastebin(String content) {
+        return new Pastebin(Validate.notNull(content));
+    }
 }

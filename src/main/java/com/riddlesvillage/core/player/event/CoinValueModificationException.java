@@ -10,24 +10,24 @@ import com.riddlesvillage.core.CoreException;
 
 public class CoinValueModificationException extends CoreException {
 
-	public CoinValueModificationException(String message,
-										   Object... components) {
-		super(message, components);
-	}
+    public CoinValueModificationException(String message,
+                                           Object... components) {
+        super(message, components);
+    }
 
-	public CoinValueModificationException(String message,
-										   Throwable cause) {
-		super(message, cause);
-	}
+    public CoinValueModificationException(String message,
+                                           Throwable cause) {
+        super(message, cause);
+    }
 
-	public CoinValueModificationException(Throwable cause) {
-		super(cause);
-	}
+    public CoinValueModificationException(Throwable cause) {
+        super(cause);
+    }
 
-	public CoinValueModificationException(String message,
-										   Throwable cause,
-										   boolean enableSuppression,
-										   boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
+    public CoinValueModificationException(String message,
+                                           Throwable cause,
+                                           boolean enableSuppression,
+                                           boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

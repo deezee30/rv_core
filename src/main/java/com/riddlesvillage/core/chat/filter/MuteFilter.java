@@ -12,18 +12,18 @@ import java.util.Optional;
 
 class MuteFilter implements ChatBlockFilter {
 
-	@Override
-	public boolean block(CorePlayer player, String message) {
-		return player.isMuted();
-	}
+    @Override
+    public boolean block(CorePlayer player, String message) {
+        return player.isMuted();
+    }
 
-	@Override
-	public Optional<String> getReason() {
-		return Optional.of("chat.mute.reminder");
-	}
+    @Override
+    public Optional<String> getReason() {
+        return Optional.of("chat.mute.reminder");
+    }
 
-	@Override
-	public boolean violate() {
-		return false;
-	}
+    @Override
+    public boolean violate() {
+        return false;
+    }
 }

@@ -2,107 +2,131 @@ package com.riddlesvillage.core.title;
 
 import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.player.CorePlayer;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 public final class Title implements ConfigurationSerializable {
 
-	static {
-		ConfigurationSerialization.registerClass(Title.class);
-	}
+    static {
+        ConfigurationSerialization.registerClass(Title.class);
+    }
 
-	private static final transient TitleHandler handler = new TitleHandler();
+    private static final transient TitleHandler handler = new TitleHandler();
 
-	private final boolean clear;
-	private Optional<TitleMessage> title = Optional.empty();
-	private Optional<TitleMessage> subTitle = Optional.empty();
+    private final boolean clear;
+    private Optional<TitleMessage> title = Optional.empty();
+    private Optional<TitleMessage> subTitle = Optional.empty();
 
-	Title(Optional<TitleMessage> title,
-		  Optional<TitleMessage> subTitle,
-		  boolean clear) {
-		this.title = title;
-		this.subTitle = subTitle;
-		this.clear = clear;
-	}
+    Title(Optional<TitleMessage> title,
+          Optional<TitleMessage> subTitle,
+          boolean clear) {
+        this.title = Validate.notNull(title);
+        this.subTitle = Validate.notNull(subTitle);
+        this.clear = clear;
+    }
 
-	public void send(Player... players) {
+    public void send(final Player... players) {
         for (Player player : players) {
             send(CorePlayer.createIfAbsent(player));
         }
     }
 
-	public void send(CorePlayer... players) {
-		if (clear) {
-			handler.send(handler.buildClearPacket(), players);
-			return;
-		}
+    public void send(final CorePlayer... players) {
+        if (clear) {
+            handler.send(handler.buildClearPacket(), players);
+            return;
+        }
 
-		if (title.isPresent()) {
-			TitleMessage title = this.title.get();
-			handler.handleTitleSendPacket(title, players);
-		}
+        if (title.isPresent()) {
+            TitleMessage title = this.title.get();
+            handler.handleTitleSendPacket(title, players);
+        }
 
-		if (subTitle.isPresent()) {
-			TitleMessage subTitle = this.subTitle.get();
-			handler.handleTitleSendPacket(subTitle, players);
-		}
-	}
+        if (subTitle.isPresent()) {
+            TitleMessage subTitle = this.subTitle.get();
+            handler.handleTitleSendPacket(subTitle, players);
+        }
+    }
 
-	@Override
-	public Map<String, Object> serialize() {
-		EnhancedMap<String, Object> map = new EnhancedMap<>();
+    public boolean isClear() {
+        return clear;
+    }
 
-		map.put("clear", clear);
-		map.putIf(title.isPresent(), "title", title.get());
-		map.putIf(subTitle.isPresent(), "subTitle", subTitle.get());
+    public Optional<TitleMessage> getTitle() {
+        return title;
+    }
 
-		return map;
-	}
+    public Optional<TitleMessage> getSubTitle() {
+        return subTitle;
+    }
 
-	public static Title deserialize(Map<String, Object> data) {
-		Optional<TitleMessage> title = Optional.empty();
-		Optional<TitleMessage> subTitle = Optional.empty();
-		boolean clear = false;
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("clear", clear)
+                .append("title", title)
+                .append("subTitle", subTitle)
+                .toString();
+    }
 
-		if (data.containsKey("title"))
-			title = Optional.of((TitleMessage) data.get("title"));
-		if (data.containsKey("subTitle"))
-			subTitle = Optional.of((TitleMessage) data.get("subTitle"));
-		clear = (boolean) data.get("clear");
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
 
-		return new Title(title, subTitle, clear);
-	}
+        if (o == null || getClass() != o.getClass()) return false;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Title that = (Title) o;
-		return Objects.equals(clear, that.clear) &&
-				Objects.equals(title, that.title) &&
-				Objects.equals(subTitle, that.subTitle);
-	}
+        Title title1 = (Title) o;
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(title, subTitle, clear);
-	}
+        return new EqualsBuilder()
+                .append(clear, title1.clear)
+                .append(title, title1.title)
+                .append(subTitle, title1.subTitle)
+                .isEquals();
+    }
 
-	@Override
-	public String toString() {
-		return "Title{" +
-				"title=" + title +
-				", subTitle=" + subTitle +
-				", clear=" + clear +
-				'}';
-	}
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(clear)
+                .append(title)
+                .append(subTitle)
+                .toHashCode();
+    }
 
-	public static TitleBuilder builder() {
-		return new TitleBuilder();
-	}
+    @Override
+    public Map<String, Object> serialize() {
+        EnhancedMap<String, Object> map = new EnhancedMap<>();
+
+        map.put("clear", clear);
+        map.putIf(title.isPresent(), "title", title.get());
+        map.putIf(subTitle.isPresent(), "subTitle", subTitle.get());
+
+        return map;
+    }
+
+    public static Title deserialize(final Map<String, Object> data) {
+        Optional<TitleMessage> title = Optional.empty();
+        Optional<TitleMessage> subTitle = Optional.empty();
+        boolean clear;
+
+        if (data.containsKey("title"))
+            title = Optional.of((TitleMessage) data.get("title"));
+        if (data.containsKey("subTitle"))
+            subTitle = Optional.of((TitleMessage) data.get("subTitle"));
+        clear = (boolean) data.get("clear");
+
+        return new Title(title, subTitle, clear);
+    }
+
+    public static TitleBuilder builder() {
+        return new TitleBuilder();
+    }
 }

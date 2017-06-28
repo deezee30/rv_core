@@ -12,10 +12,10 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 final class PlayerFoodChange implements Listener {
 
-	@EventHandler (priority = EventPriority.HIGH)
-	public void onFoodChange(FoodLevelChangeEvent event) {
-		if (!CorePlayerManager.getInstance().get(event).canGetHungry()) {
-			event.setCancelled(true);
-		}
-	}
+    @EventHandler (priority = EventPriority.HIGH)
+    public void onFoodChange(FoodLevelChangeEvent event) {
+        if (!CorePlayerManager.getInstance().get(event).canGetHungry()) {
+            event.setCancelled(true);
+        }
+    }
 }

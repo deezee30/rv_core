@@ -23,13 +23,13 @@ public class RiddlesWorld {
         if (Validate.notNull(worldFile).exists()) {
 
             File files[] = worldFile.listFiles();
-			for (File file : files) {
-				if (file.isDirectory()) {
-					deleteWorld(file);
-				} else {
-					file.delete();
-				}
-			}
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteWorld(file);
+                } else {
+                    file.delete();
+                }
+            }
 
             isLoaded = false;
         }

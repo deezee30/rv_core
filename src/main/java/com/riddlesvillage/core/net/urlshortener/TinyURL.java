@@ -3,6 +3,7 @@ package com.riddlesvillage.core.net.urlshortener;
 import com.google.common.base.Strings;
 import com.riddlesvillage.core.net.WebUtil;
 import com.riddlesvillage.core.net.http.HttpRequest;
+import org.apache.commons.lang3.Validate;
 
 import java.net.URL;
 
@@ -12,12 +13,12 @@ public final class TinyURL extends URLShortener {
 
 	private String alias;
 
-	TinyURL(String longUrl) {
+	TinyURL(final String longUrl) {
 		super(longUrl);
 	}
 
-	public void setAlias(String alias) {
-		this.alias = alias;
+	public void setAlias(final String alias) {
+		this.alias = Validate.notNull(alias);
 	}
 
 	@Override

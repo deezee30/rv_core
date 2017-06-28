@@ -8,45 +8,46 @@ package com.riddlesvillage.core.database.data;
 
 public enum DataOperator {
 
-	//Increase whats current in database.
-	$INC(0, "$inc"),
+    //Increase whats current in database.
+    $INC(0, "$inc"),
 
-	//Multiply by current in database.
-	$MUL(1, "$mul"),
+    //Multiply by current in database.
+    $MUL(1, "$mul"),
 
-	//Push into an arraylist
-	$PUSH(2, "$push"),
+    //Push into an arraylist
+    $PUSH(2, "$push"),
 
-	//Set a field.
-	$SET(3, "$set"),
+    //Set a field.
+    $SET(3, "$set"),
 
-	//Remove from an ArrayList
-	$PULL(4, "$pull"),
+    //Remove from an ArrayList
+    $PULL(4, "$pull"),
 
-	//remove from a document
-	$UNSET(5, "$unset"),
+    //remove from a document
+    $UNSET(5, "$unset"),
 
-	//remove from a document
-	$POP(6, "$pop");
+    //remove from a document
+    $POP(6, "$pop");
 
-	private int id;
-	private String operator;
+    private int id;
+    private String operator;
 
-	DataOperator(int id, String operator) {
-		this.id = id;
-		this.operator = operator;
-	}
+    DataOperator(final int id,
+                 final String operator) {
+        this.id = id;
+        this.operator = operator;
+    }
 
-	public int getId() {
-		return id;
-	}
+    @Override
+    public String toString() {
+        return operator;
+    }
 
-	public String getOperator() {
-		return operator;
-	}
+    public int getId() {
+        return id;
+    }
 
-	@Override
-	public String toString() {
-		return operator;
-	}
+    public String getOperator() {
+        return operator;
+    }
 }

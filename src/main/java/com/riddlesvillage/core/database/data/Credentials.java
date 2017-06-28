@@ -8,81 +8,98 @@ package com.riddlesvillage.core.database.data;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.Map;
 
 public final class Credentials implements ConfigurationSerializable {
 
-	private final String address;
-	private final String database;
-	private final String user;
-	private final String pass;
-	private final int port;
+    private final String address;
+    private final String database;
+    private final String user;
+    private final String pass;
 
-	public Credentials(String address,
-					   String database,
-					   String user,
-					   String pass,
-					   int port) {
-		this.address  = Validate.notNull(address);
-		this.database = Validate.notNull(database);
-		this.user = Validate.notNull(user);
-		this.pass = Validate.notNull(pass);
-		this.port = Validate.notNull(port);
-	}
+    public Credentials(final String address,
+                       final String database,
+                       final String user,
+                       final String pass) {
+        this.address  = Validate.notNull(address);
+        this.database = Validate.notNull(database);
+        this.user = Validate.notNull(user);
+        this.pass = Validate.notNull(pass);
+    }
 
-	public Credentials(Map<String, Object> data) {
-		this(
-				(String) data.get("address"),
-				(String) data.get("database"),
-				(String) data.get("username"),
-				(String) data.get("password"),
-				(Integer) data.get("port")
-		);
-	}
+    public Credentials(final Map<String, Object> data) {
+        this(
+                (String) data.get("address"),
+                (String) data.get("database"),
+                (String) data.get("username"),
+                (String) data.get("password")
+        );
+    }
 
-	/**
-	 * @return	The address including the hostname and port (and perhaps properties) of the
-	 * 			database server.
-	 */
-	public synchronized String getAddress() {
-		return address;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	/**
-	 * @return The database name of the database server.
-	 */
-	public synchronized String getDatabase() {
-		return database;
-	}
+    public String getDatabase() {
+        return database;
+    }
 
-	/**
-	 * @return The username of the database server.
-	 */
-	public synchronized String getUser() {
-		return user;
-	}
+    public String getUser() {
+        return user;
+    }
 
-	public int getPort() {
-		return port;
-	}
+    public String getPass() {
+        return pass;
+    }
 
-	/**
-	 * @return The password of the database server.
-	 */
-	public synchronized String getPass() {
-		return pass;
-	}
+    @Override
+    public Map<String, Object> serialize() {
+        return new ImmutableMap.Builder<String, Object>()
+                .put("address", address)
+                .put("database", database)
+                .put("username", user)
+                .put("password", pass)
+                .build();
+    }
 
-	@Override
-	public Map<String, Object> serialize() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put("address",		address)
-				.put("database", 	database)
-				.put("username",	user)
-				.put("password",	pass)
-				.put("port",	port)
-				.build();
-	}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("address", address)
+                .append("database", database)
+                .append("user", user)
+                .append("pass", pass)
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Credentials that = (Credentials) o;
+
+        return new EqualsBuilder()
+                .append(address, that.address)
+                .append(database, that.database)
+                .append(user, that.user)
+                .append(pass, that.pass)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(address)
+                .append(database)
+                .append(user)
+                .append(pass)
+                .toHashCode();
+    }
 }

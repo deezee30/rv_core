@@ -17,52 +17,60 @@ import java.util.Optional;
 
 public class FlagMap extends EnhancedMap<Flag, Boolean> implements ConfigurationSerializable {
 
-	public FlagMap() {}
+    public FlagMap() {}
 
-	public FlagMap(int initialCapacity, float loadFactor) {
-		super(initialCapacity, loadFactor);
-	}
+    public FlagMap(Flag flag, boolean bool) {
+        this(1);
+        put(flag, bool);
+    }
 
-	public FlagMap(int initialCapacity) {
-		super(initialCapacity);
-	}
+    public FlagMap(final int initialCapacity,
+                   final float loadFactor) {
+        super(initialCapacity, loadFactor);
+    }
 
-	public FlagMap(Map<? extends Flag, Boolean> m) {
-		super(m);
-	}
+    public FlagMap(final int initialCapacity) {
+        super(initialCapacity);
+    }
 
-	public FlagMap(int initialCapacity, float loadFactor, boolean accessOrder) {
-		super(initialCapacity, loadFactor, accessOrder);
-	}
+    public FlagMap(final Map<Flag, Boolean> m) {
+        super(m);
+    }
 
-	public boolean isAllowed(Flag flag) {
-		Boolean val = get(flag);
-		return val == null ? true : val;
-	}
+    public FlagMap(final int initialCapacity,
+                   final float loadFactor,
+                   final boolean accessOrder) {
+        super(initialCapacity, loadFactor, accessOrder);
+    }
 
-	@Override
-	public Gson getGson() {
-		return Regions.REGION_GSON;
-	}
+    public boolean isAllowed(final Flag flag) {
+        Boolean val = get(flag);
+        return val == null ? true : val;
+    }
 
-	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> map = Maps.newHashMap();
-		for (Map.Entry<Flag, Boolean> entry : entrySet())
-			map.put(entry.getKey().flag, entry.getValue());
-		return map;
-	}
+    @Override
+    public Gson getGson() {
+        return Regions.REGION_GSON;
+    }
 
-	public static FlagMap deserialize(Map<String, Object> data) {
-		FlagMap map = new FlagMap();
-		for (Map.Entry<String, Object> entry : data.entrySet()) {
-			Optional<Flag> flag = Flag.from(entry.getKey());
-			map.putIf(flag.isPresent(), flag.get(), (boolean) entry.getValue());
-		}
-		return map;
-	}
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = Maps.newHashMap();
+        for (Map.Entry<Flag, Boolean> entry : entrySet())
+            map.put(entry.getKey().flag, entry.getValue());
+        return map;
+    }
 
-	public static FlagMap fromJson(String json) {
-		return Regions.REGION_GSON.fromJson(json, FlagMap.class);
-	}
+    public static FlagMap deserialize(final Map<String, Object> data) {
+        FlagMap map = new FlagMap();
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+            Optional<Flag> flag = Flag.from(entry.getKey());
+            map.putIf(flag.isPresent(), flag.get(), (boolean) entry.getValue());
+        }
+        return map;
+    }
+
+    public static FlagMap fromJson(final String json) {
+        return Regions.REGION_GSON.fromJson(json, FlagMap.class);
+    }
 }

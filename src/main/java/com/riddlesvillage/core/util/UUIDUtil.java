@@ -24,7 +24,7 @@ public final class UUIDUtil {
 	 * @return  The String version of {@param id}.
 	 * @see     UUID
 	 */
-	public static synchronized String fromUuid(UUID id) {
+	public static synchronized String fromUuid(final UUID id) {
 		return fromUuid(String.valueOf(id));
 	}
 
@@ -36,7 +36,7 @@ public final class UUIDUtil {
 	 *
 	 * @return  The String version of {@param id}.
 	 */
-	public static synchronized String fromUuid(String id) {
+	public static synchronized String fromUuid(final String id) {
 		return id.replaceAll("-", "");
 	}
 
@@ -50,7 +50,7 @@ public final class UUIDUtil {
 	 * @return  A new instance of {@link UUID}.
 	 * @see     UUID#fromString(String)
 	 */
-	public static synchronized UUID fromString(String id) {
+	public static synchronized UUID fromString(final String id) {
 		return UUID.fromString(id.length() == 32 ?
 				id.substring(0, 8) + "-" +
 				id.substring(8, 12) + "-" +
@@ -69,7 +69,7 @@ public final class UUIDUtil {
 	 * @return  True if it meets the requirements of a UUID.
 	 * @see     UUID
 	 */
-	public static synchronized boolean isUuid(String str) {
+	public static synchronized boolean isUuid(final String str) {
 
 		// Check if str is natively in the form of a real UUID
 		try {
@@ -105,7 +105,7 @@ public final class UUIDUtil {
 	 * @see     #isUuid(String)
 	 * @see     #fromString(String)
 	 */
-	public static synchronized String checkForValidUuid(Object obj) {
+	public static synchronized String checkForValidUuid(final Object obj) {
 		String str = String.valueOf(obj);
 		return isUuid(str) ? str.length() == 32 ? fromString(str).toString() : str : str;
 	}

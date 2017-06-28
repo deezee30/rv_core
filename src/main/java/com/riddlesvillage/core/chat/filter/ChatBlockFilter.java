@@ -10,11 +10,32 @@ import com.riddlesvillage.core.player.CorePlayer;
 
 import java.util.Optional;
 
+/**
+ * The interface Chat block filter.
+ */
 public interface ChatBlockFilter {
 
-	boolean block(CorePlayer player, String message);
+    /**
+     * Whether or not the message should be filtered out.
+     *
+     * @param player  the player that sent the message
+     * @param message the message
+     * @return {@code true} if message should be filtered
+     */
+    boolean block(final CorePlayer player, final String message);
 
-	Optional<String> getReason();
+    /**
+     * The reason why the message is blocked
+     *
+     * <p>Supports locales</p>
+     *
+     * @return an optional reason why the message is blocked
+     */
+    Optional<String> getReason();
 
-	boolean violate();
+    /**
+     * @return Whether or not this filter causes a violation
+     * on the player's part
+     */
+    boolean violate();
 }

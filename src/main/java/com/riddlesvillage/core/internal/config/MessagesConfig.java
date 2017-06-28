@@ -16,32 +16,32 @@ import java.io.File;
 
 public final class MessagesConfig {
 
-	private static final Core PLUGIN_INSTANCE = Core.get();
-	private static final CoreSettings SETTINGS = Core.getSettings();
+    private static final Core PLUGIN_INSTANCE = Core.get();
+    private static final CoreSettings SETTINGS = Core.getSettings();
 
-	static {
-		String defaultLocale = SETTINGS.getDefaultLocale();
+    static {
+        String defaultLocale = SETTINGS.getDefaultLocale();
 
-		ConfigFile.check(
-				new File(String.format(
-						"%s%slocale",
-						PLUGIN_INSTANCE.getDataFolder().getPath(),
-						File.separator
-				), defaultLocale + ".yml"),
-				PLUGIN_INSTANCE.getResource("locale/" + defaultLocale + ".yml") // locale/english.yml
-		);
+        ConfigFile.check(
+                new File(String.format(
+                        "%s%slocale",
+                        PLUGIN_INSTANCE.getDataFolder().getPath(),
+                        File.separator
+                ), defaultLocale + ".yml"),
+                PLUGIN_INSTANCE.getResource("locale/" + defaultLocale + ".yml") // locale/english.yml
+        );
 
-		SETTINGS.findAndRegisterLocales(PLUGIN_INSTANCE);
+        SETTINGS.findAndRegisterLocales(PLUGIN_INSTANCE);
 
-		Messaging.setNoPrefixChar((char) 126);
-		Messaging.setPrefix(
-				ChatColor.translateAlternateColorCodes('&', SETTINGS.get("chat.prefix"))
-		);
+        Messaging.setNoPrefixChar((char) 126);
+        Messaging.setPrefix(
+                ChatColor.translateAlternateColorCodes('&', SETTINGS.get("chat.prefix"))
+        );
 
-		Messaging.setOutput(new ConsoleOutput(Bukkit.getConsoleSender()));
+        Messaging.setOutput(new ConsoleOutput(Bukkit.getConsoleSender()));
 
-		SETTINGS.tryPasteLocales();
-	}
+        SETTINGS.tryPasteLocales();
+    }
 
-	private MessagesConfig() {}
+    private MessagesConfig() {}
 }

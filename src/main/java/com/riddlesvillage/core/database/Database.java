@@ -4,10 +4,11 @@ import com.google.common.collect.Lists;
 import com.mongodb.ServerAddress;
 import com.mongodb.async.client.*;
 import com.mongodb.connection.ClusterSettings;
-import com.riddlesvillage.core.CoreException;
 import com.riddlesvillage.core.Core;
+import com.riddlesvillage.core.CoreException;
 import com.riddlesvillage.core.database.data.Credentials;
 import com.riddlesvillage.core.database.data.RankCodec;
+import org.apache.commons.lang3.Validate;
 import org.bson.Document;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -20,34 +21,35 @@ import java.util.stream.IntStream;
 
 public final class Database implements Closeable {
 
-	public static MongoClient client;
-	public static MongoDatabase database = null;
+    public static MongoClient client;
+    public static MongoDatabase database = null;
 
-	private static MongoCollection<Document> playerData;
+    private static MongoCollection<Document> playerData;
     private static Database INSTANCE = new Database();
 
-	private static final Codec<?>[] CODECS = new Codec[] {
-			new RankCodec()
-	};
+    private static final Codec<?>[] CODECS = new Codec[] {
+            new RankCodec()
+    };
 
-	private static final CodecRegistry REGISTRY = CodecRegistries.fromRegistries(
-			MongoClients.getDefaultCodecRegistry(),
-			CodecRegistries.fromCodecs(CODECS)
-	);
+    private static final CodecRegistry REGISTRY = CodecRegistries.fromRegistries(
+            MongoClients.getDefaultCodecRegistry(),
+            CodecRegistries.fromCodecs(CODECS)
+    );
 
     private Database() {}
 
-    public void init(Credentials credentials) throws CoreException {
+    public void init(final Credentials credentials) throws CoreException {
+        Validate.notNull(credentials);
         if (client != null) throw new CoreException("Database connection already established");
 
         Core.log("Database connection pool is being created...");
 
         client = MongoClients.create(MongoClientSettings.builder()
-				.codecRegistry(REGISTRY)
-				.clusterSettings(ClusterSettings.builder()
-								.hosts(Collections.singletonList(new ServerAddress(credentials.getAddress(), credentials.getPort())))
-								.build()
-				).build());
+                .codecRegistry(REGISTRY)
+                .clusterSettings(ClusterSettings.builder()
+                                .hosts(Collections.singletonList(new ServerAddress(credentials.getAddress())))
+                                .build()
+                ).build());
 
         database = client.getDatabase("riddlesvillage");
         playerData = database.getCollection("player_data");

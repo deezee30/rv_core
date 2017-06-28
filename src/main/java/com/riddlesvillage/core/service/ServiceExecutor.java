@@ -9,25 +9,25 @@ import java.util.concurrent.ThreadFactory;
 
 public final class ServiceExecutor {
 
-	// Used by pasters and url shorteners
-	// Will never be shut down as it will be reused
-	private static final ListeningExecutorService executor = newAsyncExecutor();
+    // Used by pasters and url shorteners
+    // Will never be shut down as it will be reused
+    private static final ListeningExecutorService executor = newAsyncExecutor();
 
-	private ServiceExecutor() {}
+    private ServiceExecutor() {}
 
-	public static ListeningExecutorService getCachedExecutor() {
-		return executor;
-	}
+    public static ListeningExecutorService getCachedExecutor() {
+        return executor;
+    }
 
-	public static ListeningExecutorService newAsyncExecutor() {
-		return MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
-	}
+    public static ListeningExecutorService newAsyncExecutor() {
+        return MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
+    }
 
-	public static ListeningExecutorService newAsyncExecutor(ThreadFactory tf) {
-		return MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1, tf));
-	}
+    public static ListeningExecutorService newAsyncExecutor(final ThreadFactory tf) {
+        return MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1, tf));
+    }
 
-	public static ListeningExecutorService newAsyncExecutor(String name) {
-		return newAsyncExecutor(new ThreadFactoryBuilder().setNameFormat(name + "-%d").build());
-	}
+    public static ListeningExecutorService newAsyncExecutor(final String name) {
+        return newAsyncExecutor(new ThreadFactoryBuilder().setNameFormat(name + "-%d").build());
+    }
 }

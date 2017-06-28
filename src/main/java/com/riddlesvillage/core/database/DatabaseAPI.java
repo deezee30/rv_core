@@ -9,7 +9,7 @@ import com.mongodb.client.model.WriteModel;
 import com.mongodb.client.result.UpdateResult;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecConfigurationException;
 
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@SuppressWarnings("unchecked")
 public class DatabaseAPI {
 
     /**
@@ -26,80 +25,83 @@ public class DatabaseAPI {
      *                        specify extra actions after the update query is
      *                        completed. doAfterOptional is executed async.
      */
-    public static void bulkWrite(MongoCollection<Document> collection,
-								 List<WriteModel<Document>> operations,
-								 SingleResultCallback<BulkWriteResult> doAfterOptional) {
-		Validate.notNull(collection);
-		Validate.notNull(operations);
+    public static void bulkWrite(final MongoCollection<Document> collection,
+                                 final List<WriteModel<Document>> operations,
+                                 final SingleResultCallback<BulkWriteResult> doAfterOptional) {
+        Validate.notNull(collection);
+        Validate.notNull(operations);
 
-		collection.bulkWrite(operations, doAfterOptional);
+        collection.bulkWrite(operations, doAfterOptional);
     }
 
-    public static void update(MongoCollection<Document> collection,
-							  UUID uuid,
-							  DataOperator operator,
-							  StatType variable,
-							  Object object,
-							  SingleResultCallback<UpdateResult> doAfterOptional) {
-		Validate.notNull(collection);
-		Validate.notNull(uuid);
-		Validate.notNull(operator);
-		Validate.notNull(variable);
+    public static void update(final MongoCollection<Document> collection,
+                              final UUID uuid,
+                              final DataOperator operator,
+                              final StatType variable,
+                              final Object object,
+                              final SingleResultCallback<UpdateResult> doAfterOptional) {
+        Validate.notNull(collection);
+        Validate.notNull(uuid);
+        Validate.notNull(operator);
+        Validate.notNull(variable);
 
-		collection.updateOne(
-				Filters.eq(DataInfo.UUID.getStat(), uuid.toString()),
-				new Document(operator.getOperator(), new Document(
-						variable.getStat(),
-						checkForCodec(object)
-				)), doAfterOptional
-		);
+        collection.updateOne(
+                Filters.eq(DataInfo.UUID.getStat(), uuid.toString()),
+                new Document(operator.getOperator(), new Document(
+                        variable.getStat(),
+                        checkForCodec(object)
+                )), doAfterOptional
+        );
     }
 
-    public static <Obj> Obj getData(Document document, StatType data, Class<Obj> clazz) {
-        return clazz.cast(document.get(data.getStat()));
+    public static void retrieveCoreDataFromUuid(final UUID uuid,
+                                                final SingleResultCallback<Document> doAfter) {
+        retrieveDocument(Database.getMainCollection(), DataInfo.UUID, Validate.notNull(uuid), doAfter);
     }
 
-    public static void retrieveCoreDataFromUuid(UUID uuid, SingleResultCallback<Document> doAfter) {
-        retrieveDocument(Database.getMainCollection(), DataInfo.UUID, uuid, doAfter);
+    public static void retrieveCoreDataFromName(final String username,
+                                                final SingleResultCallback<Document> doAfter) {
+        retrieveDocument(Database.getMainCollection(), DataInfo.NAME, Validate.notNull(username), doAfter);
     }
 
-    public static void retrieveCoreDataFromName(String username, SingleResultCallback<Document> doAfter) {
-        retrieveDocument(Database.getMainCollection(), DataInfo.NAME, username, doAfter);
-    }
-
-    public static void retrieveDocument(MongoCollection<Document> collection,
-										StatType stat,
-										Object value,
-										SingleResultCallback<Document> doAfter) {
+    public static void retrieveDocument(final MongoCollection<Document> collection,
+                                        final StatType stat,
+                                        final Object value,
+                                        final SingleResultCallback<Document> doAfter) {
         Validate.notNull(collection);
         Validate.notNull(stat);
 
-		collection.find(Filters.eq(stat.getStat(), checkForCodec(value))).first(doAfter);
-	}
+        collection.find(Filters.eq(stat.getStat(), checkForCodec(value))).first(doAfter);
+    }
 
-    public static void insertNew(MongoCollection<Document> collection,
-                                 Map<String, Object> map,
-                                 SingleResultCallback<Void> callback) {
+    public static void insertNew(final MongoCollection<Document> collection,
+                                 final Map<String, Object> map,
+                                 final SingleResultCallback<Void> callback) {
+        Validate.notNull(collection);
+        Validate.notNull(map);
+
         Document insert = new Document();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             insert.append(entry.getKey(), checkForCodec(entry.getValue()));
         }
 
-		collection.insertOne(insert, callback);
+        collection.insertOne(insert, callback);
     }
 
-	private static Object checkForCodec(Object obj) {
-		if (obj == null) return null;
-		// we don't want mongodb driver to convert uuid to binary 0x03
-		if (obj instanceof UUID) return obj.toString();
-		try {
-			// check if there is a codec for object
-			MongoClients.getDefaultCodecRegistry().get(obj.getClass());
-		} catch (CodecConfigurationException ignored) {
-			// if not, simply return as String
-			return String.valueOf(obj);
-		}
+    private static Object checkForCodec(final Object obj) {
+        if (obj == null) return null;
 
-		return obj;
-	}
+        // we don't want mongodb driver to convert uuid to binary 0x03
+        if (obj instanceof UUID) return obj.toString();
+
+        try {
+            // check if there is a codec for object
+            MongoClients.getDefaultCodecRegistry().get(obj.getClass());
+        } catch (CodecConfigurationException ignored) {
+            // if not, simply return as String
+            return String.valueOf(obj);
+        }
+
+        return obj;
+    }
 }

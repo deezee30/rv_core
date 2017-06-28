@@ -7,59 +7,73 @@
 package com.riddlesvillage.core.database.value;
 
 import com.riddlesvillage.core.util.MathUtil;
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 
 public final class Value<O> implements Cloneable, Serializable {
 
-	private static final long serialVersionUID = 35271921742643526L;
+    private static final long serialVersionUID = 35271921742643526L;
 
-	private final O value;
-	private final ValueType type;
+    private final O value;
+    private final ValueType type;
 
-	public Value(O value,
-				 ValueType type) {
-		this.value = Validate.notNull(value);
-		this.type = Validate.notNull(type);
-	}
+    public Value(final O value,
+                 final ValueType type) {
+        this.value = value;
+        this.type = type;
+    }
 
-	public boolean isInteger() {
-		return MathUtil.isInteger(String.valueOf(value));
-	}
+    public boolean isInteger() {
+        return MathUtil.isInteger(String.valueOf(value));
+    }
 
+    public ValueType getType() {
+        return type;
+    }
 
-	public ValueType getType() {
-		return type;
-	}
+    public O getValue() {
+        return value;
+    }
 
+    public int appendTo(final int append) {
+        if (!isInteger()) throw new IllegalStateException("Value " + value + " is not an integer");
 
-	public O getValue() {
-		return value;
-	}
+        return type.equals(ValueType.SET) ? append
+                : Integer.valueOf(value.toString())
+                + (type.equals(ValueType.GIVE) ? append : -append);
+    }
 
-	public int appendTo(int append) {
-		if (!isInteger()) throw new IllegalStateException("Value " + value + " is not an integer");
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 
-		return type.equals(ValueType.SET) ? append
-				: Integer.valueOf(value.toString())
-				+ (type.equals(ValueType.GIVE) ? append : -append);
-	}
+    @Override
+    public Value<O> clone() {
+        return new Value<>(value, type);
+    }
 
-	@Override
-	public String toString() {
-		return value.toString();
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
 
-	@Override
-	public Value<O> clone() {
-		return new Value<>(value, type);
-	}
+        if (o == null || getClass() != o.getClass()) return false;
 
-	@Override
-	public boolean equals(Object other) {
-		return other instanceof Value
-				&& value.equals(((Value) other).value)
-				&& type.equals(((Value) other).type);
-	}
+        Value<?> value1 = (Value<?>) o;
+
+        return new EqualsBuilder()
+                .append(value, value1.value)
+                .append(type, value1.type)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(value)
+                .append(type)
+                .toHashCode();
+    }
 }

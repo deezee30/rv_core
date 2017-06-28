@@ -1,6 +1,7 @@
 package com.riddlesvillage.core.fanciful;
 
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import javax.annotation.concurrent.Immutable;
@@ -16,32 +17,38 @@ import java.util.Map;
 @Immutable
 final class JsonString implements JsonRepresentedObject, ConfigurationSerializable {
 
-	private String _value;
-	
-	public JsonString(String value){
-		_value = value;
-	}
-	
-	public void writeJson(JsonWriter writer) throws IOException {
-		writer.value(getValue());
-	}
-	
-	public String getValue(){
-		return _value;
-	}
+    private final String value;
 
-	public Map<String, Object> serialize() {
-		HashMap<String, Object> theSingleValue = new HashMap<>();
-		theSingleValue.put("stringValue", _value);
-		return theSingleValue;
-	}
-	
-	public static JsonString deserialize(Map<String, Object> map){
-		return new JsonString(map.get("stringValue").toString());
-	}
-	
-	@Override
-	public String toString(){
-		return _value;
-	}
+    public JsonString(String value){
+        this.value = value;
+    }
+
+    @Override
+    public void writeJson(final JsonWriter writer) throws IOException {
+        Validate.notNull(writer);
+        writer.value(getValue());
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        HashMap<String, Object> theSingleValue = new HashMap<>();
+        theSingleValue.put("stringValue", value);
+        return theSingleValue;
+    }
+
+    public static JsonString deserialize(final Map<String, Object> map) {
+        Validate.notNull(map);
+        return new JsonString(map.get("stringValue").toString());
+    }
+
+    @Override
+    public String toString(){
+        return value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+
 }

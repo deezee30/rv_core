@@ -8,26 +8,27 @@ package com.riddlesvillage.core.player.manager;
 
 import com.riddlesvillage.core.chat.ChatViolation;
 import com.riddlesvillage.core.player.CorePlayer;
+import org.apache.commons.lang3.Validate;
 
 public final class ViolationManager {
 
-	private final CorePlayer player;
-	private final ChatViolation chatViolation;
+    private final CorePlayer player;
+    private final ChatViolation chatViolation;
 
-	public ViolationManager(CorePlayer player) {
-		this.player = player;
-		chatViolation = new ChatViolation(player);
-	}
+    public ViolationManager(final CorePlayer player) {
+        this.player = Validate.notNull(player);
+        chatViolation = new ChatViolation(player);
+    }
 
-	public CorePlayer getPlayer() {
-		return player;
-	}
+    public void destroy() {
+        chatViolation.cancel();
+    }
 
-	public ChatViolation getChatViolation() {
-		return chatViolation;
-	}
+    public CorePlayer getPlayer() {
+        return player;
+    }
 
-	public void destroy() {
-		chatViolation.cancel();
-	}
+    public ChatViolation getChatViolation() {
+        return chatViolation;
+    }
 }

@@ -24,73 +24,73 @@ import java.util.Map;
 
 public final class ScoreboardBuilder {
 
-	private Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-	private EnhancedList<Team> teams = new EnhancedList<>();
+    private Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+    private EnhancedList<Team> teams = new EnhancedList<>();
 
-	private final EnhancedMap<String, Integer> scores = new EnhancedMap<>();
-	private final String title;
+    private final EnhancedMap<String, Integer> scores = new EnhancedMap<>();
+    private final String title;
 
-	public ScoreboardBuilder(String title, Map<String, Integer> scores) {
-		this(title, scores, Scoreboards.MAX_WIDTH);
-	}
+    public ScoreboardBuilder(String title, Map<String, Integer> scores) {
+        this(title, scores, Scoreboards.MAX_WIDTH);
+    }
 
-	public ScoreboardBuilder(String title, Map<String, Integer> scores, int maxWidth) {
-		this.title = shorten(title, maxWidth);
+    public ScoreboardBuilder(String title, Map<String, Integer> scores, int maxWidth) {
+        this.title = shorten(title, maxWidth);
 
-		for (Map.Entry<String, Integer> entry : scores.entrySet()) {
-			String text = entry.getKey();
-			while (scores.containsKey(text)) text += ChatColor.RESET;
-			this.scores.put(shorten(text, maxWidth), entry.getValue());
-		}
-	}
+        for (Map.Entry<String, Integer> entry : scores.entrySet()) {
+            String text = entry.getKey();
+            while (scores.containsKey(text)) text += ChatColor.RESET;
+            this.scores.put(shorten(text, maxWidth), entry.getValue());
+        }
+    }
 
-	public Scoreboard build() {
-		scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+    public Scoreboard build() {
+        scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-		Objective obj = scoreboard.registerNewObjective((title.length() > 16 ? title.substring(0, 15) : title), "dummy");
-		obj.setDisplayName(ChatColor.translateAlternateColorCodes('&', title));
-		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        Objective obj = scoreboard.registerNewObjective((title.length() > 16 ? title.substring(0, 15) : title), "dummy");
+        obj.setDisplayName(ChatColor.translateAlternateColorCodes('&', title));
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-		int index = scores.size();
+        int index = scores.size();
 
-		for (Map.Entry<String, Integer> text : scores.entrySet()) {
-			Map.Entry<Team, String> team = createTeam(text.getKey());
-			Integer score = text.getValue() != null ? text.getValue() : index;
-			String row = team.getValue();
-			if (!Strings.isNullOrEmpty(row) && team.getKey() != null) {
-				team.getKey().addEntry(ChatColor.translateAlternateColorCodes('&', row));
-			}
-			obj.getScore(ChatColor.translateAlternateColorCodes('&', row)).setScore(score);
-			--index;
-		}
+        for (Map.Entry<String, Integer> text : scores.entrySet()) {
+            Map.Entry<Team, String> team = createTeam(text.getKey());
+            Integer score = text.getValue() != null ? text.getValue() : index;
+            String row = team.getValue();
+            if (!Strings.isNullOrEmpty(row) && team.getKey() != null) {
+                team.getKey().addEntry(ChatColor.translateAlternateColorCodes('&', row));
+            }
+            obj.getScore(ChatColor.translateAlternateColorCodes('&', row)).setScore(score);
+            --index;
+        }
 
-		return scoreboard;
-	}
+        return scoreboard;
+    }
 
-	public ScoreboardBuilder destroy() {
-		scoreboard.getObjectives().forEach(Objective::unregister);
-		teams.forEach(Team::unregister);
-		teams.clear();
-		return this;
-	}
+    public ScoreboardBuilder destroy() {
+        scoreboard.getObjectives().forEach(Objective::unregister);
+        teams.forEach(Team::unregister);
+        teams.clear();
+        return this;
+    }
 
-	public Scoreboard getScoreboard() {
-		return scoreboard;
-	}
+    public Scoreboard getScoreboard() {
+        return scoreboard;
+    }
 
-	private Map.Entry<Team, String> createTeam(String text) {
-		String result;
-		if (text.length() <= 16) return new AbstractMap.SimpleEntry<>(null, text);
-		Team team = scoreboard.registerNewTeam("text-" + scoreboard.getTeams().size());
-		Iterator<String> iterator = Splitter.fixedLength(16).split(text).iterator();
-		team.setPrefix(iterator.next());
-		result = iterator.next();
-		if (text.length() > 32) team.setSuffix(iterator.next());
-		teams.add(team);
-		return new AbstractMap.SimpleEntry<>(team, result);
-	}
+    private Map.Entry<Team, String> createTeam(String text) {
+        String result;
+        if (text.length() <= 16) return new AbstractMap.SimpleEntry<>(null, text);
+        Team team = scoreboard.registerNewTeam("text-" + scoreboard.getTeams().size());
+        Iterator<String> iterator = Splitter.fixedLength(16).split(text).iterator();
+        team.setPrefix(iterator.next());
+        result = iterator.next();
+        if (text.length() > 32) team.setSuffix(iterator.next());
+        teams.add(team);
+        return new AbstractMap.SimpleEntry<>(team, result);
+    }
 
-	private String shorten(String text, int limit) {
-		return text.length() > limit ? text.substring(0, limit - 1) : text;
-	}
+    private String shorten(String text, int limit) {
+        return text.length() > limit ? text.substring(0, limit - 1) : text;
+    }
 }

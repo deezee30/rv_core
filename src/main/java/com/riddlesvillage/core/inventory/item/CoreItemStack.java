@@ -4,10 +4,13 @@
 
 package com.riddlesvillage.core.inventory.item;
 
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -23,166 +26,238 @@ import java.util.Map;
 
 public class CoreItemStack implements JSONAware {
 
-	private final Material material;
-	private final int quantity;
-	private final String displayName;
-	private final int color;
-	private final EnhancedList<String> lore = new EnhancedList<>();
-	private final EnhancedMap<Enchantment, Integer> enchantments = new EnhancedMap<>();
+    private final Material material;
+    private final int quantity;
+    private final String displayName;
+    private final EnhancedList<String> lore = new EnhancedList<>();
+    private final EnhancedMap<Enchantment, Integer> enchantments = new EnhancedMap<>();
+    private final int color;
 
-	public CoreItemStack(ItemStack item) {
-		if (item == null) {
-			material = Material.AIR;
-			quantity = 1;
-			displayName = null;
-			color = 0;
-		} else {
-			material = item.getType();
-			quantity = item.getAmount();
+    public CoreItemStack(final ItemStack item) {
+        if (item == null) {
+            material = Material.AIR;
+            quantity = 1;
+            displayName = null;
+            color = 0;
+        } else {
+            material = item.getType();
+            quantity = item.getAmount();
 
-			if (item.hasItemMeta()) {
-				ItemMeta meta = item.getItemMeta();
-				color = meta instanceof LeatherArmorMeta ? ((LeatherArmorMeta) meta).getColor().asRGB() : 0;
-				displayName = meta.hasDisplayName() ? meta.getDisplayName() : null;
-				if (meta.hasLore()) lore.addAll(meta.getLore());
-			} else {
-				color = 0;
-				displayName = null;
-			}
+            if (item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                color = meta instanceof LeatherArmorMeta ? ((LeatherArmorMeta) meta).getColor().asRGB() : 0;
+                displayName = meta.hasDisplayName() ? meta.getDisplayName() : null;
+                if (meta.hasLore()) lore.addAll(meta.getLore());
+            } else {
+                color = 0;
+                displayName = null;
+            }
 
-			enchantments.putAll(item.getEnchantments());
-		}
-	}
+            enchantments.putAll(item.getEnchantments());
+        }
+    }
 
-	public CoreItemStack(ItemStackContainer item) {
-		this.material = Material.getMaterial(item.material);
-		this.quantity = item.quantity;
-		this.displayName = item.title;
-		this.color = item.color;
-		this.lore.addAll(item.lore);
-		for (Map.Entry<String, Integer> entry : item.enchantments.entrySet()) {
-			this.enchantments.put(EnchantmentWrapper.getByName(entry.getKey()), entry.getValue());
-		}
-	}
+    public CoreItemStack(final ItemStackContainer item) {
+        Validate.notNull(item);
+        this.material = Material.getMaterial(item.material);
+        this.quantity = item.quantity;
+        this.displayName = item.title;
+        this.color = item.color;
+        this.lore.addAll(item.lore);
+        for (Map.Entry<String, Integer> entry : item.enchantments.entrySet()) {
+            this.enchantments.put(EnchantmentWrapper.getByName(entry.getKey()), entry.getValue());
+        }
+    }
 
-	public Material getMaterial() {
-		return material;
-	}
+    public boolean hasColor() {
+        return color != 0;
+    }
 
-	public int getQuantity() {
-		return quantity;
-	}
+    public Material getMaterial() {
+        return material;
+    }
 
-	public String getDisplayName() {
-		return displayName;
-	}
+    public int getQuantity() {
+        return quantity;
+    }
 
-	public boolean hasColor() {
-		return color != 0;
-	}
+    public String getDisplayName() {
+        return displayName;
+    }
 
-	public Color getColor() {
-		if (!hasColor()) return null;
-		return Color.fromRGB(color);
-	}
+    public EnhancedList<String> getLore() {
+        return lore;
+    }
 
-	public EnhancedList<String> getLore() {
-		return lore;
-	}
+    public EnhancedMap<Enchantment, Integer> getEnchantments() {
+        return enchantments;
+    }
 
-	public HashMap<Enchantment, Integer> getEnchantments() {
-		return enchantments;
-	}
+    public Color getColor() {
+        if (!hasColor()) return null;
+        return Color.fromRGB(color);
+    }
 
-	public ItemStack getItemStack() {
-		return new ItemBuilder(material, quantity) {{
-			setTitle(displayName);
-			if (hasColor()) setColor(getColor());
-			addLores(lore);
-			enchantments.entrySet().stream().forEach(entry -> addEnchantment(entry.getKey(), entry.getValue()));
-		}}.build();
-	}
+    public ItemStack getItemStack() {
+        return new ItemBuilder(material, quantity) {{
+            setTitle(displayName);
+            if (hasColor()) setColor(getColor());
+            addLores(lore);
+            enchantments.entrySet().stream().forEach(entry -> addEnchantment(entry.getKey(), entry.getValue()));
+        }}.build();
+    }
 
-	@Override
-	public String toString() {
-		return "CoreItemStack{" +
-				"material=" + material +
-				", quantity=" + quantity +
-				", displayName='" + displayName + '\'' +
-				", color=" + color +
-				", lore=" + lore +
-				", enchantments=" + enchantments +
-				'}';
-	}
+    @Override
+    public String toJSONString() {
+        Map<String, Integer> map = new HashMap<>(enchantments.size());
+        for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+            map.put(entry.getKey().getName(), entry.getValue());
+        }
 
-	@Override
-	public String toJSONString() {
-		Map<String, Integer> map = Maps.newHashMap();
-		for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-			map.put(entry.getKey().getName(), entry.getValue());
-		}
+        return new Gson().toJson(new ItemStackContainer(
+                material.name(),
+                quantity,
+                displayName,
+                color,
+                lore,
+                map
+        ));
+    }
 
-		return new Gson().toJson(new ItemStackContainer(
-				material.name(),
-				quantity,
-				displayName,
-				color,
-				lore,
-				map
-		));
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
 
-	public static CoreItemStack fromJSONString(String json) {
-		return new CoreItemStack(new Gson().fromJson(json, ItemStackContainer.class));
-	}
+        if (o == null || getClass() != o.getClass()) return false;
 
-	public static final class ItemStackContainer {
+        CoreItemStack that = (CoreItemStack) o;
 
-		private String material;
-		private int quantity;
-		private String title;
-		private int color;
-		private List<String> lore;
-		private Map<String, Integer> enchantments;
+        return new EqualsBuilder()
+                .append(quantity, that.quantity)
+                .append(color, that.color)
+                .append(material, that.material)
+                .append(displayName, that.displayName)
+                .append(lore, that.lore)
+                .append(enchantments, that.enchantments)
+                .isEquals();
+    }
 
-		public ItemStackContainer() {}
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(material)
+                .append(quantity)
+                .append(displayName)
+                .append(lore)
+                .append(enchantments)
+                .append(color)
+                .toHashCode();
+    }
 
-		public ItemStackContainer(String material,
-								  int quantity,
-								  String title,
-								  int color,
-								  List<String> lore,
-								  Map<String, Integer> enchantments) {
-			this.material = material;
-			this.quantity = quantity;
-			this.title = title;
-			this.color = color;
-			this.lore = lore;
-			this.enchantments = enchantments;
-		}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("material", material)
+                .append("quantity", quantity)
+                .append("displayName", displayName)
+                .append("lore", lore)
+                .append("enchantments", enchantments)
+                .append("color", color)
+                .toString();
+    }
 
-		public String getMaterial() {
-			return material;
-		}
+    public static CoreItemStack fromJSONString(String json) {
+        return new CoreItemStack(new Gson().fromJson(json, ItemStackContainer.class));
+    }
 
-		public int getQuantity() {
-			return quantity;
-		}
+    public static final class ItemStackContainer {
 
-		public String getTitle() {
-			return title;
-		}
+        private final String material;
+        private final int quantity;
+        private final String title;
+        private final int color;
+        private final List<String> lore;
+        private final Map<String, Integer> enchantments;
 
-		public int getColor() {
-			return color;
-		}
+        public ItemStackContainer(final String material,
+                                  final int quantity,
+                                  final String title,
+                                  final int color,
+                                  final List<String> lore,
+                                  final Map<String, Integer> enchantments) {
+            this.material = Validate.notNull(material);
+            this.quantity = Validate.notNull(quantity);
+            this.title = Validate.notNull(title);
+            this.color = Validate.notNull(color);
+            this.lore = Validate.notNull(lore);
+            this.enchantments = Validate.notNull(enchantments);
+        }
 
-		public List<String> getLore() {
-			return lore;
-		}
+        public int getQuantity() {
+            return quantity;
+        }
 
-		public Map<String, Integer> getEnchantments() {
-			return enchantments;
-		}
-	}
+        public String getTitle() {
+            return title;
+        }
+
+        public int getColor() {
+            return color;
+        }
+
+        public List<String> getLore() {
+            return lore;
+        }
+
+        public Map<String, Integer> getEnchantments() {
+            return enchantments;
+        }
+
+        public String getMaterial() {
+
+            return material;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this)
+                    .append("material", material)
+                    .append("quantity", quantity)
+                    .append("title", title)
+                    .append("color", color)
+                    .append("lore", lore)
+                    .append("enchantments", enchantments)
+                    .toString();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ItemStackContainer that = (ItemStackContainer) o;
+
+            return new EqualsBuilder()
+                    .append(quantity, that.quantity)
+                    .append(color, that.color)
+                    .append(material, that.material)
+                    .append(title, that.title)
+                    .append(lore, that.lore)
+                    .append(enchantments, that.enchantments)
+                    .isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37)
+                    .append(material)
+                    .append(quantity)
+                    .append(title)
+                    .append(color)
+                    .append(lore)
+                    .append(enchantments)
+                    .toHashCode();
+        }
+    }
 }

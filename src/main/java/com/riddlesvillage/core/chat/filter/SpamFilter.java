@@ -16,54 +16,54 @@ import java.util.Optional;
 
 class SpamFilter implements ChatBlockFilter {
 
-	private final EnhancedMap<String, Integer> count = new EnhancedMap<>();
+    private final EnhancedMap<String, Integer> count = new EnhancedMap<>();
 
-	@Override
-	public boolean block(CorePlayer player, String message) {
-		if (player.isHelper()) return false;
+    @Override
+    public boolean block(CorePlayer player, String message) {
+        if (player.isHelper()) return false;
 
-		boolean violation = false;
+        boolean violation = false;
 
-		// check for spam
-		String name = player.getName();
-		if (count.containsKey(name)) {
-			int c = count.get(player.getName());
-			if (c > MainConfig.getMaxMessages()) {
-				count.remove(player.getName());
-				violation = true;
-			} else {
-				putTemp(name, c + 1);
-			}
-		} else {
-			putTemp(name, 1);
-		}
+        // check for spam
+        String name = player.getName();
+        if (count.containsKey(name)) {
+            int c = count.get(player.getName());
+            if (c > MainConfig.getMaxMessages()) {
+                count.remove(player.getName());
+                violation = true;
+            } else {
+                putTemp(name, c + 1);
+            }
+        } else {
+            putTemp(name, 1);
+        }
 
-		return violation;
-	}
+        return violation;
+    }
 
-	@Override
-	public Optional<String> getReason() {
-		return Optional.of("chat.mute.no-spam");
-	}
+    @Override
+    public Optional<String> getReason() {
+        return Optional.of("chat.mute.no-spam");
+    }
 
-	@Override
-	public boolean violate() {
-		return true;
-	}
+    @Override
+    public boolean violate() {
+        return true;
+    }
 
-	private void putTemp(String name, int messages) {
-		count.put(name, messages);
+    private void putTemp(String name, int messages) {
+        count.put(name, messages);
 
-		new BukkitRunnable() {
+        new BukkitRunnable() {
 
-			@Override
-			public void run() {
-				if (count.containsKey(name)) {
-					int c = count.get(name);
-					if (c == 1) count.remove(name);
-					else count.put(name, c - 1);
-				}
-			}
-		}.runTaskLater(Core.get(), 20 * 20);
-	}
+            @Override
+            public void run() {
+                if (count.containsKey(name)) {
+                    int c = count.get(name);
+                    if (c == 1) count.remove(name);
+                    else count.put(name, c - 1);
+                }
+            }
+        }.runTaskLater(Core.get(), 20 * 20);
+    }
 }

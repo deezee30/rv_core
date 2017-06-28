@@ -20,11 +20,11 @@ import org.bukkit.entity.Player;
 public interface ScoreboardHolder {
 
 
-	ScoreboardContainer getScoreboard();
+    ScoreboardContainer getScoreboard();
 
 
-	/**
-	 * @return The Bukkit player instance that holds this player.
-	 */
-	Player getBukkitPlayer();
+    /**
+     * @return The Bukkit player instance that holds this player.
+     */
+    Player getBukkitPlayer();
 }

@@ -26,7 +26,9 @@ public final class Scroller implements Serializable {
 	 * @param width        The width of the window to scroll across
 	 * @param spaceBetween The amount of spaces between each repetition
 	 */
-	public Scroller(String message, int width, int spaceBetween) {
+	public Scroller(String message,
+					int width,
+					int spaceBetween) {
 		if (message.length() <= width) {
 			scroll = message;
 			return;

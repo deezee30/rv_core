@@ -7,6 +7,7 @@ package com.riddlesvillage.core.player.manager;
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.player.profile.CoreProfile;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
 
@@ -22,87 +23,92 @@ import java.util.UUID;
  */
 public abstract class PlayerManager<P extends CoreProfile> implements Iterable<P> {
 
-	/**
-	 * Gets the {@link P} instance from his name.
-	 *
-	 * @param	name
-	 * 			The name of the profile.
-	 * @return	The {@link P} instance if found, or
-	 * 			{@code null} if not.
-	 */
-	public P get(String name) {
-		for (P player : getOnlinePlayers()) {
-			if (player.getName().equalsIgnoreCase(name)) {
-				return player;
-			}
-		}
+    /**
+     * Gets the {@link P} instance from his name.
+     *
+     * @param	name
+     * 			The name of the profile.
+     * @return	The {@link P} instance if found, or
+     * 			{@code null} if not.
+     */
+    public P get(String name) {
+        Validate.notNull(name);
 
-		return null;
-	}
+        for (P player : getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(name)) {
+                return player;
+            }
+        }
 
-	/**
-	 * Gets the {@link P} instance from his unique ID.
-	 *
-	 * @param   id
-	 * 			The ID of the profile.
-	 * @return	The {@link P} instance if found, or
-	 * 			{@code null} if not.
-	 */
-	public P get(UUID id) {
-		for (P player : getOnlinePlayers()) {
-			if (player.getUuid().equals(id)) {
-				return player;
-			}
-		}
+        return null;
+    }
 
-		return null;
-	}
+    /**
+     * Gets the {@link P} instance from his unique ID.
+     *
+     * @param   id
+     * 			The ID of the profile.
+     * @return	The {@link P} instance if found, or
+     * 			{@code null} if not.
+     */
+    public P get(UUID id) {
+        Validate.notNull(id);
 
-	/**
-	 * Gets the {@link P} instance from a {@link PlayerEvent}.
-	 *
-	 * Suitable for online players only.
-	 *
-	 * @param	event
-	 * 			The event the online player is associated with.
-	 * @return	The {@link P} instance if found, or
-	 * 			{@code null} if not.
-	 */
-	public P get(PlayerEvent event) {
-		return get(event.getPlayer().getName());
-	}
+        for (P player : getOnlinePlayers()) {
+            if (player.getUuid().equals(id)) {
+                return player;
+            }
+        }
 
-	/**
-	 * @return All online players that are registered in this player manager in an unmodifiable list.
-	 */
-	public ImmutableList<P> getOnlinePlayers() {
-		// Return an unmodifiable list to make sure the actual list isn't modified externally
-		return delegate().getImmutableElements();
-	}
+        return null;
+    }
 
-	/**
-	 * @return A random {@link P} instance.
-	 */
-	public P getRandomElement() {
-		return delegate().getRandomElement();
-	}
+    /**
+     * Gets the {@link P} instance from a {@link PlayerEvent}.
+     *
+     * Suitable for online players only.
+     *
+     * @param	event
+     * 			The event the online player is associated with.
+     * @return	The {@link P} instance if found, or
+     * 			{@code null} if not.
+     */
+    public P get(PlayerEvent event) {
+        return get(event.getPlayer().getName());
+    }
 
-	protected abstract EnhancedList<P> delegate();
+    /**
+     * @return All online players that are registered in this player manager in an unmodifiable list.
+     */
+    public ImmutableList<P> getOnlinePlayers() {
+        // Return an unmodifiable list to make sure the actual list isn't modified externally
+        return delegate().getImmutableElements();
+    }
 
-	public abstract P add(Player player);
+    /**
+     * @return A random {@link P} instance.
+     */
+    public P getRandomElement() {
+        return delegate().getRandomElement();
+    }
 
-	public P remove(P player) {
-		delegate().remove(player);
-		return player;
-	}
+    protected abstract EnhancedList<P> delegate();
 
-	@Override
-	public Iterator<P> iterator() {
-		return getOnlinePlayers().iterator();
-	}
+    public abstract P add(Player player);
 
-	@Override
-	public final String toString() {
-		return delegate().toString();
-	}
+    public P remove(P player) {
+        Validate.notNull(player);
+        delegate().remove(player);
+        return player;
+    }
+
+    @Override
+    public Iterator<P> iterator() {
+        return getOnlinePlayers().iterator();
+    }
+
+    @Override
+    public final String toString() {
+        return delegate().toString();
+    }
 }

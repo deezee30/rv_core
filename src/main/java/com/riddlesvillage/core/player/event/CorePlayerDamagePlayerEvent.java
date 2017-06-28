@@ -13,24 +13,24 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class CorePlayerDamagePlayerEvent extends CorePlayerEvent {
 
-	private final DamageCause cause;
-	private final CorePlayer damaged;
+    private final DamageCause cause;
+    private final CorePlayer damaged;
 
-	public CorePlayerDamagePlayerEvent(EntityDamageByEntityEvent event) {
-		super(MANAGER.get(Validate.notNull(event)));
-		this.cause = event.getCause();
-		this.damaged = MANAGER.get(event.getDamager().getUniqueId());
-	}
+    public CorePlayerDamagePlayerEvent(final EntityDamageByEntityEvent event) {
+        super(MANAGER.get(Validate.notNull(event).getDamager().getUniqueId()));
+        this.cause = event.getCause();
+        this.damaged = MANAGER.get(event.getEntity().getUniqueId());
+    }
 
-	public CorePlayer getDamager() {
-		return getPlayer();
-	}
+    public CorePlayer getDamager() {
+        return getPlayer();
+    }
 
-	public CorePlayer getDamaged() {
-		return damaged;
-	}
+    public DamageCause getCause() {
+        return cause;
+    }
 
-	public DamageCause getCause() {
-		return cause;
-	}
+    public CorePlayer getDamaged() {
+        return damaged;
+    }
 }

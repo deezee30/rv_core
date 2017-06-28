@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 @FunctionalInterface
 public interface CoreInventoryClickEvent {
 
-	boolean handleInventory(CorePlayer player,
-							ItemStack clickedItem,
-							int slot);
+    boolean handleInventory(final CorePlayer player,
+                            final ItemStack clickedItem,
+                            final int slot);
 }

@@ -8,9 +8,9 @@ package com.riddlesvillage.core.world.region.type;
 
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.collect.EnhancedList;
+import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.util.MathUtil;
 import com.riddlesvillage.core.world.Vector3D;
 import com.riddlesvillage.core.world.Vector3DList;
@@ -24,121 +24,122 @@ import java.util.Map;
 @Beta
 public class CylindricalRegion extends Region {
 
-	private static final long serialVersionUID = 2750518492398124058L;
+    private static final long serialVersionUID = 2750518492398124058L;
 
-	private final Vector3D base;
-	private final int radius, height;
+    private final Vector3D base;
+    private final int radius, height;
 
-	// do not serialize these
-	private transient Vector3DList points;
-	private transient Vector3D minBounds, maxBounds;
-	private transient int volume;
+    // do not serialize these
+    private transient Vector3DList points;
+    private transient Vector3D min, max;
+    private transient int volume;
 
-	public CylindricalRegion(String world,
-							 Vector3D base,
-							 int radius,
-							 int height) {
-		super(world);
-		this.base = Validate.notNull(base, "The base point can not be null").floor();
-		this.radius = Math.abs(radius);
-		this.height = Math.abs(height);
+    public CylindricalRegion(String world,
+                             Vector3D base,
+                             int radius,
+                             int height) {
+        super(world);
+        this.base = Validate.notNull(base, "The base point can not be null").floor();
+        this.radius = Math.abs(radius);
+        this.height = Math.abs(height);
 
-		init();
-	}
+        init();
+    }
 
-	@Override
-	public void calculate() {
-		// TODO: calculate points
-		points = new Vector3DList();
+    @Override
+    public void calculate() {
+        // TODO: calculate points
+        points = new Vector3DList();
 
-		// find points in region
+        // find points in region
 
 
-		// calculate dimensions
-		volume = MathUtil.round(Math.PI * Math.pow(radius, 2) * height);
+        // calculate dimensions
+        volume = MathUtil.round(Math.PI * Math.pow(radius, 2) * height);
 
-		minBounds = new Vector3D(
-				base.getX() - radius,
-				base.getY(),
-				base.getZ() - radius
-		);
+        min = new Vector3D(
+                base.getX() - radius,
+                base.getY(),
+                base.getZ() - radius
+        );
 
-		maxBounds = new Vector3D(
-				base.getX() + radius,
-				base.getY() + height,
-				base.getZ() + radius
-		);
+        max = new Vector3D(
+                base.getX() + radius,
+                base.getY() + height,
+                base.getZ() + radius
+        );
 
-		Messaging.debug("CYLINDER: Measured volume: %s; Calculated volume: %s", points.size(), volume);
-	}
+        Messaging.debug("CYLINDER: Measured volume: %s; Calculated volume: %s", points.size(), volume);
+    }
 
-	@Override
-	public int getVolume() {
-		return volume;
-	}
+    public Vector3D getBase() {
+        return base;
+    }
 
-	@Override
-	public Vector3D getMinBounds() {
-		return minBounds;
-	}
+    public int getRadius() {
+        return radius;
+    }
 
-	@Override
-	public Vector3D getMaxBounds() {
-		return maxBounds;
-	}
+    public int getHeight() {
+        return height;
+    }
 
-	@Override
-	public boolean contains(Vector3D vector) {
-		return Validate.notNull(vector).getY() >= base.getY()
-				&& vector.getY() <= base.getY() + height
-				&& Math.pow(vector.getX() - base.getX(), 2) + Math.pow(vector.getZ() - base.getZ(), 2) < Math.pow(radius, 2);
-	}
+    @Override
+    public Vector3D getMin() {
+        return min;
+    }
 
-	@Override
-	public EnhancedList<Vector3D> getWalls() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Vector3D getMax() {
+        return max;
+    }
 
-	@Override
-	public EnhancedList<Vector3D> getEdges() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getVolume() {
+        return volume;
+    }
 
-	@Override
-	public ImmutableList<Vector3D> getPoints() {
-		return points.getImmutableElements();
-	}
+    @Override
+    public boolean contains(Vector3D vector) {
+        return vector.getY() >= base.getY()
+                && vector.getY() <= base.getY() + height
+                && Math.pow(vector.getX() - base.getX(), 2) + Math.pow(vector.getZ() - base.getZ(), 2) < Math.pow(radius, 2);
+    }
 
-	@Override
-	public RegionType getType() {
-		return RegionType.CYLINDRICAL;
-	}
+    @Override
+    public EnhancedList<Vector3D> getWalls() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Region joinWith(Region other) throws RegionBoundsException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public EnhancedList<Vector3D> getEdges() {
+        throw new UnsupportedOperationException();
+    }
 
-	public final Vector3D getBaseCenter() {
-		return base;
-	}
+    @Override
+    public ImmutableList<Vector3D> getPoints() {
+        return points.getImmutableElements();
+    }
 
-	public final double getRadius() {
-		return radius;
-	}
+    @Override
+    public RegionType getType() {
+        return RegionType.CYLINDRICAL;
+    }
 
-	public final double getHeight() {
-		return height;
-	}
+    @Override
+    public Region joinWith(Region other) throws RegionBoundsException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Map<String, Object> serialize() {
-		return ImmutableMap.<String, Object>builder()
-				.put(Regions.TYPE_META, getType())
-				.put("world", getWorld())
-				.put("base_center", base)
-				.put("radius", radius)
-				.put("height", height)
-				.build();
-	}
+    @Override
+    public Map<String, Object> serialize() {
+        EnhancedMap<String, Object> map = new EnhancedMap<>();
+        map.put(Regions.TYPE_META, getType());
+        map.put("world", getWorld());
+        map.put("base", base);
+        map.put("radius", radius);
+        map.put("height", height);
+        map.putIf(hasPriority(), "priority", getPriority().get());
+        return map.getImmutableEntries();
+    }
 }

@@ -12,41 +12,59 @@ import com.google.gson.JsonObject;
 import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.net.paster.PasteException;
 import com.riddlesvillage.core.net.paster.Paster;
+import org.apache.commons.lang3.Validate;
 
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * The type Chat messages.
+ */
 public final class ChatMessages {
 
-	private static final ChatMessages INSTANCE = new ChatMessages();
+    private static final ChatMessages INSTANCE = new ChatMessages();
 
-	private List<ChatMessage> chatMessageList = Collections.synchronizedList(Lists.newArrayList());
+    private List<ChatMessage> chatMessageList = Collections.synchronizedList(Lists.newArrayList());
 
-	// disable initialization
-	private ChatMessages() {}
+    // disable initialization
+    private ChatMessages() {}
 
+	/**
+	 * Paste all chat messages in this session.
+	 */
 	public void pasteChatMessages() {
-		JsonObject jsonObject = new JsonObject();
-		JsonArray jsonElements = new JsonArray();
-		for (ChatMessage chatMessage : chatMessageList) {
-			jsonElements.add(chatMessage.toJsonObject());
-		}
+        JsonObject jsonObject = new JsonObject();
+        JsonArray jsonElements = new JsonArray();
+        for (ChatMessage chatMessage : chatMessageList) {
+            jsonElements.add(chatMessage.toJsonObject());
+        }
 
-		jsonObject.add("messages", jsonElements);
-		try {
-			URL paste = Paster.hastebin(jsonObject.toString()).paste();
-			Messaging.log("Saved chat messages to %s", paste.toString());
-		} catch (PasteException e) {
-			e.printStackTrace();
-		}
-	}
+        jsonObject.add("messages", jsonElements);
 
-	public void add(ChatMessage message) {
-		chatMessageList.add(message);
-	}
+        try {
+            URL paste = Paster.hastebin(jsonObject.toString()).paste();
+            Messaging.log("Saved chat messages to %s", paste.toString());
+        } catch (PasteException e) {
+            Messaging.log("Could not paste saved chat messages: " + e);
+        }
+    }
 
+	/**
+	 * Adds a new chat message to the session.
+	 *
+	 * @param message the message
+	 */
+	public void add(final ChatMessage message) {
+        chatMessageList.add(Validate.notNull(message));
+    }
+
+	/**
+	 * Gets instance.
+	 *
+	 * @return the instance
+	 */
 	public static ChatMessages getInstance() {
-		return INSTANCE;
-	}
+        return INSTANCE;
+    }
 }

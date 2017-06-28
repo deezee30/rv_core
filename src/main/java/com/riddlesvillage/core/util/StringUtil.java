@@ -27,7 +27,8 @@ public final class StringUtil {
 	 * @return 	The new string with {@param sequence} removed.
 	 * @see		String#replace(CharSequence, CharSequence)
 	 */
-	public static String remove(String origin, String sequence) {
+	public static String remove(final String origin,
+								final String sequence) {
 		return Validate.notNull(origin, "Cannot remove sequence from null string")
 				.replace(Validate.notNull(sequence, "Cannot remove null sequence from string"), "");
 	}
@@ -49,18 +50,21 @@ public final class StringUtil {
 	 * 			If string is null.
 	 * @see		String#regionMatches(boolean, int, String, int, int)
 	 */
-	public static boolean startsWithIgnoreCase(final String string, final String prefix)
+	public static boolean startsWithIgnoreCase(final String string,
+											   final String prefix)
 			throws IllegalArgumentException, NullPointerException {
 		return Validate.notNull(string, "Cannot check a null string for a match").length()
 				>= prefix.length()
 				&& string.regionMatches(true, 0, prefix, 0, prefix.length());
 	}
 
-	public static String checkPlural(String singular, String plural, int count) {
+	public static String checkPlural(final String singular,
+									 final String plural, int count) {
 		return count == 1 ? singular : plural;
 	}
 
-	public static ImmutableList<String> splitMaintainBounds(String longString, int maxLength) {
+	public static ImmutableList<String> splitMaintainBounds(final String longString,
+															final int maxLength) {
 		final Matcher m = Pattern.compile("\\G\\s*(.{1," + maxLength + "})(?=\\s|$)", Pattern.DOTALL).matcher(longString);
 		final ImmutableList.Builder<String> strings = new ImmutableList.Builder<>();
 		while (m.find()) strings.add(m.group(1));
@@ -68,7 +72,7 @@ public final class StringUtil {
 		return strings.build();
 	}
 
-	public static String getStringFromStringList(List<String> list) {
+	public static String getStringFromStringList(final List<String> list) {
 		String string = "";
 		if (list.size() == 1) {
 			string += list.get(0);
@@ -82,7 +86,7 @@ public final class StringUtil {
 		return string;
 	}
 
-	public static boolean containsInetAddress(String string) {
+	public static boolean containsInetAddress(final String string) {
 		String[] parts = string.split("\\s+");
 
 		for (String part : parts) {

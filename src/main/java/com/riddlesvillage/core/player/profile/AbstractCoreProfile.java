@@ -5,9 +5,10 @@
 package com.riddlesvillage.core.player.profile;
 
 import com.google.common.collect.ImmutableList;
+import com.mongodb.async.client.MongoCollection;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.CoreException;
 import com.riddlesvillage.core.Messaging;
-import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
@@ -49,7 +50,7 @@ import java.util.concurrent.TimeUnit;
  * of profile caching system can be found in the sub class
  * {@link OfflineCorePlayer}.
  *
- * To check if the {@code UUID} and name of the player
+ * <p>To check if the {@code UUID} and name of the player
  * are both real and thus making the user a valid user, simply
  * check with {@link #hasPlayed()}.</p>
  *
@@ -59,267 +60,321 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHolder, CoinsHolder, TokensHolder, RankedPlayer {
 
-	/*
-	 * In case the player is offline and the UUID or name has
-	 * not been found in the general database, either the UUID
-	 * or name can result to being null, as it can be used to
-	 * store for cache purposes.
-	 *
-	 * If both values are null, profile will not be generated.
-	 */
-	private volatile UUID uuid = null;
-	private volatile String name = null;
+    /*
+     * In case the player is offline and the UUID or name has
+     * not been found in the general database, either the UUID
+     * or name can result to being null, as it can be used to
+     * store for cache purposes.
+     *
+     * If both values are null, profile will not be generated.
+     */
+    private volatile UUID   uuid = null;
+    private volatile String name = null;
 
-	/**
-	 * Used for timing this class.  Can be accessed and interacted
-	 * with via sub classes.  It is recommented to stop the timer
-	 * after all loading is done via {@link Timer#forceStop()}.
-	 */
-	protected volatile transient Timer
-			timer			= new Timer();
-	protected transient boolean
-			played			= false;
-	private transient StatisticHolder
-			statHolder		= this;
+    /**
+     * Used for timing this class.  Can be accessed and interacted
+     * with via sub classes.  It is recommented to stop the timer
+     * after all loading is done via {@link Timer#forceStop()}.
+     */
+    protected volatile transient Timer
+            timer           = new Timer();
 
-	/**
-	 * @see #AbstractCoreProfile(UUID, String)
-	 */
-	protected AbstractCoreProfile(UUID uuid) {
-		this(uuid, null);
-	}
+    protected transient boolean
+            loaded          = false,
+            played          = false;
+    private transient StatisticHolder
+            statisticHolder = this;
 
-	/**
-	 * @see #AbstractCoreProfile(UUID, String)
-	 */
-	protected AbstractCoreProfile(String name) {
-		this(null, name);
-	}
+    /**
+     * @see #AbstractCoreProfile(Optional, Optional)
+     */
+    protected AbstractCoreProfile(final UUID uuid) {
+        this(Optional.of(uuid), Optional.empty());
+    }
 
-	/**
-	 * Instantiates a user instance used to store essential data.
-	 *
-	 * <p>Either the {@param uuid} or {@param name} provided
-	 * can be {@code null} but not both.  This class attempts
-	 * to find the user in the pre-defined database collection.
-	 * If the database connection is not set up or the user
-	 * has not been found, the profile data will not be loaded.</p>
-	 *
-	 * <p>As loading users or online players could potentially
-	 * be quite a heavy task, this class times the load time for
-	 * all instantiations of this class and the sub classes
-	 * using {@link #timer}.  It is recommented to stop the timer
-	 * in order for it to debug how many milliseconds it took to
-	 * load all constructors.</p>
-	 *
-	 * @param   uuid
-	 *          A {@code UUID} that the user may have.
-	 * @param   name
-	 *          A name that the user may have.
-	 * @throws  CoreException
-	 *          In case a database error occurs.
-	 * @see     Timer
-	 */
-	protected AbstractCoreProfile(UUID uuid, String name) {
-		if (uuid == null && name == null) {
-			Messaging.log("Created a fake player but both ID and name are null");
-			return;
-		}
+    /**
+     * @see #AbstractCoreProfile(Optional, Optional)
+     */
+    protected AbstractCoreProfile(final String name) {
+        this(Optional.empty(), Optional.of(name));
+    }
 
-		this.uuid = uuid;
-		this.name = name;
+    /**
+     * @see #AbstractCoreProfile(Optional, Optional)
+     */
+    protected AbstractCoreProfile(final UUID uuid,
+                                  final String name) {
+        this(Optional.of(uuid), Optional.of(name));
+    }
 
-		// Record how long it takes to load the profile
-		timer.start();
+    /**
+     * Instantiates a user instance used to store essential data.
+     *
+     * <p>Either the {@param uuid} or {@param name} provided
+     * can be {@link Optional} but not both.  This class attempts
+     * to find the user in the pre-defined database collection.
+     * If the database connection is not set up or the user
+     * has not been found, the profile data will not be loaded.</p>
+     *
+     * <p>Class instatiation should be done so in {@link #onLoad(Optional)},
+     * as described in {@link #onLoad(Optional)} JavaDocs.</p>
+     *
+     * @param   uuid
+     *          A {@code UUID} that the user may have.
+     * @param   name
+     *          A name that the user may have.
+     * @see     #onLoad(Optional)
+     */
+    protected AbstractCoreProfile(final Optional<UUID> uuid,
+                                  final Optional<String> name) {
+        if (!uuid.isPresent() && !name.isPresent()) {
+            Messaging.log("Created a fake player but both ID and name are null");
+            return;
+        }
 
-		// Called from subclass when load is complete
-		timer.onFinishExecute(() -> Messaging.debug(
-				"Generated player profile (%s) '%s' with ID '%s' in %sms",
-				AbstractCoreProfile.this.getClass().getSimpleName(),
-				AbstractCoreProfile.this.name,
-				AbstractCoreProfile.this.uuid,
-				timer.getTime(TimeUnit.MILLISECONDS)
-		));
+        this.uuid = uuid.isPresent() ? uuid.get() : null;
+        this.name = name.isPresent() ? name.get() : null;
 
-		DataInfo data = DataInfo.UUID;
-		Object value = uuid;
+        // Record how long it takes to load the profile
+        timer.start().onFinishExecute(() -> Messaging.debug(
+                "Generated player profile (%s) '%s' with ID '%s' in %sms",
+                AbstractCoreProfile.this.getClass().getSimpleName(),
+                AbstractCoreProfile.this.name,
+                AbstractCoreProfile.this.uuid,
+                timer.getTime(TimeUnit.MILLISECONDS)
+        ));
 
-		// if uuid is null, use name instead
-		if (uuid == null) {
-			data = DataInfo.NAME;
-			value = name;
-		}
+        DataInfo data = DataInfo.UUID;
+        Object value = this.uuid;
 
-		DatabaseAPI.retrieveDocument(Database.getMainCollection(), data, value, (document, throwable) -> {
-			Core.logIf(throwable != null, "Error loading '%s' ('%s'):", name, uuid, throwable);
+        // if uuid is null, use name instead
+        if (!uuid.isPresent()) {
+            data = DataInfo.NAME;
+            value = this.name;
+        }
 
-			Optional<Document> downloadedDoc = Optional.ofNullable(document);
-			if (downloadedDoc.isPresent()) {
-				played = true;
+        DatabaseAPI.retrieveDocument(
+                Database.getMainCollection(),
+                data, value, (document, throwable) -> {
 
-				this.name = document.getString(DataInfo.NAME.getStat());
-				this.uuid = UUIDUtil.fromString(document.getString(DataInfo.UUID.getStat()));
+            Core.logIf(
+                    throwable != null,
+                    "Error loading '%s' ('%s'):",
+                    this.name,
+                    this.uuid,
+                    throwable
+            );
 
-				if (Database.getMainCollection().equals(getCollection()) || getCollection() == null) {
-					// Apply already downloaded stats
-					finishLoading(downloadedDoc);
-				} else {
-					// Async download custom stats from database
-					refreshStats();
-				}
-			} else {
-				// player never played before
-				finishLoading(Optional.<Document>empty());
-			}
-		});
-	}
+            Optional<Document> downloadedDoc = Optional.ofNullable(document);
+            if (downloadedDoc.isPresent()) {
+                played = true;
 
-	private void finishLoading(Optional<Document> document) {
-		// finish loading on the main thread
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Core.get(), () -> {
-			onLoad(document);
-			if (isOnline()) played = true;
-			timer.forceStop();
-		});
-	}
+                this.name = document.getString(DataInfo.NAME.getStat());
+                this.uuid = UUIDUtil.fromString(document.getString(DataInfo.UUID.getStat()));
 
-	protected abstract void onLoad(Optional<Document> document);
+                Optional<MongoCollection<Document>> col = getCollection();
+                if (!col.isPresent() || col.get().equals(Database.getMainCollection())) {
+                    // Apply already downloaded stats
+                    finishLoading(downloadedDoc);
+                } else {
+                    // Async download custom stats from database
+                    refreshStats();
+                }
+            } else {
+                // player never played before
+                finishLoading(Optional.<Document>empty());
+            }
+        });
+    }
 
-	protected void refreshStats() {
-		// Async download custom stats from database
-		DatabaseAPI.retrieveDocument(getCollection(), DataInfo.UUID, uuid, ((result, t) -> {
-			Core.logIf(t != null, "Error loading '%s' ('%s'): %s", name, uuid, t);
-			finishLoading(Optional.ofNullable(result));
-		}));
-	}
+    private void finishLoading(Optional<Document> document) {
+        // finish loading on the main thread
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Core.get(), () -> {
+            loaded = true;
+            if (isOnline()) played = true;
+            onLoad(document);
+            timer.forceStop();
+        });
+    }
 
-	@Override
-	public String toString() {
-		return name;
-	}
+    /**
+     * Sets up and loads the player after the statistics have
+     * been downloaded.
+     *
+     * <p>Because the Core relies on processing database tasks
+     * asynchronously, this method is essential for such calls
+     * and will get called as soon as the process is finished
+     * and returned.</p>
+     *
+     * <p>Whenever a player instance is being set up and needs
+     * to access certain statistics from {@link #getCollection()}.
+     * the initialization of instance should be made in this
+     * method.</p>
+     *
+     * <p>If the collection isn't provided by the sub class
+     * <b>OR</b> the collection is the default collection
+     * found at {@link Database#getMainCollection()}, then
+     * the default collection statistics will be passed
+     * in the arguments, in case the profile needs them to
+     * finish loading, eg: {@link CorePlayer}.</p>
+     *
+     * <p>If the player is not found in the database, ie: the player hasn't
+     * played the server before - then {@link Optional#empty()} is passed.</p>
+     *
+     * @param document the optional document that holds the statistics
+     */
+    protected abstract void onLoad(Optional<Document> document);
 
-	@Override
-	public boolean equals(Object other) {
-		return other instanceof CoreProfile && equals((CoreProfile) other);
-	}
+    /**
+     * Redownload the {@link #getCollection()} again asynchronously
+     * and call {@link #onLoad(Optional)} with the newly downloaded
+     * stats.
+     *
+     * <p>Typically used for updating cached offline players</p>
+     */
+    protected void refreshStats() {
+        // Async download custom stats from database
+        DatabaseAPI.retrieveDocument(getCollection().get(), DataInfo.UUID, uuid, ((result, t) -> {
+            Core.logIf(t != null, "Error loading '%s' ('%s'): %s", name, uuid, t);
+            finishLoading(Optional.ofNullable(result));
+        }));
+    }
 
-	public boolean equals(CoreProfile other) {
-		return other != null && other.getName().equals(name);
-	}
+    @Override
+    public String toString() {
+        return name;
+    }
 
-	// == User Data ====================================================== //
+    // == User Data ====================================================== //
 
-	@Override
-	public final UUID getUuid() {
-		return uuid;
-	}
 
-	@Override
-	public final String getName() {
-		return name;
-	}
+    @Override
+    public UUID getUuid() {
+        return uuid;
+    }
 
-	@Override
-	public final boolean hasPlayed() {
-		return played;
-	}
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	// == Defaults ====================================================== //
+    @Override
+    public final boolean hasPlayed() {
+        return played;
+    }
 
-	@Override
-	public String getDisplayName() {
-		CorePlayer player = toCorePlayer();
-		if (player == null) {
-			return (getUuid() == null ?
-					OfflineCorePlayer.fromName(getName()) :
-					OfflineCorePlayer.fromUuid(getUuid())
-			).getDisplayName();
-		} else {
-			return player.getDisplayName();
-		}
-	}
+    /**
+     * @return  whether or not the instance has finished
+     *          database lookup and is loaded
+     */
+    public boolean isLoaded() {
+        return loaded;
+    }
 
-	@Override
-	public String getIp() {
-		CorePlayer player = toCorePlayer();
-		if (player == null) {
-			return (getUuid() == null ?
-					OfflineCorePlayer.fromName(getName()) :
-					OfflineCorePlayer.fromUuid(getUuid())
-			).getIp();
-		} else {
-			return player.getIp();
-		}
-	}
+    // == Defaults ====================================================== //
 
-	@Override
-	public List<String> getIpHistory() {
-		CorePlayer player = toCorePlayer();
-		if (player == null) {
-			return (getUuid() == null ?
-					OfflineCorePlayer.fromName(getName()) :
-					OfflineCorePlayer.fromUuid(getUuid())
-			).getIpHistory();
-		} else {
-			return player.getIpHistory();
-		}
-	}
+    @Override
+    public String getDisplayName() {
+        CorePlayer player = toCorePlayer();
+        if (player == null) {
+            return (getUuid() == null ?
+                    OfflineCorePlayer.fromName(getName()) :
+                    OfflineCorePlayer.fromUuid(getUuid())
+            ).getDisplayName();
+        } else {
+            return player.getDisplayName();
+        }
+    }
 
-	@Override
-	public List<String> getNameHistory() {
-		CorePlayer player = toCorePlayer();
-		if (player == null) {
-			return (getUuid() == null ?
-					OfflineCorePlayer.fromName(getName()) :
-					OfflineCorePlayer.fromUuid(getUuid())
-			).getNameHistory();
-		} else {
-			return player.getNameHistory();
-		}
-	}
+    @Override
+    public String getIp() {
+        CorePlayer player = toCorePlayer();
+        if (player == null) {
+            return (getUuid() == null ?
+                    OfflineCorePlayer.fromName(getName()) :
+                    OfflineCorePlayer.fromUuid(getUuid())
+            ).getIp();
+        } else {
+            return player.getIp();
+        }
+    }
 
-	// == Statistics ====================================================== //
+    @Override
+    public List<String> getIpHistory() {
+        CorePlayer player = toCorePlayer();
+        if (player == null) {
+            return (getUuid() == null ?
+                    OfflineCorePlayer.fromName(getName()) :
+                    OfflineCorePlayer.fromUuid(getUuid())
+            ).getIpHistory();
+        } else {
+            return player.getIpHistory();
+        }
+    }
 
-	/**
-	 * Sets the {@code StatisticHolder} to be used instead of
-	 * the default one provided ({@link #getStatisticValues()}).
-	 *
-	 * @see StatisticHolder
-	 */
-	public final void setStatisticHolder(StatisticHolder statHolder) {
-		this.statHolder = statHolder;
-	}
+    @Override
+    public List<String> getNameHistory() {
+        CorePlayer player = toCorePlayer();
+        if (player == null) {
+            return (getUuid() == null ?
+                    OfflineCorePlayer.fromName(getName()) :
+                    OfflineCorePlayer.fromUuid(getUuid())
+            ).getNameHistory();
+        } else {
+            return player.getNameHistory();
+        }
+    }
 
-	@Override
-	public ImmutableList<String> getStatisticValues() {
+    // == Statistics ====================================================== //
 
-		/*
-		 * If statHolder equals to the current instance (this
-		 * instance of CoreProfile), then return custom lines
-		 * for statistics.  Otherwise let statHolder decide
-		 * which statistics to return.
-		 */
-		if (!equals(statHolder)) {
-			return statHolder.getStatisticValues();
-		}
+    /**
+     * Sets statistic holder.
+     *
+     * @param statisticHolder the statistic holder
+     */
+    public void setStatisticHolder(StatisticHolder statisticHolder) {
+        this.statisticHolder = statisticHolder;
+    }
 
-		if (!played) {
-			try {
-				throw new CoreException("Player " + name + " never played before!");
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-		}
+    /**
+     * Gets statistic holder.
+     *
+     * @return the statistic holder
+     */
+    public StatisticHolder getStatisticHolder() {
+        return statisticHolder;
+    }
 
-		return new ImmutableList.Builder<String>()
-				.add("~")
-				.add("~&e======= " + getDisplayName() + " &e=======")
-				.add("~&eRank: " + getRank().getDisplayName())
-				.add("~&eCoins: &3" + getCoins())
-				.add("~&eTokens: &3" + getTokens())
-				.add("~&ePremium: " + (isPremium() ? "&2True" : "&4False"))
-				.add("~&eCurrently " + (isOnline() ? "&2Online" : "&4Offline"))
-				.add("~")
-				.build();
-	}
+    @Override
+    public ImmutableList<String> getStatisticValues() {
+
+        /*
+         * If statHolder equals to the current instance (this
+         * instance of CoreProfile), then return custom lines
+         * for statistics.  Otherwise let statHolder decide
+         * which statistics to return.
+         */
+        if (!equals(statisticHolder)) {
+            return statisticHolder.getStatisticValues();
+        }
+
+        if (!played) {
+            try {
+                throw new CoreException("Player " + name + " never played before!");
+            } catch (CoreException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new ImmutableList.Builder<String>()
+                .add("~")
+                .add("~&e======= " + getDisplayName() + " &e=======")
+                .add("~&eRank: " + getRank().getDisplayName())
+                .add("~&eCoins: &3" + getCoins())
+                .add("~&eTokens: &3" + getTokens())
+                .add("~&ePremium: " + (isPremium() ? "&2True" : "&4False"))
+                .add("~&eCurrently " + (isOnline() ? "&2Online" : "&4Offline"))
+                .add("~")
+                .build();
+    }
 }

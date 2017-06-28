@@ -7,13 +7,11 @@ import java.util.Optional;
 /**
  * Created by Matthew E on 6/13/2017.
  */
-public class SingleCharacterFilter implements ChatBlockFilter {
+class SingleCharacterFilter implements ChatBlockFilter {
+
     @Override
     public boolean block(CorePlayer player, String message) {
-        if (message.length() < 2) {
-            return true;
-        }
-        return false;
+        return message.length() < 2;
     }
 
     @Override

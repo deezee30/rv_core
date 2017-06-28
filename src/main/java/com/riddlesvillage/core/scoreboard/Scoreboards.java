@@ -17,37 +17,37 @@ import java.util.Map;
 
 public final class Scoreboards {
 
-	public static final int MAX_WIDTH = 24;
+    public static final int MAX_WIDTH = 24;
 
-	// Disable inialization
-	private Scoreboards() {}
+    // Disable inialization
+    private Scoreboards() {}
 
-	public static Map<String, Integer> orderedRows(List<String> rows) {
-		int len = rows.size();
-		EnhancedMap<String, Integer> map = new EnhancedMap<>(len);
-		for (int i = 0; i < len; i++) {
-			map.put(rows.get(i), len - i - 1);
-		}
+    public static Map<String, Integer> orderedRows(List<String> rows) {
+        int len = rows.size();
+        EnhancedMap<String, Integer> map = new EnhancedMap<>(len);
+        for (int i = 0; i < len; i++) {
+            map.put(rows.get(i), len - i - 1);
+        }
 
-		return map;
-	}
+        return map;
+    }
 
-	public static IScoreboardHandler newScoreboard(IScoreboard scoreboard, long refreshRateTicks) {
-		CoreScoreboardHandler board = new CoreScoreboardHandler(scoreboard).refresh();
+    public static IScoreboardHandler newScoreboard(IScoreboard scoreboard, long refreshRateTicks) {
+        CoreScoreboardHandler board = new CoreScoreboardHandler(scoreboard).refresh();
 
-		new BukkitRunnable() {
+        new BukkitRunnable() {
 
-			@Override
-			public void run() {
-				if (scoreboard.getHolder().getBukkitPlayer().isOnline()) {
-					board.refresh();
-				} else {
-					board.destroy();
-					cancel();
-				}
-			}
-		}.runTaskTimer(Core.get(), refreshRateTicks, refreshRateTicks);
+            @Override
+            public void run() {
+                if (scoreboard.getHolder().getBukkitPlayer().isOnline()) {
+                    board.refresh();
+                } else {
+                    board.destroy();
+                    cancel();
+                }
+            }
+        }.runTaskTimer(Core.get(), refreshRateTicks, refreshRateTicks);
 
-		return board;
-	}
+        return board;
+    }
 }

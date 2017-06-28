@@ -12,30 +12,30 @@ import org.bukkit.event.Cancellable;
 
 public class CorePlayerEvent extends CoreProfileEvent implements Cancellable {
 
-	protected static CorePlayerManager MANAGER = CorePlayerManager.getInstance();
+    protected static CorePlayerManager MANAGER = CorePlayerManager.getInstance();
 
-	private boolean cancel = false;
+    private boolean cancelled = false;
 
-	protected CorePlayerEvent(CorePlayer profile) {
-		super(profile);
-	}
+    protected CorePlayerEvent(CorePlayer profile) {
+        super(profile);
+    }
 
-	@Override
-	public CorePlayer getProfile() {
-		return (CorePlayer) super.getProfile();
-	}
+    @Override
+    public CorePlayer getProfile() {
+        return (CorePlayer) super.getProfile();
+    }
 
-	public CorePlayer getPlayer() {
-		return getProfile();
-	}
+    public CorePlayer getPlayer() {
+        return getProfile();
+    }
 
-	@Override
-	public boolean isCancelled() {
-		return cancel;
-	}
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
+    }
 
-	@Override
-	public void setCancelled(boolean cancel) {
-		this.cancel = cancel;
-	}
+    @Override
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
 }

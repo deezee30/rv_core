@@ -16,16 +16,16 @@ import com.riddlesvillage.core.internal.command.StatsCommand;
 public interface StatisticHolder {
 
 
-	/**
-	 * The lines used for presenting the statistical values for
-	 * this player instance.
-	 *
-	 * Used by {@link AbstractCoreProfile}
-	 * and its subclasses to set the values.
-	 *
-	 * @return  The custom statistic lines stored in an unmodifiable {@code List}
-	 * @see     AbstractCoreProfile#getStatisticValues()
-	 * @see     StatsCommand
-	 */
-	ImmutableList<String> getStatisticValues();
+    /**
+     * The lines used for presenting the statistical values for
+     * this player instance.
+     *
+     * Used by {@link AbstractCoreProfile}
+     * and its subclasses to set the values.
+     *
+     * @return  The custom statistic lines stored in an unmodifiable {@code List}
+     * @see     AbstractCoreProfile#getStatisticValues()
+     * @see     StatsCommand
+     */
+    ImmutableList<String> getStatisticValues();
 }

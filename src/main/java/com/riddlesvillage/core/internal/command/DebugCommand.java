@@ -10,24 +10,24 @@ import org.bukkit.entity.Player;
 
 public final class DebugCommand implements CommandExecutor {
 
-	@Override
-	public boolean onCommand(CommandSender sender,
-							 Command command,
-							 String label,
-							 String[] args) {
-		boolean debugging = !Messaging.debugEnabled();
+    @Override
+    public boolean onCommand(CommandSender sender,
+                             Command command,
+                             String label,
+                             String[] args) {
+        boolean debugging = !Messaging.debugEnabled();
 
-		if (sender instanceof Player) {
-			CorePlayer player = CorePlayerManager.getInstance().get(sender.getName());
-			if (!player.isAdmin()) {
-				player.sendMessage("player.error.no-permission");
-				return true;
-			}
+        if (sender instanceof Player) {
+            CorePlayer player = CorePlayerManager.getInstance().get(sender.getName());
+            if (!player.isAdmin()) {
+                player.sendMessage("player.error.no-permission");
+                return true;
+            }
 
-			player.sendMessage("Debugging has been temporarily %s", debugging ? "enabled" : "disabled");
-		}
+            player.sendMessage("Debugging has been temporarily %s", debugging ? "enabled" : "disabled");
+        }
 
-		Messaging.enableDebugging(debugging);
-		return true;
-	}
+        Messaging.enableDebugging(debugging);
+        return true;
+    }
 }

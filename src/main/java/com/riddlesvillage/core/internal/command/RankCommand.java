@@ -21,42 +21,42 @@ import java.util.stream.Collectors;
 
 public final class RankCommand implements CommandExecutor {
 
-	private static final CorePlayerManager MANAGER = CorePlayerManager.getInstance();
+    private static final CorePlayerManager MANAGER = CorePlayerManager.getInstance();
 
-	@Override
-	public boolean onCommand(CommandSender sender,
-							 Command command,
-							 String label,
-							 String[] args) {
-		CorePlayer player = MANAGER.get(sender.getName());
-		if (player != null) {
-			player.sendMessage("command.only-console");
-			return true;
-		}
+    @Override
+    public boolean onCommand(CommandSender sender,
+                             Command command,
+                             String label,
+                             String[] args) {
+        CorePlayer player = MANAGER.get(sender.getName());
+        if (player != null) {
+            player.sendMessage("command.only-console");
+            return true;
+        }
 
-		switch (args.length) {
-			default:
-				Core.log("command.usage", new String[] {"$usage"}, "/rank <player> <rank>");
-			case 0:
-				break;
-			case 2:
-				String rankName = args[1].toUpperCase(Locale.ENGLISH);
+        switch (args.length) {
+            default:
+                Core.log("command.usage", new String[] {"$usage"}, "/rank <player> <rank>");
+            case 0:
+                break;
+            case 2:
+                String rankName = args[1].toUpperCase(Locale.ENGLISH);
 
-				try {
-					Rank rank = Rank.valueOf(rankName);
+                try {
+                    Rank rank = Rank.valueOf(rankName);
 
-					String targetName = args[0];
-					MANAGER.getOrOffline(targetName).setRank(rank);
-					Core.log("%s's rank has been set to %s", targetName, rankName);
+                    String targetName = args[0];
+                    MANAGER.getOrOffline(targetName).setRank(rank);
+                    Core.log("%s's rank has been set to %s", targetName, rankName);
 
-					return true;
-				} catch (IllegalArgumentException e) {
-					Core.log("%s is not a valid rank", rankName);
-					break;
-				}
-		}
-		Core.log("Available ranks: " + StringUtil.getStringFromStringList(Arrays.stream(Rank.values()).map(Rank:: getName).collect(Collectors.toList())));
+                    return true;
+                } catch (IllegalArgumentException e) {
+                    Core.log("%s is not a valid rank", rankName);
+                    break;
+                }
+        }
+        Core.log("Available ranks: " + StringUtil.getStringFromStringList(Arrays.stream(Rank.values()).map(Rank:: getName).collect(Collectors.toList())));
 
-		return true;
-	}
+        return true;
+    }
 }

@@ -12,8 +12,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 final class PlayerRespawn implements Listener {
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onRespawn(PlayerRespawnEvent event) {
-		CorePlayerManager.getInstance().get(event).giveLoginItems();
-	}
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onRespawn(PlayerRespawnEvent event) {
+        CorePlayerManager.getInstance().get(event).giveLoginItems();
+    }
 }

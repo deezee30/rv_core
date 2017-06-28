@@ -13,19 +13,18 @@ import java.util.Optional;
 
 class AdvertisementFilter implements ChatBlockFilter {
 
-	@Override
-	public boolean block(CorePlayer player, String message) {
-		return !player.isHelper() && (StringUtil.containsAddress(message) || StringUtil.containsInetAddress(message));
+    @Override
+    public boolean block(CorePlayer player, String message) {
+        return !player.isHelper() && (StringUtil.containsAddress(message) || StringUtil.containsInetAddress(message));
+    }
 
-	}
+    @Override
+    public Optional<String> getReason() {
+        return Optional.of("chat.mute.no-ads");
+    }
 
-	@Override
-	public Optional<String> getReason() {
-		return Optional.of("chat.mute.no-ads");
-	}
-
-	@Override
-	public boolean violate() {
-		return true;
-	}
+    @Override
+    public boolean violate() {
+        return true;
+    }
 }

@@ -5,6 +5,7 @@
 package com.riddlesvillage.core.internal;
 
 import com.riddlesvillage.core.Messaging;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 
@@ -12,33 +13,33 @@ import java.io.PrintStream;
 
 public final class ConsoleOutput extends PrintStream {
 
-	private final ConsoleCommandSender console;
+    private final ConsoleCommandSender console;
 
-	public ConsoleOutput(ConsoleCommandSender console) {
-		super(Messaging.getOutput());
-		this.console = console;
-	}
+    public ConsoleOutput(final ConsoleCommandSender console) {
+        super(Messaging.getOutput());
+        this.console = Validate.notNull(console);
+    }
 
-	public ConsoleCommandSender getConsole() {
-		return console;
-	}
+    public ConsoleCommandSender getConsole() {
+        return console;
+    }
 
-	@Override
-	public void println() {
-		print0(Messaging.getNoPrefixChar());
-	}
+    @Override
+    public void println() {
+        print0(Messaging.getNoPrefixChar());
+    }
 
-	@Override
-	public void println(String x) {
-		print0(x);
-	}
+    @Override
+    public void println(final String x) {
+        print0(x);
+    }
 
-	@Override
-	public void println(Object x) {
-		print0(x);
-	}
+    @Override
+    public void println(final Object x) {
+        print0(x);
+    }
 
-	private void print0(Object object) {
-		console.sendMessage(ChatColor.translateAlternateColorCodes('&', object.toString()));
-	}
+    private void print0(final Object object) {
+        console.sendMessage(ChatColor.translateAlternateColorCodes('&', object.toString()));
+    }
 }

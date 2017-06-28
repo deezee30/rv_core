@@ -4,28 +4,28 @@ import org.apache.commons.lang3.Validate;
 
 public abstract class TimedTask<T> {
 
-	private final Timer timer = new Timer();
-	private T t;
+    private final Timer timer = new Timer();
+    private T t;
 
-	public final T execute() throws Exception {
-		return executeAndThen(() -> {});
-	}
+    public final T execute() throws Exception {
+        return executeAndThen(() -> {});
+    }
 
-	public final T executeAndThen(Runnable runnable) throws Exception {
-		timer.onFinishExecute(Validate.notNull(runnable)).start();
-		t = process();
-		timer.forceStop();
-		return t;
-	}
+    public final T executeAndThen(final Runnable runnable) throws Exception {
+        Validate.notNull(runnable);
+        timer.onFinishExecute(runnable).start();
+        t = process();
+        timer.forceStop();
+        return t;
+    }
 
+    public T getT() {
+        return t;
+    }
 
-	public final Timer getTimer() {
-		return timer;
-	}
+    public final Timer getTimer() {
+        return timer;
+    }
 
-	public final T getT() {
-		return t;
-	}
-
-	protected abstract T process() throws Exception;
+    protected abstract T process() throws Exception;
 }

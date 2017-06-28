@@ -12,59 +12,85 @@ import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.Rank;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
+import com.riddlesvillage.core.player.Rank;
 import com.riddlesvillage.core.player.profile.CoreProfile;
 
+/**
+ * Represents any profile that can hold and modify a {@link Rank}.
+ * @see Rank
+ */
 public interface RankedPlayer extends CoreProfile {
 
-	default Rank getRank() {
-		CorePlayer player = toCorePlayer();
-		if (player == null) {
-			return (getUuid() == null ?
-					OfflineCorePlayer.fromName(getName()) :
-					OfflineCorePlayer.fromUuid(getUuid())
-			).getRank();
-		} else {
-			return player.getRank();
-		}
-	}
+    /**
+     * @return the holder's current cached rank
+     */
+    default Rank getRank() {
+        CorePlayer player = toCorePlayer();
+        if (player == null) {
+            return (getUuid() == null ?
+                    OfflineCorePlayer.fromName(getName()) :
+                    OfflineCorePlayer.fromUuid(getUuid())
+            ).getRank();
+        } else {
+            return player.getRank();
+        }
+    }
 
-	/**
-	 * @deprecated Use {@link #setRank(Rank)} instead
-	 */
-	default void _setRank(Rank rank) {
-		CorePlayer player = toCorePlayer();
-		if (player == null) {
-			(getUuid() == null ?
-				OfflineCorePlayer.fromName(getName()) :
-					OfflineCorePlayer.fromUuid(getUuid())
-			)._setRank(rank);
-		} else {
-			player._setRank(rank);
-		}
-	}
+    /**
+     * @deprecated For internal use. Use {@link #setRank(Rank)} instead
+     */
+    @Deprecated
+    default void _setRank(final Rank rank) {
+        CorePlayer player = toCorePlayer();
+        if (player == null) {
+            (getUuid() == null ?
+                OfflineCorePlayer.fromName(getName()) :
+                    OfflineCorePlayer.fromUuid(getUuid())
+            )._setRank(rank);
+        } else {
+            player._setRank(rank);
+        }
+    }
 
-	default void setRank(Rank rank) {
-		_setRank(rank);
+    /**
+     * Sets the holder's {@link Rank} to the specified parameter
+     * in cache and also updates the {@link Database#getMainCollection()}
+     * in the database.
+     *
+     * @param   rank the rank to update to
+     * @see     Rank
+     */
+    default void setRank(final Rank rank) {
+        _setRank(rank);
 
-		DatabaseAPI.update(
-				Database.getMainCollection(),
-				getUuid(),
-				DataOperator.$SET,
-				DataInfo.RANK,
-				rank,
-				(updateResult, throwable) -> Core.logIf(
-						!updateResult.wasAcknowledged(),
-						"%s's rank update to %s was unacknowledged: %s",
-						getName(),
-						rank.getDisplayName(),
-						throwable
-				)
-		);
-	}
+        DatabaseAPI.update(
+                Database.getMainCollection(),
+                getUuid(),
+                DataOperator.$SET,
+                DataInfo.RANK,
+                rank,
+                (updateResult, throwable) -> Core.logIf(
+                        !updateResult.wasAcknowledged(),
+                        "%s's rank update to %s was unacknowledged: %s",
+                        getName(),
+                        rank.getDisplayName(),
+                        throwable
+                )
+        );
+    }
 
-	default boolean isAllowedFor(Rank rank) {
-		return getRank().getId() >= rank.getId();
-	}
+    /**
+     * Returns if the rank holder is allowed to perform
+     * a task that requires to be of the provided
+     * <b>or higher.</b>
+     *
+     * @param   rank the rank to check
+     * @return  if the rank provided is greater than or
+     *          equal to the holder's rank
+     * @see     Rank
+     */
+    default boolean isAllowedFor(final Rank rank) {
+        return getRank().getId() >= rank.getId();
+    }
 }

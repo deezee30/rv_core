@@ -9,38 +9,60 @@ package com.riddlesvillage.core.chat.filter;
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.collect.EnhancedList;
+import org.apache.commons.lang.Validate;
 
 import java.util.Iterator;
 
+/**
+ * The type Chat filters.
+ */
 public final class ChatFilters implements Iterable<ChatBlockFilter> {
 
-	private static final ChatFilters INSTANCE = new ChatFilters();
-	private EnhancedList<ChatBlockFilter> filters = new EnhancedList<>();
+    private static final ChatFilters INSTANCE = new ChatFilters();
+    private EnhancedList<ChatBlockFilter> filters = new EnhancedList<>();
 
-	public void registerDefaults() {
-		addFilter(new MuteFilter());
-		addFilter(new AdvertisementFilter());
-		addFilter(new SpamFilter());
-		addFilter(new SingleCharacterFilter());
-	}
+    /**
+     * Registers defaults.
+     */
+    public void registerDefaults() {
+        addFilter(new MuteFilter());
+        addFilter(new AdvertisementFilter());
+        addFilter(new SpamFilter());
+        addFilter(new SingleCharacterFilter());
+    }
 
-	public void addFilter(ChatBlockFilter filter) {
-		if (filter == null) return;
+    /**
+     * Add filter.
+     *
+     * @param filter the filter
+     */
+    public void addFilter(final ChatBlockFilter filter) {
+        Validate.notNull(filter);
 
-		Messaging.debug("Adding chat filter: " + filter.getClass().getSimpleName());
-		filters.add(filter);
-	}
+        Messaging.debug("Adding chat filter: " + filter.getClass().getSimpleName());
+        filters.add(filter);
+    }
 
-	public ImmutableList<ChatBlockFilter> getFilters() {
-		return filters.getImmutableElements();
-	}
+    /**
+     * Gets registered filters.
+     *
+     * @return the filters
+     */
+    public ImmutableList<ChatBlockFilter> getFilters() {
+        return filters.getImmutableElements();
+    }
 
-	@Override
-	public Iterator<ChatBlockFilter> iterator() {
-		return filters.iterator();
-	}
+    @Override
+    public Iterator<ChatBlockFilter> iterator() {
+        return filters.iterator();
+    }
 
-	public static ChatFilters getInstance() {
-		return INSTANCE;
-	}
+    /**
+     * Gets instance.
+     *
+     * @return the instance
+     */
+    public static ChatFilters getInstance() {
+        return INSTANCE;
+    }
 }

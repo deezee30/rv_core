@@ -15,51 +15,53 @@ import org.bukkit.command.CommandSender;
 
 public final class GodCommand implements CommandExecutor {
 
-	@Override
-	public boolean onCommand(CommandSender sender,
-							 Command command,
-							 String label,
-							 String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender,
+                             Command command,
+                             String label,
+                             String[] args) {
 
-		CorePlayer player = CorePlayerManager.getInstance().get(sender.getName());
-		boolean isPlayer = player != null;
+        CorePlayer player = CorePlayerManager.getInstance().get(sender.getName());
+        boolean isPlayer = player != null;
 
-		if (isPlayer && !player.isMod()) {
-			player.sendMessage("player.error.no-permission");
-			return true;
-		}
+        if (isPlayer && !player.isMod()) {
+            player.sendMessage("player.error.no-permission");
+            return true;
+        }
 
-		switch (args.length) {
-			default:
-				if (isPlayer)	player.sendMessage("command.usage", new String[] {"usage"}, "/god (<player>)");
-				else			Core.log("command.usage", new String[] {"usage"}, "/god <player>");
-				return true;
-			case 0:
-				if (!isPlayer)	Core.log("command.usage", new String[] {"usage"}, "/god <player>");
-				else {
-					player.sendMessage("god." + (player.setDamageable(!player.isDamageable()) ? "disable" : "enable"));
-				}
+        switch (args.length) {
+            default:
+                if (isPlayer)	player.sendMessage("command.usage", new String[] {"usage"}, "/god (<player>)");
+                else			Core.log("command.usage", new String[] {"usage"}, "/god <player>");
+                return true;
+            case 0:
+                if (!isPlayer)	Core.log("command.usage", new String[] {"usage"}, "/god <player>");
+                else {
+                    boolean disable = !player.isDamageable();
+                    player.setDamageable(disable);
+                    player.sendMessage("god." + (disable ? "disable" : "enable"));
+                }
 
-				return true;
-			case 1:
-				String targetName = args[0];
-				CorePlayer target = CorePlayerManager.getInstance().get(targetName);
-				if (target == null) {
-					if (isPlayer)	player.sendMessage("player.error.not-found", new String[]{"$player"}, targetName);
-					else			Core.log("player.error.not-found", new String[] {"$player"}, targetName);
-					return true;
-				}
+                return true;
+            case 1:
+                String targetName = args[0];
+                CorePlayer target = CorePlayerManager.getInstance().get(targetName);
+                if (target == null) {
+                    if (isPlayer)	player.sendMessage("player.error.not-found", new String[]{"$player"}, targetName);
+                    else			Core.log("player.error.not-found", new String[] {"$player"}, targetName);
+                    return true;
+                }
 
-				boolean damageable = !target.isDamageable();
-				target.setDamageable(damageable);
+                boolean damageable = !target.isDamageable();
+                target.setDamageable(damageable);
 
-				String msg = "god." + (damageable ? "disable" : "enable");
+                String msg = "god." + (damageable ? "disable" : "enable");
 
-				target.sendMessage(msg);
-				if (isPlayer)	player.sendMessage(msg);
-				else			Core.log(msg);
-		}
+                target.sendMessage(msg);
+                if (isPlayer)	player.sendMessage(msg);
+                else			Core.log(msg);
+        }
 
-		return true;
-	}
+        return true;
+    }
 }

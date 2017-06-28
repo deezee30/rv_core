@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface ScoreboardContainer {
 
-	String getTitle();
+    String getTitle();
 
-	Map<String, Integer> getRows();
+    Map<String, Integer> getRows();
 }

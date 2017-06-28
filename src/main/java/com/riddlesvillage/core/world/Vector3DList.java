@@ -14,31 +14,31 @@ import java.util.Collection;
 
 public class Vector3DList extends EnhancedList<Vector3D> {
 
-	private static final Gson gson = new GsonBuilder()
-			.setPrettyPrinting()
-			.serializeNulls()
-			.create();
+    private static final Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .serializeNulls()
+            .create();
 
-	public Vector3DList() {}
+    public Vector3DList() {}
 
-	public Vector3DList(int initialCapacity) {
-		super(initialCapacity);
-	}
+    public Vector3DList(final int initialCapacity) {
+        super(initialCapacity);
+    }
 
-	public Vector3DList(Vector3D... elements) {
-		super(elements);
-	}
+    public Vector3DList(final Vector3D... elements) {
+        super(elements);
+    }
 
-	public Vector3DList(Collection<? extends Vector3D> c) {
-		super(c);
-	}
+    public Vector3DList(final Collection<Vector3D> c) {
+        super(c);
+    }
 
-	@Override
-	public Gson getGson() {
-		return gson;
-	}
+    @Override
+    public Gson getGson() {
+        return gson;
+    }
 
-	public static Vector3DList fromJson(String json) {
-		return gson.fromJson(json, Vector3DList.class);
-	}
+    public static Vector3DList fromJson(final String json) {
+        return gson.fromJson(json, Vector3DList.class);
+    }
 }

@@ -11,13 +11,14 @@ import com.riddlesvillage.core.chat.filter.ChatBlockFilter;
 import com.riddlesvillage.core.chat.filter.ChatFilters;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
+import com.riddlesvillage.core.inventory.item.IndexedItem;
 import com.riddlesvillage.core.net.paster.PasteException;
 import com.riddlesvillage.core.net.paster.Paster;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.util.StringUtil;
-import com.riddlesvillage.core.inventory.item.IndexedItem;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,229 +39,243 @@ import java.util.function.Predicate;
 
 public final class CoreSettings {
 
-	private String defaultLocale = "english";
+    private String defaultLocale = "english";
 
-	private final EnhancedMap<String, String>
-			messages			= new EnhancedMap<>();
-	private final EnhancedMap<IndexedItem, Predicate<CorePlayer>>
-			loginItems			= new EnhancedMap<>();
-	private final EnhancedList<String>
-			allowedCommands		= new EnhancedList<>(),
-			locales				= new EnhancedList<>();
-	private final EnhancedMap<String, CoreInventoryClickEvent>
-			inventories			= new EnhancedMap<>();
-	private final AtomicBoolean
-			premiumChat			= new AtomicBoolean(false);
-	private final ChatFilters
-			chatFilters			= ChatFilters.getInstance();
+    private final EnhancedMap<String, String>
+            messages			= new EnhancedMap<>();
+    private final EnhancedMap<IndexedItem, Predicate<CorePlayer>>
+            loginItems			= new EnhancedMap<>();
+    private final EnhancedList<String>
+            allowedCommands		= new EnhancedList<>(),
+            locales				= new EnhancedList<>();
+    private final EnhancedMap<String, CoreInventoryClickEvent>
+            inventories			= new EnhancedMap<>();
+    private final AtomicBoolean
+            premiumChat			= new AtomicBoolean(false);
+    private final ChatFilters
+            chatFilters			= ChatFilters.getInstance();
 
-	CoreSettings() {}
+    CoreSettings() {}
 
-	public boolean isPremiumChat() {
-		return premiumChat.get();
-	}
+    public boolean isPremiumChat() {
+        return premiumChat.get();
+    }
 
-	public void setPremiumChat(boolean premiumChat) {
-		this.premiumChat.set(premiumChat);
-		Core.broadcast("premiumchat." + (premiumChat ? "enable" : "disable"));
-	}
+    public void setPremiumChat(final boolean premiumChat) {
+        this.premiumChat.set(premiumChat);
+        Core.broadcast("premiumchat." + (premiumChat ? "enable" : "disable"));
+    }
 
-	public void addChatFilter(ChatBlockFilter filter) {
-		chatFilters.addFilter(filter);
-	}
+    public void addChatFilter(final ChatBlockFilter filter) {
+        chatFilters.addFilter(Validate.notNull(filter));
+    }
 
-	public ChatFilters getChatFilters() {
-		return chatFilters;
-	}
+    public ChatFilters getChatFilters() {
+        return chatFilters;
+    }
 
-	public void addAllowedCommands(List<String> commands) {
-		allowedCommands.addAll(commands);
-	}
+    public void addAllowedCommands(final List<String> commands) {
+        allowedCommands.addAll(commands);
+    }
 
-	public void addAllowedCommand(String command) {
-		allowedCommands.add(command.toLowerCase(Locale.ENGLISH));
-	}
+    public void addAllowedCommand(final String command) {
+        allowedCommands.add(command.toLowerCase(Locale.ENGLISH));
+    }
 
-	public ImmutableList<String> getAllowedCommands() {
-		return allowedCommands.getImmutableElements();
-	}
+    public ImmutableList<String> getAllowedCommands() {
+        return allowedCommands.getImmutableElements();
+    }
 
-	public void addLoginItem(IndexedItem item) {
-		addLoginItem(item, player -> true);
-	}
+    public void addLoginItem(final IndexedItem item) {
+        addLoginItem(item, player -> true);
+    }
 
-	public void addLoginItem(IndexedItem item, Predicate<CorePlayer> action) {
-		loginItems.put(item, action);
-	}
+    public void addLoginItem(final IndexedItem item,
+                             final Predicate<CorePlayer> action) {
+        loginItems.put(Validate.notNull(item), Validate.notNull(action));
+    }
 
-	public void clearLoginItems() {
-		loginItems.clear();
-	}
+    public void clearLoginItems() {
+        loginItems.clear();
+    }
 
-	public ImmutableMap<IndexedItem, Predicate<CorePlayer>> getLoginItems() {
-		return loginItems.getImmutableEntries();
-	}
+    public ImmutableMap<IndexedItem, Predicate<CorePlayer>> getLoginItems() {
+        return loginItems.getImmutableEntries();
+    }
 
-	public void registerInventory(String path, CoreInventoryClickEvent event) {
-		inventories.put(path, event);
-	}
+    public void registerInventory(final String path,
+                                  final CoreInventoryClickEvent event) {
+        inventories.put(Validate.notNull(path), Validate.notNull(event));
+    }
 
-	public void registerInventories(Map<String, CoreInventoryClickEvent> events) {
-		inventories.putAll(events);
-	}
+    public void registerInventories(final Map<String, CoreInventoryClickEvent> events) {
+        inventories.putAll(events);
+    }
 
-	public ImmutableMap<String, CoreInventoryClickEvent> getRegisteredInventories() {
-		return inventories.getImmutableEntries();
-	}
+    public ImmutableMap<String, CoreInventoryClickEvent> getRegisteredInventories() {
+        return inventories.getImmutableEntries();
+    }
 
-	public void registerCommands(JavaPlugin plugin, Map<String, CommandExecutor> commandExecutorMap) {
-		for (Map.Entry<String, CommandExecutor> entry : commandExecutorMap.entrySet()) {
-			plugin.getCommand(entry.getKey()).setExecutor(entry.getValue());
-		}
-	}
+    public void registerCommands(final JavaPlugin plugin,
+                                 final Map<String, CommandExecutor> commandExecutorMap) {
+        for (Map.Entry<String, CommandExecutor> entry : commandExecutorMap.entrySet()) {
+            plugin.getCommand(entry.getKey()).setExecutor(entry.getValue());
+        }
+    }
 
-	public void registerListeners(JavaPlugin instance, Listener... listeners) {
-		for (Listener listener : listeners) {
-			instance.getServer().getPluginManager().registerEvents(listener, instance);
-		}
-	}
+    public void registerListeners(final JavaPlugin instance,
+                                  final Listener... listeners) {
+        for (Listener listener : listeners) {
+            instance.getServer().getPluginManager().registerEvents(listener, instance);
+        }
+    }
 
-	public void findAndRegisterLocales(JavaPlugin plugin) {
-		findAndRegisterLocales(new File(plugin.getDataFolder().getPath()
-				+ File.separator
-				+ "locale"
-		));
-	}
+    public void findAndRegisterLocales(final JavaPlugin plugin) {
+        Validate.notNull(plugin);
+        findAndRegisterLocales(new File(plugin.getDataFolder().getPath()
+                + File.separator
+                + "locale"
+        ));
+    }
 
-	public void findAndRegisterLocales(File directory) {
-		if (!directory.exists() && !directory.mkdirs()) return;
+    public void findAndRegisterLocales(final File directory) {
+        Validate.notNull(directory);
+        if (!directory.exists() && !directory.mkdirs()) return;
 
-		for (File file : directory.listFiles()) {
-			String configName = file.getName();
-			String locale = StringUtil.remove(configName, ".yml").toLowerCase();
+        for (File file : directory.listFiles()) {
+            String configName = file.getName();
+            String locale = StringUtil.remove(configName, ".yml").toLowerCase();
 
-			addLocale(locale);
+            addLocale(locale);
 
-			FileConfiguration config = new YamlConfiguration();
+            FileConfiguration config = new YamlConfiguration();
 
-			try {
-				config.load(file);
-			} catch (IOException | InvalidConfigurationException e) {
-				Messaging.log("Skipping loading %s: ");
-				e.printStackTrace();
-				continue;
-			}
+            try {
+                config.load(file);
+            } catch (IOException | InvalidConfigurationException e) {
+                Messaging.log("Skipping loading %s: ");
+                e.printStackTrace();
+                continue;
+            }
 
-			for (String path : config.getKeys(true)) {
-				String message = config.getString(path);
-				addMessage(locale, path, message);
-			}
-		}
-	}
+            for (String path : config.getKeys(true)) {
+                String message = config.getString(path);
+                addMessage(locale, path, message);
+            }
+        }
+    }
 
-	public String get(String path) {
-		return get(getDefaultLocale(), path);
-	}
+    public String get(final String path) {
+        return get(getDefaultLocale(), path);
+    }
 
-	public String get(String locale, String path) {
-		if (locale == null || StringUtils.isEmpty(path) || path.contains(" ")) {
-			return path;
-		}
+    public String get(final String locale,
+                      final String path) {
+        if (locale == null || StringUtils.isEmpty(path) || path.contains(" ")) {
+            return path;
+        }
 
-		String message = messages.get(locale.toLowerCase() + "." + path);
-		if (message == null) message = messages.get(getDefaultLocale() + "." + path);
-		if (message == null || message.equalsIgnoreCase("null")) {
-			return path.equals("chat.prefix") ? "" : path;
-		}
-		return message;
-	}
+        String message = messages.get(locale.toLowerCase() + "." + path);
+        if (message == null) message = messages.get(getDefaultLocale() + "." + path);
+        if (message == null || message.equalsIgnoreCase("null")) {
+            return path.equals("chat.prefix") ? "" : path;
+        }
+        return message;
+    }
 
-	public void addMessage(String locale, String path, String message) {
-		locale = locale.toLowerCase();
+    public void addMessage(String locale,
+                           final String path,
+                           final String message) {
+        Validate.notNull(path);
+        locale = locale.toLowerCase();
 
-		if (!locales.contains(locale)) {
-			locale = getDefaultLocale();
-			addLocale(locale);
-		}
+        if (!locales.contains(locale)) {
+            locale = getDefaultLocale();
+            addLocale(locale);
+        }
 
-		messages.put(
-				locale + "." + path,
-				StringUtils.isEmpty(message) || message.equalsIgnoreCase("null")
-						? "null"
-						: ChatColor.translateAlternateColorCodes('&', message)
-		);
-	}
+        messages.put(
+                locale + "." + path,
+                StringUtils.isEmpty(message) || message.equalsIgnoreCase("null")
+                        ? "null"
+                        : ChatColor.translateAlternateColorCodes('&', message)
+        );
+    }
 
-	public void addLocale(String locale) {
-		locales.addIf(
-				Messaging.logIf(
-						!Strings.isNullOrEmpty(locale) && !locales.contains(locale),
-						"New locale detected: `%s`",
-						WordUtils.capitalize(locale)
-				), locale
-		);
-	}
+    public void addLocale(final String locale) {
+        locales.addIf(
+                Messaging.logIf(
+                        !Strings.isNullOrEmpty(locale) && !locales.contains(locale),
+                        "New locale detected: `%s`",
+                        WordUtils.capitalize(locale)
+                ), locale
+        );
+    }
 
-	public ImmutableList<String> getLocales() {
-		return locales.getImmutableElements();
-	}
+    public boolean isLocaleRegistered(final String locale) {
+        return locales.contains(locale);
+    }
 
-	public String getDefaultLocale() {
-		return defaultLocale;
-	}
+    public ImmutableList<String> getLocales() {
+        return locales.getImmutableElements();
+    }
 
-	public void setDefaultLocale(String defaultLocale) {
-		addLocale(this.defaultLocale = defaultLocale);
-	}
+    public String getDefaultLocale() {
+        return defaultLocale;
+    }
 
-	public ImmutableMap<String, String> getAllMessages() {
-		return messages.getImmutableEntries();
-	}
+    public void setDefaultLocale(final String defaultLocale) {
+        addLocale(this.defaultLocale = Validate.notNull(defaultLocale));
+    }
 
-	public String getLocaleOrDefault(String locale) {
-		return locales.contains(locale.toLowerCase()) ? locale : getDefaultLocale();
-	}
+    public ImmutableMap<String, String> getAllMessages() {
+        return messages.getImmutableEntries();
+    }
 
-	public void initClasses(String... classPaths) {
-		for (String classPath : classPaths) {
-			try {
-				Class.forName(classPath);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    public String getLocaleOrDefault(final String locale) {
+        return locales.contains(locale.toLowerCase()) ? locale : getDefaultLocale();
+    }
 
-	public void tryPasteLocales() {
-		Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
-			StringBuilder sb = new StringBuilder();
-			String oldLocale = null;
-			for (Map.Entry<String, String> msg : Core.getSettings().getAllMessages().entrySet()) {
-				String[] parts = msg.getKey().split("\\.");
-				String locale = parts[0];
-				String path = StringUtils.join(ArrayUtils.subarray(parts, 1, parts.length + 1), ".");
-				String message = Core.getSettings().get(locale, path);
+    public void initClasses(final String... classPaths) {
+        for (String classPath : classPaths) {
+            try {
+                Class.forName(classPath);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-				if (message != null && !message.equalsIgnoreCase("null")) {
-					if (message.startsWith("MemorySection")) continue;
+    public void tryPasteLocales() {
+        Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
+            StringBuilder sb = new StringBuilder();
+            String oldLocale = null;
+            for (Map.Entry<String, String> msg : Core.getSettings().getAllMessages().entrySet()) {
+                String[] parts = msg.getKey().split("\\.");
+                String locale = parts[0];
+                String path = StringUtils.join(ArrayUtils.subarray(parts, 1, parts.length + 1), ".");
+                String message = Core.getSettings().get(locale, path);
 
-					message = ChatColor.stripColor(message);
-				}
+                if (message != null && !message.equalsIgnoreCase("null")) {
+                    if (message.startsWith("MemorySection")) continue;
 
-				if (oldLocale == null || !locale.equals(oldLocale)) {
-					oldLocale = locale;
+                    message = ChatColor.stripColor(message);
+                }
 
-					sb.append("\n").append(locale).append(":");
-				}
+                if (oldLocale == null || !locale.equals(oldLocale)) {
+                    oldLocale = locale;
 
-				sb.append(String.format("\n\t\"%-48s => \"%s\"", path + "\"", message));
-			}
+                    sb.append("\n").append(locale).append(":");
+                }
 
-			try {
-				Paster.hastebin(sb.toString()).paste();
-			} catch (PasteException e) {
-				Messaging.log("Did not paste locale-supported messages: %s", e);
-			}
-		});
-	}
+                sb.append(String.format("\n\t\"%-48s => \"%s\"", path + "\"", message));
+            }
+
+            try {
+                Paster.hastebin(sb.toString()).paste();
+            } catch (PasteException e) {
+                Messaging.log("Did not paste locale-supported messages: %s", e);
+            }
+        });
+    }
 }

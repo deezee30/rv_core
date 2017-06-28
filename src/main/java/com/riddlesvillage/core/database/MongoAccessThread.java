@@ -7,6 +7,7 @@ import com.riddlesvillage.core.database.query.BulkWriteQuery;
 import com.riddlesvillage.core.database.query.DocumentSearchQuery;
 import com.riddlesvillage.core.database.query.Query;
 import com.riddlesvillage.core.database.query.SingleUpdateQuery;
+import org.apache.commons.lang3.Validate;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -18,8 +19,8 @@ public class MongoAccessThread extends Thread {
 
     public final static UpdateOptions UPDATE_OPTIONS = new UpdateOptions().upsert(true);
 
-    public static void submitQuery(Query<?> query) {
-        CONCURRENT_QUERIES.add(query);
+    public static void submitQuery(final Query<?> query) {
+        CONCURRENT_QUERIES.add(Validate.notNull(query));
     }
 
     @Override

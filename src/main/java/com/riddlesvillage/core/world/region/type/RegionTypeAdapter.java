@@ -13,40 +13,41 @@ import java.lang.reflect.Type;
 
 public final class RegionTypeAdapter implements JsonSerializer<Region>, JsonDeserializer<Region> {
 
-	private static final RegionTypeAdapter INSTANCE = new RegionTypeAdapter();
-	public static final String META_TYPE = "type";
-	public static final String META_REGION = "region";
+    private static final RegionTypeAdapter INSTANCE = new RegionTypeAdapter();
+    public static final String META_TYPE = "type";
+    public static final String META_REGION = "region";
 
-	private RegionTypeAdapter() {}
+    private RegionTypeAdapter() {}
 
-	@Override
-	public JsonElement serialize(Region region,
-								 Type type,
-								 JsonSerializationContext context) {
-		JsonObject result = new JsonObject();
+    @Override
+    public JsonElement serialize(Region region,
+                                 Type type,
+                                 JsonSerializationContext context) {
+        JsonObject result = new JsonObject();
 
-		result.add(META_TYPE, new JsonPrimitive(region.getType().name()));
-		result.add(META_REGION, context.serialize(region, region.getClass()));
+        result.add(META_TYPE, new JsonPrimitive(region.getType().name()));
+        result.add(META_REGION, context.serialize(region, region.getClass()));
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public Region deserialize(JsonElement jsonElement,
-							  Type elementType,
-							  JsonDeserializationContext context) throws JsonParseException {
-		JsonObject jsonObject = jsonElement.getAsJsonObject();
+    @Override
+    public Region deserialize(JsonElement jsonElement,
+                              Type elementType,
+                              JsonDeserializationContext context) throws JsonParseException {
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-		return context.deserialize(
-				jsonElement.getAsJsonObject().get(META_REGION),
-				RegionType.valueOf(jsonObject
-								.get(META_TYPE)
-								.getAsString()
-				).getDefaultClass()
-		);
-	}
+        // TODO: Deserialization error when region contains flags...
+        return context.deserialize(
+                jsonElement.getAsJsonObject().get(META_REGION),
+                RegionType.valueOf(jsonObject
+                                .get(META_TYPE)
+                                .getAsString()
+                ).getDefaultClass()
+        );
+    }
 
-	public static RegionTypeAdapter getInstance() {
-		return INSTANCE;
-	}
+    public static RegionTypeAdapter getInstance() {
+        return INSTANCE;
+    }
 }

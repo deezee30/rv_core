@@ -6,44 +6,93 @@
 
 package com.riddlesvillage.core.database;
 
-import java.util.Map;
+import org.apache.commons.lang3.Validate;
 
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * The interface Stat type.
+ */
 public interface StatType {
 
-	String getStat();
+    /**
+     * Gets stat.
+     *
+     * @return the stat
+     */
+    String getStat();
 
-	Object getDefault();
+    /**
+     * Gets default.
+     *
+     * @return the default
+     */
+    Optional<Object> getDefault();
 
-	default Map<String, Object> append(Map<String, Object> map) {
-		return append(map, getDefault());
-	}
+    /**
+     * Append map.
+     *
+     * @param map the map
+     * @return the map
+     */
+    default Map<String, Object> append(final Map<String, Object> map) {
+        Validate.notNull(map);
+        return append(map, getDefault().isPresent() ? getDefault() : null);
+    }
 
-	default Map<String, Object> append(Map<String, Object> map, Object def) {
-		map.put(getStat(), def);
-		return map;
-	}
+    /**
+     * Append map.
+     *
+     * @param map the map
+     * @param def the def
+     * @return the map
+     */
+    default Map<String, Object> append(final Map<String, Object> map,
+                                       final Object def) {
+        Validate.notNull(map);
 
-	static StatType create(String stat) {
-		return create(stat, null);
-	}
+        map.put(getStat(), def);
+        return map;
+    }
 
-	static StatType create(String stat, Object def) {
-		return new StatType() {
+    /**
+     * Create stat type.
+     *
+     * @param stat the stat
+     * @return the stat type
+     */
+    static StatType create(final String stat) {
+        return create(stat, null);
+    }
 
-			@Override
-			public String getStat() {
-				return stat;
-			}
+    /**
+     * Create stat type.
+     *
+     * @param stat the stat
+     * @param def  the def
+     * @return the stat type
+     */
+    static StatType create(final String stat,
+                           final Object def) {
+        Validate.notNull(stat);
 
-			@Override
-			public Object getDefault() {
-				return def;
-			}
+        return new StatType() {
 
-			@Override
-			public String toString() {
-				return stat;
-			}
-		};
-	}
+            @Override
+            public String getStat() {
+                return stat;
+            }
+
+            @Override
+            public Optional<Object> getDefault() {
+                return Optional.ofNullable(def);
+            }
+
+            @Override
+            public String toString() {
+                return stat;
+            }
+        };
+    }
 }

@@ -12,13 +12,13 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 final class PlayerMove implements Listener {
 
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onMove(PlayerMoveEvent event) {
-		if (event.getFrom().getBlock().equals(event.getTo().getBlock())) return;
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onMove(PlayerMoveEvent event) {
+        if (event.getFrom().getBlock().equals(event.getTo().getBlock())) return;
 
-		CorePlayer player = CorePlayer.PLAYER_MANAGER.get(event);
-		if (player == null || player.isMovable()) return;
+        CorePlayer player = CorePlayer.PLAYER_MANAGER.get(event);
+        if (player == null || player.isMovable()) return;
 
-		player.getPlayer().teleport(event.getFrom());
-	}
+        player.getPlayer().teleport(event.getFrom());
+    }
 }

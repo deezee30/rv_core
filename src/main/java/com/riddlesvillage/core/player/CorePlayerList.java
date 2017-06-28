@@ -18,17 +18,17 @@ import java.util.Collection;
  */
 public class CorePlayerList extends EnhancedList<CorePlayer> {
 
-	public CorePlayerList() {}
+    public CorePlayerList() {}
 
-	public CorePlayerList(int initialCapacity) {
-		super(initialCapacity);
-	}
+    public CorePlayerList(int initialCapacity) {
+        super(initialCapacity);
+    }
 
-	public CorePlayerList(CorePlayer... elements) {
-		super(elements);
-	}
+    public CorePlayerList(CorePlayer... elements) {
+        super(elements);
+    }
 
-	public CorePlayerList(Collection<? extends CorePlayer> c) {
-		super(c);
-	}
+    public CorePlayerList(Collection<CorePlayer> c) {
+        super(c);
+    }
 }
