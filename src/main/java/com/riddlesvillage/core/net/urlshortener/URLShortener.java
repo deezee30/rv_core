@@ -10,10 +10,13 @@ import org.apache.commons.lang3.Validate;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public abstract class URLShortener extends TimedCallableTask<URL> {
 
     protected final String longUrl;
+    protected final long timeout;
+    protected final TimeUnit unit;
 
     private static final String[] removables = {
             // do not change order
@@ -25,21 +28,31 @@ public abstract class URLShortener extends TimedCallableTask<URL> {
     }
 
     protected URLShortener(final String longUrl) {
+        this(longUrl, 2, TimeUnit.SECONDS);
+    }
+
+    protected URLShortener(final String longUrl,
+                           final long timeout,
+                           final TimeUnit unit) {
         Validate.notNull(longUrl);
         for (String keyword : removables) {
             StringUtil.remove(longUrl, keyword);
         }
 
         this.longUrl = longUrl;
+        this.timeout = timeout;
+        this.unit = Validate.notNull(unit);
     }
 
-    public final URL shorten() {
+    public final URL shorten() throws URLShortenerException {
         ListenableFuture<URL> future = ServiceExecutor.getCachedExecutor().submit(this);
         try {
-            return future.get();
+            return future.get(timeout, unit);
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return null;
+            throw new URLShortenerException(e);
+        } catch (TimeoutException e) {
+            throw new URLShortenerException("The request timed out after "
+                    + timeout + unit.toString().toLowerCase());
         }
     }
 

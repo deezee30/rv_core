@@ -6,6 +6,7 @@ package com.riddlesvillage.core;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.riddlesvillage.core.chat.ChatMessages;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.internal.command.*;
 import com.riddlesvillage.core.internal.config.DatabaseConfig;
@@ -125,8 +126,7 @@ public final class Core extends JavaPlugin {
     @Override
     public void onDisable() {
         // Paste all messages in this session
-        // TODO: First add a timeout to the paster
-        // ChatMessages.getInstance().pasteChatMessages();
+        ChatMessages.getInstance().pasteChatMessages();
 
         // Kick all players
         for (CorePlayer player : PLAYER_MANAGER) {
