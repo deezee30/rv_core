@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class Hastebin extends Paster {
 
-    private static final String URL = "https://hastebin.com/";
+    private static final String URL = "https://www.hastebin.com/";
 
     Hastebin(final String content) {
         super(content);
