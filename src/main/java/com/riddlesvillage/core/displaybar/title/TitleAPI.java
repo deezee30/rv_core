@@ -4,7 +4,7 @@
  * Created on 04 June 2017 at 3:46 PM.
  */
 
-package com.riddlesvillage.core.title;
+package com.riddlesvillage.core.displaybar.title;
 
 import com.riddlesvillage.core.Core;
 import org.bukkit.Bukkit;

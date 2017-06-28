@@ -2,9 +2,9 @@ package example;
 
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.event.CorePlayerPostLoadEvent;
-import com.riddlesvillage.core.title.Title;
-import com.riddlesvillage.core.title.TitleBuilder;
-import com.riddlesvillage.core.title.TitleMessage;
+import com.riddlesvillage.core.displaybar.title.Title;
+import com.riddlesvillage.core.displaybar.title.TitleBuilder;
+import com.riddlesvillage.core.displaybar.title.TitleMessage;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 

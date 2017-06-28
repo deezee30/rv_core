@@ -4,7 +4,7 @@
  * Created on 21 June 2017 at 8:15 PM.
  */
 
-package com.riddlesvillage.core.title;
+package com.riddlesvillage.core.displaybar.title;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;

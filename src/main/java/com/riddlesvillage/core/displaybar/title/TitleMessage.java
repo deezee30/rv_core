@@ -4,7 +4,7 @@
  * Created on 21 June 2017 at 10:20 PM.
  */
 
-package com.riddlesvillage.core.title;
+package com.riddlesvillage.core.displaybar.title;
 
 import com.riddlesvillage.core.collect.EnhancedMap;
 import org.apache.commons.lang3.Validate;

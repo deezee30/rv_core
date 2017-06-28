@@ -1,4 +1,4 @@
-package com.riddlesvillage.core.title;
+package com.riddlesvillage.core.displaybar.title;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.EqualsBuilder;

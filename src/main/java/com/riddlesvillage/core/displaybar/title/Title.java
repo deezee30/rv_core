@@ -1,4 +1,4 @@
-package com.riddlesvillage.core.title;
+package com.riddlesvillage.core.displaybar.title;
 
 import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.player.CorePlayer;
