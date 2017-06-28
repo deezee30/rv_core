@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.world.Vector3D;
+import com.riddlesvillage.core.world.region.flag.Flag;
+import com.riddlesvillage.core.world.region.flag.FlagTypeAdapter;
 import com.riddlesvillage.core.world.region.type.RegionType;
 import com.riddlesvillage.core.world.region.type.RegionTypeAdapter;
 import org.apache.commons.lang3.Validate;
@@ -25,6 +27,7 @@ public final class Regions {
             .disableInnerClassSerialization()
             .setPrettyPrinting()
             .registerTypeAdapter(Region.class, RegionTypeAdapter.getInstance())
+            .registerTypeAdapter(Flag.class, FlagTypeAdapter.getInstance())
             .create();
 
     public static final String TYPE_META = RegionTypeAdapter.META_TYPE;
@@ -80,8 +83,6 @@ public final class Regions {
 
         if (getRegions().contains(region))
             throw new RegionException("Region already registered");
-
-        // TODO: Perform more checks
     }
 
     @Beta

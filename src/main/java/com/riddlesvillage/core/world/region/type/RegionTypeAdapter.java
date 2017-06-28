@@ -37,7 +37,6 @@ public final class RegionTypeAdapter implements JsonSerializer<Region>, JsonDese
                               JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-        // TODO: Deserialization error when region contains flags...
         return context.deserialize(
                 jsonElement.getAsJsonObject().get(META_REGION),
                 RegionType.valueOf(jsonObject

@@ -57,7 +57,7 @@ public class Flag<E extends Event & Cancellable> implements EventExecutor {
             BLOCK_SPREAD        = new Flag<>(new FlagBlockSpread());
 
     protected String flagName;
-    protected IFlag<E> flag;
+    protected transient IFlag<E> flag;
 
     private Flag(final IFlag<E> flag) {
         this.flag = flag;
