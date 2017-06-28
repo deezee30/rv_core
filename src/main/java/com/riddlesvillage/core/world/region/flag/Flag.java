@@ -8,6 +8,8 @@ import com.riddlesvillage.core.world.region.Region;
 import com.riddlesvillage.core.world.region.RegionCriteria;
 import com.riddlesvillage.core.world.region.Regions;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.*;
@@ -126,6 +128,28 @@ public class Flag<E extends Event & Cancellable> implements EventExecutor {
 
         // further action
         flag.onFurtherAction(event);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Flag<?> flag1 = (Flag<?>) o;
+
+        return new EqualsBuilder()
+                .append(flagName, flag1.flagName)
+                .append(flag, flag1.flag)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(flagName)
+                .append(flag)
+                .toHashCode();
     }
 
     public static Optional<Flag> from(final String flag) {
