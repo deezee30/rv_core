@@ -7,7 +7,7 @@
 package com.riddlesvillage.core.world.region.type;
 
 import com.google.common.collect.ImmutableList;
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.util.MathUtil;
@@ -57,7 +57,7 @@ public class CuboidRegion extends Region {
         depth	= MathUtil.floor(max.getZ() - min.getZ() + 1);
         volume	= width * height * depth;
 
-        Messaging.debug("CUBOID: Measured volume: %s; Calculated volume: %s", points.size(), volume);
+        Core.debug("CUBOID: Measured volume: %s; Calculated volume: %s", points.size(), volume);
     }
 
     @Override

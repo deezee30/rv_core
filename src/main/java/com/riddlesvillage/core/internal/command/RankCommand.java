@@ -55,7 +55,7 @@ public final class RankCommand implements CommandExecutor {
                     break;
                 }
         }
-        Core.log("Available ranks: " + StringUtil.getStringFromStringList(Arrays.stream(Rank.values()).map(Rank:: getName).collect(Collectors.toList())));
+        Core.log("Available ranks: " + StringUtil.getStringFromStringList(Arrays.stream(Rank.values()).map(Rank::getName).collect(Collectors.toList())));
 
         return true;
     }

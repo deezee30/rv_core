@@ -19,7 +19,7 @@ public class CoreException extends Exception {
 
     public CoreException(String message,
                          Object... components) {
-        super(Messaging.buildMessage(Validate.notNull(message), components));
+        super(Logger.buildMessage(Validate.notNull(message), components));
     }
 
     public CoreException(String message,

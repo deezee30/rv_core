@@ -4,9 +4,9 @@
 
 package com.riddlesvillage.core.internal.config;
 
-import com.riddlesvillage.core.CoreSettings;
-import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.Core;
+import com.riddlesvillage.core.CoreSettings;
+import com.riddlesvillage.core.Logger;
 import com.riddlesvillage.core.file.ConfigFile;
 import com.riddlesvillage.core.internal.ConsoleOutput;
 import org.bukkit.Bukkit;
@@ -33,12 +33,13 @@ public final class MessagesConfig {
 
         SETTINGS.findAndRegisterLocales(PLUGIN_INSTANCE);
 
-        Messaging.setNoPrefixChar((char) 126);
-        Messaging.setPrefix(
+        Logger logger = Core.getCoreLogger();
+        logger.setNoPrefixChar((char) 126);
+        logger.setPrefix(
                 ChatColor.translateAlternateColorCodes('&', SETTINGS.get("chat.prefix"))
         );
 
-        Messaging.setOutput(new ConsoleOutput(Bukkit.getConsoleSender()));
+        logger.setOutput(new ConsoleOutput(Bukkit.getConsoleSender()));
 
         SETTINGS.tryPasteLocales();
     }

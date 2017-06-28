@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.inventory.item;
 
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -38,7 +38,7 @@ public final class CoreItemStackList extends EnhancedList<CoreItemStack> {
         for (int x = 0; x < size(); x++) {
             if (get(x) != null) {
                 if (get(x).getMaterial().equals(mat)) {
-                    Messaging.debug("Found %s at slot %s", mat, x);
+                    Core.debug("Found %s at slot %s", mat, x);
                     return x;
                 }
             }

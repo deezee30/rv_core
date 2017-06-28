@@ -1,6 +1,6 @@
 package com.riddlesvillage.core.internal.command;
 
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.bukkit.command.Command;
@@ -15,7 +15,7 @@ public final class DebugCommand implements CommandExecutor {
                              Command command,
                              String label,
                              String[] args) {
-        boolean debugging = !Messaging.debugEnabled();
+        boolean debugging = !Core.getCoreLogger().debugEnabled();
 
         if (sender instanceof Player) {
             CorePlayer player = CorePlayerManager.getInstance().get(sender.getName());
@@ -27,7 +27,7 @@ public final class DebugCommand implements CommandExecutor {
             player.sendMessage("Debugging has been temporarily %s", debugging ? "enabled" : "disabled");
         }
 
-        Messaging.enableDebugging(debugging);
+        Core.getCoreLogger().enableDebugging(debugging);
         return true;
     }
 }

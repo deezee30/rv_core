@@ -40,6 +40,7 @@ public final class Core extends JavaPlugin {
     private static Core instance;
     private final Database database = Database.getInstance();
     private final Timer loadTimer = new Timer();
+    private final Logger logger = new Logger();
 
     @Override
     public void onLoad() {
@@ -75,22 +76,23 @@ public final class Core extends JavaPlugin {
 
             // Register default RiddlesCore commands
             settings.registerCommands(this, new ImmutableMap.Builder<String, CommandExecutor>()
-                    .put("addspawn",	new AddSpawnCommand())
-                    .put("clearchat",	new ClearChatCommand())
-                    .put("coins",		new CoinsCommand())
-                    .put("debug",		new DebugCommand())
-                    .put("iphistory",	new IpHistoryCommand())
-                    .put("namehistory",	new NameHistoryCommand())
-                    .put("god",			new GodCommand())
-                    .put("premium",		new PremiumCommand())
-                    .put("rank",		new RankCommand())
-                    .put("teleport",	new TeleportCommand())
-                    .put("stats",		new StatsCommand())
-                    .put("tokens",		new TokensCommand())
-                    .put("tpspawn",		new TPSpawnCommand())
-                    .put("vanish",		new VanishCommand())
+                    .put("addspawn",    new AddSpawnCommand())
+                    .put("clearchat",   new ClearChatCommand())
+                    .put("coins",       new CoinsCommand())
+                    .put("debug",       new DebugCommand())
+                    .put("iphistory",   new IpHistoryCommand())
+                    .put("namehistory", new NameHistoryCommand())
+                    .put("god",         new GodCommand())
+                    .put("premium",     new PremiumCommand())
+                    .put("rank",        new RankCommand())
+                    .put("teleport",    new TeleportCommand())
+                    .put("stats",       new StatsCommand())
+                    .put("tokens",      new TokensCommand())
+                    .put("tpspawn",     new TPSpawnCommand())
+                    .put("vanish",      new VanishCommand())
                     .build()
             );
+
             // Allow commands when commands are disabled
             settings.addAllowedCommands(MainConfig.getAllowedCommands());
 
@@ -148,37 +150,48 @@ public final class Core extends JavaPlugin {
 
     public static Optional<String> log(final String path,
                                        final Object... components) {
-        return Messaging.log(settings.get(path), components);
+        return instance.logger.log(settings.get(path), components);
     }
 
     public static Optional<String> log(final String path,
                                        final String[] keys,
                                        final Object... vals) {
-        return log(Messaging.constructReplacements(settings.get(path), keys, vals));
+        return log(Logger.constructReplacements(settings.get(path), keys, vals));
     }
 
     public static Optional<String> log(final String path,
                                        final Map<String, Object> replacements) {
-        return log(Messaging.constructReplacements(settings.get(path), replacements));
+        return log(Logger.constructReplacements(settings.get(path), replacements));
     }
 
     public static boolean logIf(final boolean check,
                                 final String path,
                                 final Object... components) {
-        return Messaging.logIf(check, settings.get(path), components);
+        return instance.logger.logIf(check, settings.get(path), components);
     }
 
     public static boolean logIf(final boolean check,
                                 final String path,
                                 final String[] keys,
                                 final Object... vals) {
-        return logIf(check, Messaging.constructReplacements(settings.get(path), keys, vals));
+        return logIf(check, Logger.constructReplacements(settings.get(path), keys, vals));
     }
 
     public static boolean logIf(final boolean check,
                                 final String path,
                                 final Map<String, Object> replacements) {
-        return logIf(check, Messaging.constructReplacements(settings.get(path), replacements));
+        return logIf(check, Logger.constructReplacements(settings.get(path), replacements));
+    }
+
+    public static Optional<String> debug(final String string,
+                                  final Object... components) {
+        return instance.logger.debug(string, components);
+    }
+
+    public static boolean debugIf(final boolean check,
+                                    final String string,
+                                    final Object... components) {
+        return instance.logger.debugIf(check, string, components);
     }
 
     public static void broadcast(final String message,
@@ -193,12 +206,16 @@ public final class Core extends JavaPlugin {
     public static void broadcast(final String path,
                                  final String[] keys,
                                  final Object... vals) {
-        broadcast(Messaging.constructReplacements(settings.get(path), keys, vals));
+        broadcast(Logger.constructReplacements(settings.get(path), keys, vals));
     }
 
     public static void broadcast(final String path,
                                  final Map<String, Object> replacements) {
-        broadcast(Messaging.constructReplacements(settings.get(path), replacements));
+        broadcast(Logger.constructReplacements(settings.get(path), replacements));
+    }
+
+    public static Logger getCoreLogger() {
+        return instance.logger;
     }
 
     public static boolean sendServerMessage(final String channel,

@@ -157,7 +157,7 @@ public final class CoreSettings {
             try {
                 config.load(file);
             } catch (IOException | InvalidConfigurationException e) {
-                Messaging.log("Skipping loading %s: ");
+                Core.log("Skipping loading %s: ");
                 e.printStackTrace();
                 continue;
             }
@@ -208,7 +208,7 @@ public final class CoreSettings {
 
     public void addLocale(final String locale) {
         locales.addIf(
-                Messaging.logIf(
+                Core.logIf(
                         !Strings.isNullOrEmpty(locale) && !locales.contains(locale),
                         "New locale detected: `%s`",
                         WordUtils.capitalize(locale)
@@ -278,7 +278,7 @@ public final class CoreSettings {
             try {
                 Paster.hastebin(sb.toString()).paste();
             } catch (PasteException e) {
-                Messaging.log("Did not paste locale-supported messages: %s", e);
+                Core.log("Did not paste locale-supported messages: %s", e);
             }
         });
     }

@@ -9,7 +9,7 @@ package com.riddlesvillage.core.chat;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.net.paster.PasteException;
 import com.riddlesvillage.core.net.paster.Paster;
 import org.apache.commons.lang3.Validate;
@@ -44,9 +44,9 @@ public final class ChatMessages {
 
         try {
             URL paste = Paster.hastebin(jsonObject.toString()).paste();
-            Messaging.log("Saved chat messages to %s", paste.toString());
+            Core.log("Saved chat messages to %s", paste.toString());
         } catch (PasteException e) {
-            Messaging.log("Could not paste saved chat messages: " + e);
+            Core.log("Could not paste saved chat messages: " + e);
         }
     }
 

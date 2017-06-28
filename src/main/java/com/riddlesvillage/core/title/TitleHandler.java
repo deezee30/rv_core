@@ -8,7 +8,6 @@ package com.riddlesvillage.core.title;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.packet.wrapper.WrapperPlayServerTitle;
 import com.riddlesvillage.core.player.CorePlayer;
@@ -75,7 +74,7 @@ public final class TitleHandler {
              * If not, block the message if it's a path or send it if it's not.
              */
             if (msg.equals(path)) {
-                if (!path.contains(" ") && !path.equals(String.valueOf(Messaging.getNoPrefixChar()))) {
+                if (!path.contains(" ") && !path.equals(String.valueOf(Core.getCoreLogger().getNoPrefixChar()))) {
                     return packet;
                 }
             }

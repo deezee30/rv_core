@@ -7,7 +7,6 @@ package com.riddlesvillage.core.player;
 import com.google.common.base.Strings;
 import com.mongodb.async.client.MongoCollection;
 import com.riddlesvillage.core.Core;
-import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
@@ -102,7 +101,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 
             CACHED_PROFILES.addIf(!CACHED_PROFILES.contains(this), this);
         } else {
-            Messaging.debug("Failed to obtain stats for '%s' ('%s')", getName(), getUuid());
+            Core.debug("Failed to obtain stats for '%s' ('%s')", getName(), getUuid());
         }
 
         // run the runnable once

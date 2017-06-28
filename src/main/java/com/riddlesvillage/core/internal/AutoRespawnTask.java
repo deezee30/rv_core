@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.internal;
 
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.entity.Player;
@@ -23,7 +23,7 @@ public final class AutoRespawnTask extends BukkitRunnable {
         try {
             if (player.isOnline()) player.spigot().respawn();
         } catch (Throwable t) {
-            Messaging.log(
+            Core.log(
                     "An error occurred while attempting to force respawn player %s: %s",
                     CorePlayerManager.getInstance().get(player.getUniqueId()), t
             );

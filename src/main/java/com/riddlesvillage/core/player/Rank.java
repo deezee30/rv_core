@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.player;
 
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Logger;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.ChatColor;
 
@@ -82,7 +82,7 @@ public enum Rank {
      */
     public String getFormat() {
         return ChatColor.translateAlternateColorCodes('&',
-                Messaging.buildMessage("&8[%s&8]&7", getDisplayName()));
+                Logger.buildMessage("&8[%s&8]&7", getDisplayName()));
     }
 
     @Override

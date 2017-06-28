@@ -7,7 +7,7 @@
 package com.riddlesvillage.core.chat.filter;
 
 import com.google.common.collect.ImmutableList;
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import org.apache.commons.lang.Validate;
 
@@ -39,7 +39,7 @@ public final class ChatFilters implements Iterable<ChatBlockFilter> {
     public void addFilter(final ChatBlockFilter filter) {
         Validate.notNull(filter);
 
-        Messaging.debug("Adding chat filter: " + filter.getClass().getSimpleName());
+        Core.debug("Adding chat filter: " + filter.getClass().getSimpleName());
         filters.add(filter);
     }
 

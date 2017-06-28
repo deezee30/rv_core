@@ -8,7 +8,7 @@ package com.riddlesvillage.core.world.region.type;
 
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.util.MathUtil;
@@ -63,7 +63,7 @@ public class SphericalRegion extends Region {
         min     = center.clone().subtract(radius);
         max     = center.clone().add(radius);
 
-        Messaging.debug("SPHERE: Measured volume: %s; Calculated volume: %s", points.size(), volume);
+        Core.debug("SPHERE: Measured volume: %s; Calculated volume: %s", points.size(), volume);
     }
 
     public Vector3D getCenter() {

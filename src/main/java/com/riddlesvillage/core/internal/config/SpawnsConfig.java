@@ -4,7 +4,6 @@
 
 package com.riddlesvillage.core.internal.config;
 
-import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
@@ -41,7 +40,7 @@ public final class SpawnsConfig extends CoreConfigFile {
                 World world = Bukkit.getWorld(worldName);
 
                 if (world == null) {
-                    Messaging.log("Spawn '%s' wasn't loaded -- World '%s' doesn't exist", name, worldName);
+                    Core.log("Spawn '%s' wasn't loaded -- World '%s' doesn't exist", name, worldName);
                     continue;
                 }
 

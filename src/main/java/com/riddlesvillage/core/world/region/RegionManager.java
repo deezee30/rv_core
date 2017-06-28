@@ -8,7 +8,6 @@ package com.riddlesvillage.core.world.region;
 
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.Core;
-import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.file.FileUtil;
 import com.riddlesvillage.core.util.StringUtil;
 import com.riddlesvillage.core.world.region.type.RegionType;
@@ -42,7 +41,7 @@ public final class RegionManager {
 
         regions.add(region);
 
-        Messaging.debug(
+        Core.debug(
                 "Registered %s region #%s: %s",
                 region.getType(),
                 regions.indexOf(region),
@@ -103,7 +102,7 @@ public final class RegionManager {
 
         // perform IO saves async
         Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
-            if (!Messaging.debugIf(
+            if (!Core.debugIf(
                     !file.exists(),
                     "Did not save %s regions, file doesn't exist!",
                     regions.size())) {
@@ -114,7 +113,7 @@ public final class RegionManager {
                     oops.set(e);
                 }
 
-                Messaging.debug(
+                Core.debug(
                         "Saved %s %s",
                         regions.size(),
                         StringUtil.checkPlural("region", "regions", regions.size())

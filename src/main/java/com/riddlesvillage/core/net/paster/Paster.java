@@ -1,7 +1,7 @@
 package com.riddlesvillage.core.net.paster;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.service.ServiceExecutor;
 import com.riddlesvillage.core.service.timer.TimedCallableTask;
 import org.apache.commons.lang3.Validate;
@@ -48,7 +48,7 @@ public abstract class Paster extends TimedCallableTask<URL> {
 
     @Override
     public final URL call() throws Exception {
-        return executeAndThen(() -> Messaging.debug(
+        return executeAndThen(() -> Core.debug(
                 "Content pasted in %sms: %s",
                 getTimer().getTime(TimeUnit.MILLISECONDS),
                 getT()

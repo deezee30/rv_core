@@ -1,7 +1,7 @@
 package com.riddlesvillage.core.net.urlshortener;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.service.ServiceExecutor;
 import com.riddlesvillage.core.service.timer.TimedCallableTask;
 import com.riddlesvillage.core.util.StringUtil;
@@ -58,7 +58,7 @@ public abstract class URLShortener extends TimedCallableTask<URL> {
 
     @Override
     public final URL call() throws Exception {
-        return executeAndThen(() -> Messaging.debug(
+        return executeAndThen(() -> Core.debug(
                 "URL '%s' was shortened to '%s' in %sms",
                 longUrl,
                 getT(),

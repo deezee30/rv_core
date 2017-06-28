@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.internal.config;
 
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public final class MainConfig extends CoreConfigFile {
     public List<String> allowedCmds;
 
     private MainConfig() {
-        Messaging.enableDebugging(debug);
+        Core.getCoreLogger().enableDebugging(debug);
     }
 
     @Override

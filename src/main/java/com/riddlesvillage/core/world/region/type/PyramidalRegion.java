@@ -8,7 +8,7 @@ package com.riddlesvillage.core.world.region.type;
 
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.world.Vector3D;
@@ -73,7 +73,7 @@ public class PyramidalRegion extends Region {
                 base.getZ() + radius
         );
 
-        Messaging.debug("PYRAMID: Measured volume: %s; Calculated volume: %s", points.size(), volume);
+        Core.debug("PYRAMID: Measured volume: %s; Calculated volume: %s", points.size(), volume);
     }
 
     public Vector3D getBase() {

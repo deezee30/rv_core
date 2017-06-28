@@ -2,7 +2,6 @@ package com.riddlesvillage.core.backend.server;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.Core;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -39,10 +38,10 @@ public class BungeeServerListener implements PluginMessageListener {
         this.serverList = new ArrayList<>();
         Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(Core.get(), "BungeeCord");
         Bukkit.getServer().getMessenger().registerIncomingPluginChannel(Core.get(), "BungeeCord", this);
-        Messaging.debug("&7[&aBungeeListener&7] &7Now listening on BungeeCord messages.");
+        Core.debug("&7[&aBungeeListener&7] &7Now listening on BungeeCord messages.");
         Bukkit.getScheduler().scheduleSyncRepeatingTask(Core.get(), () -> {
             long startTime = System.currentTimeMillis();
-            Messaging.debug("&7[&aBungeeListener&7] &7Updating cache...");
+            Core.debug("&7[&aBungeeListener&7] &7Updating cache...");
 
         }, 60L, 60L);
     }
@@ -61,14 +60,14 @@ public class BungeeServerListener implements PluginMessageListener {
                 if (!serverList.contains(server)) {
                     serverList.add(server);
                     long time = (System.currentTimeMillis() - startTime);
-                    Messaging.debug("&7[&aBungeeListener&7] &7Caching server &a{0} &7in &e{1}ms", server, time+"");
+                    Core.debug("&7[&aBungeeListener&7] &7Caching server &a{0} &7in &e{1}ms", server, time + "");
                 }
             }
         }
         if (subChannel.equals("GetServer")) {
             long startTime = System.currentTimeMillis();
             this.server = in.readUTF();
-            Messaging.debug("&7[&aBungeeListener&7] &7Cached server name &7in &e{0}ms", (System.currentTimeMillis()-startTime) + "");
+            Core.debug("&7[&aBungeeListener&7] &7Cached server name &7in &e{0}ms", (System.currentTimeMillis() - startTime) + "");
         }
         if (subChannel.equals("PlayerCount")) {
             long startTime = System.currentTimeMillis();
@@ -79,7 +78,7 @@ public class BungeeServerListener implements PluginMessageListener {
             }
             this.playerCountMap.put(server, playerCount);
             long time = (System.currentTimeMillis() - startTime);
-            Messaging.debug("&7[&aBungeeListener&7] &7Cached player count for &a{0} &7in &e{1}ms", server, time+"");
+            Core.debug("&7[&aBungeeListener&7] &7Cached player count for &a{0} &7in &e{1}ms", server, time + "");
         }
     }
 }

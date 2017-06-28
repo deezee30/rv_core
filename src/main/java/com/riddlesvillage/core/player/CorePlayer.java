@@ -14,7 +14,7 @@ import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.WriteModel;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.CoreSettings;
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Logger;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
@@ -191,16 +191,16 @@ public class CorePlayer extends AbstractCoreProfile {
                     COLLECTION, doc,
                     (result, t1) -> {
                         if (t1 != null) {
-                            Messaging.debug("Failed to insert '%s' into db: %s", getName(), t1);
+                            Core.debug("Failed to insert '%s' into db: %s", getName(), t1);
                             t1.printStackTrace();
                         } else {
-                            Messaging.debug("New player '%s' successfully created", CorePlayer.this.getName());
+                            Core.debug("New player '%s' successfully created", CorePlayer.this.getName());
                         }
                     }
             );
         }
 
-        Messaging.debug("%s's language is %s", getName(), WordUtils.capitalize(locale));
+        Core.debug("%s's language is %s", getName(), WordUtils.capitalize(locale));
 
         // Delay task until the CraftPlayer instance has been fully loaded
         new BukkitRunnable() {
@@ -210,7 +210,7 @@ public class CorePlayer extends AbstractCoreProfile {
 
                 // Check how long it takes to load the player in other events via RiddlesCore
                 final Timer eventTimer = new Timer().start();
-                eventTimer.onFinishExecute(() -> Messaging.debug(
+                eventTimer.onFinishExecute(() -> Core.debug(
                         "'%s' was loaded in other plugins in %sms",
                         CorePlayer.this,
                         eventTimer.getTime(TimeUnit.MILLISECONDS)
@@ -369,7 +369,7 @@ public class CorePlayer extends AbstractCoreProfile {
      * to the path provided, the message returned is taken as an
      * already defined message.</p>
      *
-     * <p>If the message returned equals {@link Messaging#getNoPrefixChar()}
+     * <p>If the message returned equals {@link Logger#getNoPrefixChar()}
      * or if the path returned is still remained as a path, then the
      * message is blocked.</p>
      *
@@ -412,7 +412,7 @@ public class CorePlayer extends AbstractCoreProfile {
      * to the path provided, the message returned is taken as an
      * already defined message.</p>
      *
-     * <p>If the message returned equals {@link Messaging#getNoPrefixChar()}
+     * <p>If the message returned equals {@link Logger#getNoPrefixChar()}
      * or if the path returned is still remained as a path, then the
      * message is blocked.</p>
      *
@@ -447,8 +447,8 @@ public class CorePlayer extends AbstractCoreProfile {
          * If not, block the message if it's a path or send it if it's not.
          */
         if (message.equals(path)) {
-            if (!path.contains(" ") && !path.equals(String.valueOf(Messaging.getNoPrefixChar()))) {
-                Messaging.debug("Blocking message '%s' from player %s (locale: %s)", path, this, locale);
+            if (!path.contains(" ") && !path.equals(String.valueOf(Core.getCoreLogger().getNoPrefixChar()))) {
+                Core.debug("Blocking message '%s' from player %s (locale: %s)", path, this, locale);
                 return;
             }
         }
@@ -464,7 +464,7 @@ public class CorePlayer extends AbstractCoreProfile {
      * to the path provided, the message returned is taken as an
      * already defined message.</p>
      *
-     * <p>If the message returned equals {@link Messaging#getNoPrefixChar()}
+     * <p>If the message returned equals {@link Logger#getNoPrefixChar()}
      * or if the path returned is still remained as a path, then the
      * message is blocked.</p>
      *
@@ -493,14 +493,14 @@ public class CorePlayer extends AbstractCoreProfile {
      *          An array of replacements to be used instead of variables
      *          in order.
      * @see     CoreSettings#get(String, String)
-     * @see     Messaging#constructReplacements(String, String[], Object...)
+     * @see     Logger#constructReplacements(String, String[], Object...)
      * @see     #sendMessage(String, Object...)
      * @see     #sendMessage(String, Map)
      */
     public void sendMessage(final String path,
                             final String[] keys,
                             final Object... vals) {
-        handleMessage(Messaging.constructReplacements(SETTINGS.get(locale, path), keys, vals));
+        handleMessage(Logger.constructReplacements(SETTINGS.get(locale, path), keys, vals));
     }
 
     /**
@@ -511,7 +511,7 @@ public class CorePlayer extends AbstractCoreProfile {
      * to the path provided, the message returned is taken as an
      * already defined message.</p>
      *
-     * <p>If the message returned equals {@link Messaging#getNoPrefixChar()}
+     * <p>If the message returned equals {@link Logger#getNoPrefixChar()}
      * or if the path returned is still remained as a path, then the
      * message is blocked.</p>
      *
@@ -535,13 +535,13 @@ public class CorePlayer extends AbstractCoreProfile {
      *          A map of keys (variables to replace) and their values
      *          (replacements) that correspond to each other.
      * @see     CoreSettings#get(String, String)
-     * @see     Messaging#constructReplacements(String, Map)
+     * @see     Logger#constructReplacements(String, Map)
      * @see     #sendMessage(String, Object...)
      * @see     #sendMessage(String, String[], Object...)
      */
     public void sendMessage(final String path,
                             final Map<String, Object> replacements) {
-        handleMessage(Messaging.constructReplacements(SETTINGS.get(locale, path), replacements));
+        handleMessage(Logger.constructReplacements(SETTINGS.get(locale, path), replacements));
     }
 
     private void handleMessage(final String message) {
@@ -551,7 +551,7 @@ public class CorePlayer extends AbstractCoreProfile {
          * components, prefix and player's set locale and send it to player.
          */
         player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                Messaging.prefix(message, SETTINGS.get(locale, "chat.prefix"))
+                Core.getCoreLogger().prefix(message, SETTINGS.get(locale, "chat.prefix"))
         ));
     }
 

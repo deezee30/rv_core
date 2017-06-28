@@ -72,7 +72,6 @@ public final class Database implements Closeable {
     public void close() {
         client.close();
         client = null;
-        // TODO: Perform closing and security checks
     }
 
     public static Database getInstance() {

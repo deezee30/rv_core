@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 import com.mongodb.async.client.MongoCollection;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.CoreException;
-import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
@@ -128,7 +127,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
     protected AbstractCoreProfile(final Optional<UUID> uuid,
                                   final Optional<String> name) {
         if (!uuid.isPresent() && !name.isPresent()) {
-            Messaging.log("Created a fake player but both ID and name are null");
+            Core.log("Created a fake player but both ID and name are null");
             return;
         }
 
@@ -136,7 +135,7 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
         this.name = name.isPresent() ? name.get() : null;
 
         // Record how long it takes to load the profile
-        timer.start().onFinishExecute(() -> Messaging.debug(
+        timer.start().onFinishExecute(() -> Core.debug(
                 "Generated player profile (%s) '%s' with ID '%s' in %sms",
                 AbstractCoreProfile.this.getClass().getSimpleName(),
                 AbstractCoreProfile.this.name,

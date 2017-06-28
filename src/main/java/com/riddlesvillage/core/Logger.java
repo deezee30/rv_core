@@ -24,18 +24,18 @@ import static org.apache.commons.lang3.Validate.notNull;
  * @see		java.util.Formatter
  * @see		PrintStream
  */
-public final class Messaging {
+public final class Logger {
 
     /**
      * Used for separating large amounts of texts to simplify reading
      */
     public static final String BORDER = "---------------------------------------";
 
-    private static boolean		debug			= false;
-    private static String		prefix			= "EnhancedLib -> ";
-    private static String		debugPrefix		= "[DEBUG] ";
-    private static char			noPrefixChar	= 126; // char "~"
-    private static PrintStream	output			= System.out;
+    private boolean     debug           = false;
+    private String      prefix          = "Core -> ";
+    private String      debugPrefix     = "Core [DEBUG] -> ";
+    private char        noPrefixChar    = 126; // char "~"
+    private PrintStream output          = System.out;
 
     /**
      * Logs a message to the console if it's present using
@@ -55,31 +55,31 @@ public final class Messaging {
      * <p>{@link java.util.Formatter} codes are available to be used in the
      * {@param string} with components being used in {@param components}.</p>
      *
-     * @param 	string
-     * 			String to be formatted with {@link java.util.Formatter}'s
-     * 			default formatting layout.
-     * @param 	components
-     * 			Arguments referenced by the format specifiers in the format
+     * @param   string
+     *          String to be formatted with {@link java.util.Formatter}'s
+     *          default formatting layout.
+     * @param   components
+     *          Arguments referenced by the format specifiers in the format
      *          string.  If there are more arguments than format specifiers,
      *          the extra arguments are ignored.  The number of arguments is
      *          variable and may be zero.
-     * @return	The already formatted string that has been outputted to
-     * 			the console.  If {@link IllegalFormatException} was
-     * 			thrown, the string returned remains unformatted.
-     * @throws 	IllegalFormatException
-     * 			If a format string contains an illegal syntax, a format
+     * @return  The already formatted string that has been outputted to
+     *          the console.  If {@link IllegalFormatException} was
+     *          thrown, the string returned remains unformatted.
+     * @throws  IllegalFormatException
+     *          If a format string contains an illegal syntax, a format
      *          specifier that is incompatible with the given arguments,
      *          insufficient arguments given the format string, or other
      *          illegal conditions.
-     * @see 	Console#format(String, Object...)
-     * @see		Console#printf(String, Object...)
-     * @see		java.util.Formatter
-     * @see 	#prefix(String, String)
-     * @see		#setPrefix(String)
+     * @see     Console#format(String, Object...)
+     * @see     Console#printf(String, Object...)
+     * @see     java.util.Formatter
+     * @see     #prefix(String, String)
+     * @see     #setPrefix(String)
      * @see     #setNoPrefixChar(char)
      */
-    public static Optional<String> log(String string,
-                                       Object... components) {
+    public Optional<String> log(final String string,
+                                final Object... components) {
         return write(output, prefix(string, prefix), components);
     }
 
@@ -101,33 +101,33 @@ public final class Messaging {
      * <p>{@link java.util.Formatter} codes are available to be used in the
      * {@param string} with components being used in {@param components}.</p>
      *
-     * @param 	check
-     * 			The boolean that needs to be checked in order for the message
-     * 			to be outputted.  If {@code check == false}, nothing happen.
-     * @param 	string
-     * 			String to be formatted with {@link java.util.Formatter}'s
+     * @param   check
+     *          The boolean that needs to be checked in order for the message
+     *          to be outputted.  If {@code check == false}, nothing happen.
+     * @param   string
+     *          String to be formatted with {@link java.util.Formatter}'s
      *          default formatting layout.
-     * @param 	components
-     * 			Arguments referenced by the format specifiers in the format
+     * @param   components
+     *          Arguments referenced by the format specifiers in the format
      *          string.  If there are more arguments than format specifiers,
      *          the extra arguments are ignored.  The number of arguments is
      *          variable and may be zero.
-     * @throws 	IllegalFormatException
-     * 			If a format string contains an illegal syntax, a format
+     * @throws  IllegalFormatException
+     *          If a format string contains an illegal syntax, a format
      *          specifier that is incompatible with the given arguments,
      *          insufficient arguments given the format string, or other
      *          illegal conditions.
-     * @return 	The value of {@param check}.
+     * @return  The value of {@param check}.
      * @see     Console#printf(String , Object...)
-     * @see 	Console#format(String , Object...)
+     * @see     Console#format(String , Object...)
      * @see     java.util.Formatter
-     * @see 	#prefix(String , String)
-     * @see		#setPrefix(String)
-     * @see		#setNoPrefixChar(char)
+     * @see     #prefix(String , String)
+     * @see     #setPrefix(String)
+     * @see     #setNoPrefixChar(char)
      */
-    public static boolean logIf(boolean check,
-                                String string,
-                                Object... components) {
+    public boolean logIf(final boolean check,
+                         final String string,
+                         final Object... components) {
         if (check) log(string, components);
         return check;
     }
@@ -156,33 +156,33 @@ public final class Messaging {
      * <p>{@link java.util.Formatter} codes are available to be used in the
      * {@param string} with components being used in {@param components}.</p>
      *
-     * @param 	string
-     * 			String to be formatted with {@link java.util.Formatter}'s
+     * @param   string
+     *          String to be formatted with {@link java.util.Formatter}'s
      *          default formatting layout.
-     * @param 	components
-     * 			Arguments referenced by the format specifiers in the format
+     * @param   components
+     *          Arguments referenced by the format specifiers in the format
      *          string.  If there are more arguments than format specifiers,
      *          the extra arguments are ignored.  The number of arguments is
      *          variable and may be zero.
-     * @return 	The already formatted string that has been outputted to
-     * 			the console.  If {@link IllegalFormatException} was
-     * 			thrown, the string returned remains unformatted.
-     * @throws 	IllegalFormatException
-     * 			If a format string contains an illegal syntax, a format
+     * @return  The already formatted string that has been outputted to
+     *          the console.  If {@link IllegalFormatException} was
+     *          thrown, the string returned remains unformatted.
+     * @throws  IllegalFormatException
+     *          If a format string contains an illegal syntax, a format
      *          specifier that is incompatible with the given arguments,
      *          insufficient arguments given the format string, or other
      *          illegal conditions.
-     * @see 	Console#format(String , Object...)
-     * @see 	Console#printf(String , Object...)
+     * @see     Console#format(String , Object...)
+     * @see     Console#printf(String , Object...)
      * @see     java.util.Formatter
-     * @see 	#prefix(String , String)
-     * @see 	#setPrefix(String)
+     * @see     #prefix(String , String)
+     * @see     #setPrefix(String)
      * @see     #setNoPrefixChar(char)
-     * @see		#setDebugPrefix(String)
-     * @see		#enableDebugging(boolean)
+     * @see     #setDebugPrefix(String)
+     * @see     #enableDebugging(boolean)
      */
-    public static Optional<String> debug(String string,
-                                         Object... components) {
+    public Optional<String> debug(final String string,
+                                  final Object... components) {
         String msg = prefix(string, debugPrefix);
         return debug ? write(System.out, msg, components) : Optional.of(msg);
     }
@@ -213,48 +213,48 @@ public final class Messaging {
      * <p>{@link java.util.Formatter} codes are available to be used in the
      * {@param string} with components being used in {@param components}.</p>
      *
-     * @param 	check
-     * 			The boolean that needs to be checked in order for the message
-     * 			to be outputted.  If {@code check == false}, nothing happen.
-     * @param 	string
-     * 			String to be formatted with {@link java.util.Formatter}'s
+     * @param   check
+     *          The boolean that needs to be checked in order for the message
+     *          to be outputted.  If {@code check == false}, nothing happen.
+     * @param   string
+     *          String to be formatted with {@link java.util.Formatter}'s
      *          default formatting layout.
-     * @param 	components
-     * 			Arguments referenced by the format specifiers in the format
+     * @param   components
+     *          Arguments referenced by the format specifiers in the format
      *          string.  If there are more arguments than format specifiers,
      *          the extra arguments are ignored.  The number of arguments is
      *          variable and may be zero.
-     * @return 	The already formatted string that has been outputted to
-     * 			the console.  If {@link IllegalFormatException} was
-     * 			thrown, the string returned remains unformatted.
-     * @throws 	IllegalFormatException
-     * 			If a format string contains an illegal syntax, a format
+     * @return  The already formatted string that has been outputted to
+     *          the console.  If {@link IllegalFormatException} was
+     *          thrown, the string returned remains unformatted.
+     * @throws  IllegalFormatException
+     *          If a format string contains an illegal syntax, a format
      *          specifier that is incompatible with the given arguments,
      *          insufficient arguments given the format string, or other
      *          illegal conditions.
-     * @see 	Console#format(String , Object...)
-     * @see 	Console#printf(String , Object...)
+     * @see     Console#format(String , Object...)
+     * @see     Console#printf(String , Object...)
      * @see     java.util.Formatter
-     * @see 	#prefix(String , String)
+     * @see     #prefix(String , String)
      * @see     #setPrefix(String)
      * @see     #setNoPrefixChar(char)
      */
-    public static boolean debugIf(boolean check,
-                                  String string,
-                                  Object... components) {
+    public boolean debugIf(final boolean check,
+                           final String string,
+                           final Object... components) {
         if (check) debug(string, components);
         return check;
     }
 
 
     /**
-     * @return 	Whether or not debugging is allowed, AKA value inputted for {@link
-     * 			#enableDebugging(boolean)}.  By default the value is {@code false}.
+     * @return  Whether or not debugging is allowed, AKA value inputted for {@link
+     *          #enableDebugging(boolean)}.  By default the value is {@code false}.
      * @see     #setDebugPrefix(String)
      * @see     #debug(String , Object...)
      * @see     #debugIf(boolean , String , Object...)
      */
-    public static boolean debugEnabled() {
+    public boolean debugEnabled() {
         return debug;
     }
 
@@ -267,16 +267,16 @@ public final class Messaging {
      * only outputted when this is enabled, which console with many useless
      * material.</p>
      *
-     * @param 	debug
-     * 			Whether or not to enable debugging.
-     * @return	The value of {@param debug}.
-     * @see		#setDebugPrefix(String)
-     * @see		#debug(String, Object...)
-     * @see		#debugIf(boolean, String, Object...)
+     * @param   debug
+     *          Whether or not to enable debugging.
+     * @return  The value of {@param debug}.
+     * @see     #setDebugPrefix(String)
+     * @see     #debug(String, Object...)
+     * @see     #debugIf(boolean, String, Object...)
      */
-    public static boolean enableDebugging(boolean debug) {
+    public boolean enableDebugging(final boolean debug) {
         log("Debugging has been %s", debug ? "enabled" : "disabled");
-        return Messaging.debug = debug;
+        return this.debug = debug;
     }
 
 
@@ -291,14 +291,14 @@ public final class Messaging {
      *  The default {@link #noPrefixChar} {@code char} is by ID of {@code 126}
      * ({@code ~}).</p>
      *
-     * @param 	prefix
-     * 			The string that will be placed before every outputted message.
-     * @return	The value of {@param prefix}.
-     * @see		#log(String, Object...)
-     * @see		#setNoPrefixChar(char)
+     * @param   prefix
+     *          The string that will be placed before every outputted message.
+     * @return  The value of {@param prefix}.
+     * @see     #log(String, Object...)
+     * @see     #setNoPrefixChar(char)
      */
-    public static String setPrefix(String prefix) {
-        return Messaging.prefix = prefix;
+    public String setPrefix(final String prefix) {
+        return this.prefix = prefix;
     }
 
 
@@ -313,14 +313,14 @@ public final class Messaging {
      * The default {@link #noPrefixChar} {@code char} is by ID of {@code 126}
      * ({@code ~}).</p>
      *
-     * @param 	debugPrefix
-     * 			The string that will be placed before every outputted message.
-     * @return 	The value of {@param prefix}.
+     * @param   debugPrefix
+     *          The string that will be placed before every outputted message.
+     * @return  The value of {@param prefix}.
      * @see     #debug(String , Object...)
      * @see     #setNoPrefixChar(char)
      */
-    public static String setDebugPrefix(String debugPrefix) {
-        return Messaging.debugPrefix = debugPrefix;
+    public String setDebugPrefix(final String debugPrefix) {
+        return this.debugPrefix = debugPrefix;
     }
 
 
@@ -333,34 +333,34 @@ public final class Messaging {
      * at the very start, which can be set here.  The default {@link #noPrefixChar}
      * {@code char} is by ID of {@code 126} ({@code ~}).</p>
      *
-     * @param 	noPrefixChar
-     * 			{@code char} that should be used before the outputting message
-     * 			to indicate that the prefix should not be used.
-     * @return	The value of {@param noPrefixChar}.
-     * @see		#prefix(String, String)
-     * @see		#setPrefix(String)
-     * @see		#log(String, Object...)
+     * @param   noPrefixChar
+     *          {@code char} that should be used before the outputting message
+     *          to indicate that the prefix should not be used.
+     * @return  The value of {@param noPrefixChar}.
+     * @see     #prefix(String, String)
+     * @see     #setPrefix(String)
+     * @see     #log(String, Object...)
      */
-    public static char setNoPrefixChar(char noPrefixChar) {
-        return Messaging.noPrefixChar = noPrefixChar;
+    public char setNoPrefixChar(final char noPrefixChar) {
+        return this.noPrefixChar = noPrefixChar;
     }
 
 
     /**
-     * @return 	{@code char} that should be used before the outputting message
-     * 			to indicate that the prefix should not be used.
-     * @see 	#setNoPrefixChar(char)
-     * @see		#prefix(String, String)
-     * @see		#setNoPrefixChar(char)
-     * @see 	#log(String, Object...)
+     * @return  {@code char} that should be used before the outputting message
+     *          to indicate that the prefix should not be used.
+     * @see     #setNoPrefixChar(char)
+     * @see     #prefix(String, String)
+     * @see     #setNoPrefixChar(char)
+     * @see     #log(String, Object...)
      */
-    public static char getNoPrefixChar() {
+    public char getNoPrefixChar() {
         return noPrefixChar;
     }
 
 
-    public static String prefix(String string,
-                                String prefix) {
+    public String prefix(String string,
+                         final String prefix) {
         if (string == null) return null;
         notNull(prefix);
 
@@ -374,18 +374,18 @@ public final class Messaging {
     }
 
 
-    public static PrintStream getOutput() {
+    public PrintStream getOutput() {
         return output;
     }
 
 
-    public static PrintStream setOutput(PrintStream output) {
-        return Messaging.output = output;
+    public PrintStream setOutput(final PrintStream output) {
+        return this.output = output;
     }
 
 
     public static String buildMessage(String message,
-                                      Object... components) {
+                                      final Object... components) {
         if (message != null) {
             // Replace null components with "null" string
             for (int x = 0; x < components.length; ++x) {
@@ -403,7 +403,7 @@ public final class Messaging {
     }
 
 
-    public static String constructReplacements(String string,
+    public static String constructReplacements(final String string,
                                                String[] keys,
                                                Object... vals) {
         final int keysLen = keys.length;
@@ -425,7 +425,7 @@ public final class Messaging {
 
 
     public static String constructReplacements(String string,
-                                               Map<String, Object> replacements) {
+                                               final Map<String, Object> replacements) {
         for (Map.Entry<String, Object> entry : replacements.entrySet()) {
             final String key = entry.getKey();
             final Object val = entry.getValue();
@@ -439,9 +439,9 @@ public final class Messaging {
     }
 
 
-    private static Optional<String> write(PrintStream output,
+    private static Optional<String> write(final PrintStream output,
                                           String message,
-                                          Object... components) {
+                                          final Object... components) {
         message = buildMessage(message, components);
         output.println(message);
         return Optional.of(message);

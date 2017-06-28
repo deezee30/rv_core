@@ -1,11 +1,10 @@
 package com.riddlesvillage.core.internal.command;
 
 import com.google.common.collect.ImmutableList;
-import com.riddlesvillage.core.Messaging;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;
-import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
+import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -52,7 +51,7 @@ public class IpHistoryCommand implements CommandExecutor {
                         if (isPlayer) {
                             playerSender.sendMessages(l.toArray(new String[l.size()]));
                         } else {
-                            l.forEach(s -> Messaging.log(s));
+                            l.forEach(s -> Core.log(s));
                         }
                     } else {
                         if (!Core.logIf(!isPlayer, ERROR)) {

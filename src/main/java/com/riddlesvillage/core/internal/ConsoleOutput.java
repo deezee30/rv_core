@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.internal;
 
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -16,7 +16,7 @@ public final class ConsoleOutput extends PrintStream {
     private final ConsoleCommandSender console;
 
     public ConsoleOutput(final ConsoleCommandSender console) {
-        super(Messaging.getOutput());
+        super(Core.getCoreLogger().getOutput());
         this.console = Validate.notNull(console);
     }
 
@@ -26,7 +26,7 @@ public final class ConsoleOutput extends PrintStream {
 
     @Override
     public void println() {
-        print0(Messaging.getNoPrefixChar());
+        print0(Core.getCoreLogger().getNoPrefixChar());
     }
 
     @Override

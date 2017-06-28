@@ -1,7 +1,7 @@
 package com.riddlesvillage.core.file;
 
 import com.google.common.collect.Lists;
-import com.riddlesvillage.core.Messaging;
+import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.util.StringUtil;
 import org.apache.commons.lang3.Validate;
@@ -58,7 +58,7 @@ public abstract class ConfigFile {
                 // if null is the case then it will not be accessed
                 Object value = fileConfig.get(path, null);
                 if (value == null) {
-                    Messaging.debug("Path '%s' resulted in a null value in config %s", path, config.getPath());
+                    Core.debug("Path '%s' resulted in a null value in config %s", path, config.getPath());
                 } else {
                     values.add(value);
                 }
@@ -85,10 +85,10 @@ public abstract class ConfigFile {
             // output an error and stop the task if the amount of usable
             // fields doesn't equal to the amount of non-null paths
             if (usableFieldsLen != pathsLen) {
-                Messaging.log(
+                Core.log(
                         "File '%s' was not loaded for plugin '%s' because the " +
-                        "amount of fields (%s) does not equal to the amount of paths (%s). " +
-                        "Total fields: %s",
+                                "amount of fields (%s) does not equal to the amount of paths (%s). " +
+                                "Total fields: %s",
                         getConfigName(),
                         getPluginInstance().getDescription().getName(),
                         usableFieldsLen,
@@ -105,9 +105,9 @@ public abstract class ConfigFile {
                 try {
                     field.set(this, value);
                 } catch (Exception e) {
-                    Messaging.log(
+                    Core.log(
                             "An error occurred while attempting to set the value " +
-                            "'%s' to field '%s' from file '%s' for plugin '%s': %s",
+                                    "'%s' to field '%s' from file '%s' for plugin '%s': %s",
                             value,
                             field.getName(),
                             getConfigName(),
@@ -117,7 +117,7 @@ public abstract class ConfigFile {
                 }
             }
 
-            Messaging.log(
+            Core.log(
                     "Loaded &e%s %s&r from file '&e%s&r'",
                     valuesLen,
                     StringUtil.checkPlural("value", "values", valuesLen),
