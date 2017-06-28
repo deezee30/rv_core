@@ -2,7 +2,7 @@
  * RiddlesCore
  */
 
-package com.riddlesvillage.core;
+package com.riddlesvillage.core.inventory;
 
 import com.riddlesvillage.core.player.CorePlayer;
 import org.bukkit.inventory.ItemStack;

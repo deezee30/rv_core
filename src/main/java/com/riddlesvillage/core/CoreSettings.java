@@ -11,6 +11,7 @@ import com.riddlesvillage.core.chat.filter.ChatBlockFilter;
 import com.riddlesvillage.core.chat.filter.ChatFilters;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
+import com.riddlesvillage.core.inventory.CoreInventoryClickEvent;
 import com.riddlesvillage.core.inventory.item.IndexedItem;
 import com.riddlesvillage.core.net.paster.PasteException;
 import com.riddlesvillage.core.net.paster.Paster;

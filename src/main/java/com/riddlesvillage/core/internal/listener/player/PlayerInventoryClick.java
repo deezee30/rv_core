@@ -4,7 +4,7 @@
 
 package com.riddlesvillage.core.internal.listener.player;
 
-import com.riddlesvillage.core.CoreInventoryClickEvent;
+import com.riddlesvillage.core.inventory.CoreInventoryClickEvent;
 import com.riddlesvillage.core.CoreSettings;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.player.CorePlayer;

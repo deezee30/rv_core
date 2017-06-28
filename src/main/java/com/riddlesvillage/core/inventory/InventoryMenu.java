@@ -6,7 +6,6 @@ package com.riddlesvillage.core.inventory;
 
 import com.google.common.collect.ImmutableList;
 import com.riddlesvillage.core.Core;
-import com.riddlesvillage.core.CoreInventoryClickEvent;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.inventory.item.IndexedItem;
 import com.riddlesvillage.core.player.CorePlayer;
