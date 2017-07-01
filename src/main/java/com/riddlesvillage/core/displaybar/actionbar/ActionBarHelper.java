@@ -8,11 +8,13 @@ package com.riddlesvillage.core.displaybar.actionbar;
 
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.riddlesvillage.core.Core;
-import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.packet.AbstractPacket;
 import com.riddlesvillage.core.packet.wrapper.WrapperPlayServerChat;
 import com.riddlesvillage.core.player.CorePlayer;
 import org.bukkit.ChatColor;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class ActionBarHelper {
 
@@ -21,9 +23,9 @@ public class ActionBarHelper {
 
     private ActionBarHelper() {}
 
-    public static EnhancedMap<CorePlayer, AbstractPacket> getRespectiveTitles(final ActionBar bar,
-                                                                              final CorePlayer... players) {
-        EnhancedMap<CorePlayer, AbstractPacket> respectiveTitles = new EnhancedMap<>(players.length);
+    public static Map<CorePlayer, AbstractPacket> getRespectiveTitles(final ActionBar bar,
+                                                                      final CorePlayer... players) {
+        Map<CorePlayer, AbstractPacket> respectiveTitles = new WeakHashMap<>(players.length);
         for (CorePlayer player : players) {
             if (!player.isOnline()) continue;
 
@@ -39,6 +41,7 @@ public class ActionBarHelper {
 
             respectiveTitles.put(player, packet);
         }
+
         return respectiveTitles;
     }
 }

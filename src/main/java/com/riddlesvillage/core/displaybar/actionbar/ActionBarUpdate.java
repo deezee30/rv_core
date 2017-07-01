@@ -6,7 +6,6 @@
 
 package com.riddlesvillage.core.displaybar.actionbar;
 
-import com.riddlesvillage.core.collect.EnhancedMap;
 import com.riddlesvillage.core.packet.AbstractPacket;
 import com.riddlesvillage.core.player.CorePlayer;
 import org.apache.commons.lang3.Validate;
@@ -19,7 +18,7 @@ public class ActionBarUpdate extends BukkitRunnable {
 
     // packets are custom for each player due to the possibility
     // of them having different locales set
-    private final AtomicReference<EnhancedMap<CorePlayer, AbstractPacket>>
+    private final AtomicReference<Map<CorePlayer, AbstractPacket>>
             respectivePackets = new AtomicReference<>();
     private final CorePlayer[] players;
     private final ActionBar bar;
