@@ -1,6 +1,7 @@
 package com.riddlesvillage.core.database;
 
 import com.google.common.collect.Lists;
+import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.async.client.*;
 import com.mongodb.connection.ClusterSettings;
@@ -49,7 +50,11 @@ public final class Database implements Closeable {
                 .clusterSettings(ClusterSettings.builder()
                                 .hosts(Collections.singletonList(new ServerAddress(credentials.getAddress())))
                                 .build()
-                ).build());
+                ).credentialList(Collections.singletonList(MongoCredential.createCredential(
+                                credentials.getUser(),
+                                credentials.getDatabase(),
+                                credentials.getPass().toCharArray()
+                ))).build());
 
         database = client.getDatabase("riddlesvillage");
         playerData = database.getCollection("player_data");
