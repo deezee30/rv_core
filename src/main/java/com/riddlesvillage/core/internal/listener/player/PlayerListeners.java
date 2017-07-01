@@ -20,7 +20,6 @@ public final class PlayerListeners {
                 new PlayerDropItem(),
                 new PlayerFoodChange(),
                 new PlayerInventoryClick(),
-                new PlayerJump(),
                 new GunManager(),
                 new PlayerLogin(),
                 new PlayerLoginFullAllow(),
