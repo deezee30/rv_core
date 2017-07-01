@@ -143,46 +143,48 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
                 timer.getTime(TimeUnit.MILLISECONDS)
         ));
 
-        DataInfo data = DataInfo.UUID;
-        Object value = this.uuid;
+        Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
+            DataInfo data = DataInfo.UUID;
+            Object value = this.uuid;
 
-        // if uuid is null, use name instead
-        if (!uuid.isPresent()) {
-            data = DataInfo.NAME;
-            value = this.name;
-        }
-
-        DatabaseAPI.retrieveDocument(
-                Database.getMainCollection(),
-                data, value, (document, throwable) -> {
-
-            Core.logIf(
-                    throwable != null,
-                    "Error loading '%s' ('%s'):",
-                    this.name,
-                    this.uuid,
-                    throwable
-            );
-
-            Optional<Document> downloadedDoc = Optional.ofNullable(document);
-            if (downloadedDoc.isPresent()) {
-                played = true;
-
-                this.name = document.getString(DataInfo.NAME.getStat());
-                this.uuid = UUIDUtil.fromString(document.getString(DataInfo.UUID.getStat()));
-
-                Optional<MongoCollection<Document>> col = getCollection();
-                if (!col.isPresent() || col.get().equals(Database.getMainCollection())) {
-                    // Apply already downloaded stats
-                    finishLoading(downloadedDoc);
-                } else {
-                    // Async download custom stats from database
-                    refreshStats();
-                }
-            } else {
-                // player never played before
-                finishLoading(Optional.<Document>empty());
+            // if uuid is null, use name instead
+            if (!uuid.isPresent()) {
+                data = DataInfo.NAME;
+                value = this.name;
             }
+
+            DatabaseAPI.retrieveDocument(
+                    Database.getMainCollection(),
+                    data, value, (document, throwable) -> {
+
+                Core.logIf(
+                        throwable != null,
+                        "Error loading '%s' ('%s'):",
+                        this.name,
+                        this.uuid,
+                        throwable
+                );
+
+                Optional<Document> downloadedDoc = Optional.ofNullable(document);
+                if (downloadedDoc.isPresent()) {
+                    played = true;
+
+                    this.name = document.getString(DataInfo.NAME.getStat());
+                    this.uuid = UUIDUtil.fromString(document.getString(DataInfo.UUID.getStat()));
+
+                    Optional<MongoCollection<Document>> col = getCollection();
+                    if (!col.isPresent() || col.get().equals(Database.getMainCollection())) {
+                        // Apply already downloaded stats
+                        finishLoading(downloadedDoc);
+                    } else {
+                        // Async download custom stats from database
+                        refreshStats();
+                    }
+                } else {
+                    // player never played before
+                    finishLoading(Optional.<Document>empty());
+                }
+            });
         });
     }
 

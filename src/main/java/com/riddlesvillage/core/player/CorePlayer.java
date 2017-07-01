@@ -120,86 +120,92 @@ public class CorePlayer extends AbstractCoreProfile {
 
     @Override
     public void onLoad(final Optional<Document> document) {
-        if (document.isPresent()) {
-            Document stats = document.get();
+        boolean present = document.isPresent();
 
-            locale = stats.getString(DataInfo.LOCALE.getStat());
-            rank = Rank.byName(stats.getString(DataInfo.RANK.getStat()));
-            premium = stats.getBoolean(DataInfo.PREMIUM.getStat());
-            coins = stats.getInteger(DataInfo.COINS.getStat());
-            tokens = stats.getInteger(DataInfo.TOKENS.getStat());
-            ((List<String>) stats.get(DataInfo.NAME_HISTORY.getStat()))
-                    .forEach(s -> nameHistory.addIf(!nameHistory.contains(s), s));
-            ((List<String>) stats.get(DataInfo.IP_HISTORY.getStat()))
-                    .forEach(s -> ipHistory.addIf(!ipHistory.contains(s), s));
+        // perform update and insert tasks asynchronously
+        Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
+            if (present) {
+                // player has played before - get document
+                Document stats = document.get();
 
-            List<WriteModel<Document>> operations = Lists.newArrayList();
+                locale = stats.getString(DataInfo.LOCALE.getStat());
+                rank = Rank.byName(stats.getString(DataInfo.RANK.getStat()));
+                premium = stats.getBoolean(DataInfo.PREMIUM.getStat());
+                coins = stats.getInteger(DataInfo.COINS.getStat());
+                tokens = stats.getInteger(DataInfo.TOKENS.getStat());
+                ((List<String>) stats.get(DataInfo.NAME_HISTORY.getStat()))
+                        .forEach(s -> nameHistory.addIf(!nameHistory.contains(s), s));
+                ((List<String>) stats.get(DataInfo.IP_HISTORY.getStat()))
+                        .forEach(s -> ipHistory.addIf(!ipHistory.contains(s), s));
 
-            // update name
-            operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                    DataOperator.$SET.getOperator(),
-                    new Document(DataInfo.NAME.getStat(), getName()))));
+                List<WriteModel<Document>> operations = Lists.newArrayList();
 
-            // update name history
-            operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                    DataOperator.$SET.getOperator(),
-                    new Document(DataInfo.NAME_HISTORY.getStat(), nameHistory))));
+                // update name
+                operations.add(new UpdateOneModel<>(searchQuery, new Document(
+                        DataOperator.$SET.getOperator(),
+                        new Document(DataInfo.NAME.getStat(), getName()))));
 
-            // update IP history
-            operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                    DataOperator.$SET.getOperator(),
-                    new Document(DataInfo.IP_HISTORY.getStat(), ipHistory))));
+                // update name history
+                operations.add(new UpdateOneModel<>(searchQuery, new Document(
+                        DataOperator.$SET.getOperator(),
+                        new Document(DataInfo.NAME_HISTORY.getStat(), nameHistory))));
 
-            // update playing
-            operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                    DataOperator.$SET.getOperator(),
-                    new Document(DataInfo.PLAYING.getStat(), true))));
+                // update IP history
+                operations.add(new UpdateOneModel<>(searchQuery, new Document(
+                        DataOperator.$SET.getOperator(),
+                        new Document(DataInfo.IP_HISTORY.getStat(), ipHistory))));
 
-            // update last login time
-            operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                    DataOperator.$SET.getOperator(),
-                    new Document(DataInfo.LAST_LOGIN.getStat(), System.currentTimeMillis() / 1000))));
+                // update playing
+                operations.add(new UpdateOneModel<>(searchQuery, new Document(
+                        DataOperator.$SET.getOperator(),
+                        new Document(DataInfo.PLAYING.getStat(), true))));
 
-            // submit bulk update and await for result
-            DatabaseAPI.bulkWrite(
-                    COLLECTION,
-                    operations,
-                    (bulkWriteResult, throwable) -> Core.logIf(
-                            throwable != null,
-                            "Bulk update failed for '%s' (login): %s",
-                            getName(),
-                            throwable
-                    ));
-        } else {
-            // player never played before
-            Map<String, Object> doc = Maps.newHashMap();
+                // update last login time
+                operations.add(new UpdateOneModel<>(searchQuery, new Document(
+                        DataOperator.$SET.getOperator(),
+                        new Document(DataInfo.LAST_LOGIN.getStat(), System.currentTimeMillis() / 1000))));
 
-            DataInfo.UUID.append(doc, getUuid());
-            DataInfo.NAME.append(doc, getName());
-            DataInfo.NAME_HISTORY.append(doc, nameHistory);
-            DataInfo.IP_HISTORY.append(doc, ipHistory);
-            DataInfo.FIRST_LOGIN.append(doc, System.currentTimeMillis() / 1000);
-            DataInfo.LAST_LOGIN.append(doc, System.currentTimeMillis() / 1000);
-            DataInfo.LAST_LOGOUT.append(doc);
-            DataInfo.PLAYING.append(doc);
-            DataInfo.COINS.append(doc);
-            DataInfo.TOKENS.append(doc);
-            DataInfo.RANK.append(doc);
-            DataInfo.PREMIUM.append(doc);
-            DataInfo.LOCALE.append(doc);
+                // submit bulk update and await for result
+                DatabaseAPI.bulkWrite(
+                        COLLECTION,
+                        operations,
+                        (bulkWriteResult, throwable) -> Core.logIf(
+                                throwable != null,
+                                "Bulk update failed for '%s' (login): %s",
+                                getName(),
+                                throwable
+                        ));
+            } else {
+                // player never played before
+                Map<String, Object> doc = Maps.newHashMap();
 
-            DatabaseAPI.insertNew(
-                    COLLECTION, doc,
-                    (result, t1) -> {
-                        if (t1 != null) {
-                            Core.debug("Failed to insert '%s' into db: %s", getName(), t1);
-                            t1.printStackTrace();
-                        } else {
-                            Core.debug("New player '%s' successfully created", CorePlayer.this.getName());
+                DataInfo.UUID.append(doc, getUuid());
+                DataInfo.NAME.append(doc, getName());
+                DataInfo.NAME_HISTORY.append(doc, nameHistory);
+                DataInfo.IP_HISTORY.append(doc, ipHistory);
+                DataInfo.FIRST_LOGIN.append(doc, System.currentTimeMillis() / 1000);
+                DataInfo.LAST_LOGIN.append(doc, System.currentTimeMillis() / 1000);
+                DataInfo.LAST_LOGOUT.append(doc);
+                DataInfo.PLAYING.append(doc);
+                DataInfo.COINS.append(doc);
+                DataInfo.TOKENS.append(doc);
+                DataInfo.RANK.append(doc);
+                DataInfo.PREMIUM.append(doc);
+                DataInfo.LOCALE.append(doc);
+
+                DatabaseAPI.insertNew(
+                        COLLECTION, doc,
+                        (result, t1) -> {
+                            if (t1 != null) {
+                                Core.debug("Failed to insert '%s' into db: %s", getName(), t1);
+                                t1.printStackTrace();
+                            } else {
+                                Core.debug("New player '%s' successfully created", CorePlayer.this.getName());
+                            }
                         }
-                    }
-            );
-        }
+                );
+            }
+        });
 
         Core.debug("%s's language is %s", getName(), WordUtils.capitalize(locale));
 
@@ -227,9 +233,7 @@ public class CorePlayer extends AbstractCoreProfile {
                     player.setDisplayName(getRank().getColor() + player.getName());
 
                     CorePlayerPostLoadEvent event = new CorePlayerPostLoadEvent(
-                            CorePlayer.this,
-                            document.isPresent()
-                    );
+                            CorePlayer.this, present);
 
                     INSTANCE.getServer().getPluginManager().callEvent(event);
 
