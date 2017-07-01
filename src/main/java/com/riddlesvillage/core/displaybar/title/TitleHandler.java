@@ -11,10 +11,8 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.packet.wrapper.WrapperPlayServerTitle;
 import com.riddlesvillage.core.player.CorePlayer;
-import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
 
 public final class TitleHandler {
 
@@ -22,17 +20,8 @@ public final class TitleHandler {
 
     public void send(final WrapperPlayServerTitle packet,
                      final CorePlayer... players) {
-        Validate.notNull(packet);
         for (CorePlayer player : players) {
-            packet.sendPacket(player.getPlayer());
-        }
-    }
-
-    public void send(final WrapperPlayServerTitle packet,
-                     final Player... players) {
-        Validate.notNull(packet);
-        for (Player player : players) {
-            packet.sendPacket(player);
+            player.sendPacket(packet);
         }
     }
 
@@ -45,7 +34,6 @@ public final class TitleHandler {
     }
 
     public WrapperPlayServerTitle buildTimingPacket(final TitleMessage message) {
-        Validate.notNull(message);
         WrapperPlayServerTitle packet = new WrapperPlayServerTitle();
 
         packet.setAction(EnumWrappers.TitleAction.TIMES);
@@ -58,28 +46,17 @@ public final class TitleHandler {
 
     public WrapperPlayServerTitle buildTitlePacket(final CorePlayer player,
                                                    final TitleMessage message) {
-        Validate.notNull(player);
-        Validate.notNull(message);
         WrapperPlayServerTitle packet = new WrapperPlayServerTitle();
 
         packet.setAction(message.getType().equals(TitleMessage.Type.TITLE)
                 ? EnumWrappers.TitleAction.TITLE : EnumWrappers.TitleAction.SUBTITLE);
         if (message.getMessage().isPresent()) {
-            String locale = player.getLocale();
-            String path = message.getMessage().get();
-            String msg = Core.getSettings().get(locale, path);
-
-            /*
-             * Check if the path actually exists in the messages cache.
-             * If not, block the message if it's a path or send it if it's not.
-             */
-            if (msg.equals(path)) {
-                if (!path.contains(" ") && !path.equals(String.valueOf(Core.getCoreLogger().getNoPrefixChar()))) {
-                    return packet;
-                }
-            }
-
-            packet.setTitle(WrappedChatComponent.fromText(ChatColor.translateAlternateColorCodes('&', msg)));
+            packet.setTitle(WrappedChatComponent.fromText(
+                    ChatColor.translateAlternateColorCodes('&', Core.getSettings().get(
+                            player.getLocale(),
+                            message.getMessage().get()
+                    ))
+            ));
         }
 
         return packet;
@@ -87,13 +64,13 @@ public final class TitleHandler {
 
     public void handleTitleSendPacket(final TitleMessage title,
                                       final CorePlayer... players) {
-        Validate.notNull(title);
         Bukkit.getScheduler().runTaskLater(Core.get(), () -> {
             boolean animated = title.isAnimated();
 
             for (CorePlayer player : players) {
                 // send the timings first if they're animated
-                if (animated && title.getType().equals(TitleMessage.Type.TITLE)) send(buildTimingPacket(title), player);
+                if (animated && title.getType().equals(TitleMessage.Type.TITLE))
+                    send(buildTimingPacket(title), player);
 
                 send(buildTitlePacket(player, title), player);
             }

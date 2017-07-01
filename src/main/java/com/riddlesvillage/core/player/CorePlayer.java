@@ -23,6 +23,7 @@ import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.internal.config.MainConfig;
 import com.riddlesvillage.core.inventory.item.CoreItemStackList;
 import com.riddlesvillage.core.inventory.item.IndexedItem;
+import com.riddlesvillage.core.packet.AbstractPacket;
 import com.riddlesvillage.core.player.event.CorePlayerPostLoadEvent;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import com.riddlesvillage.core.player.manager.InventoryManager;
@@ -1007,6 +1008,10 @@ public class CorePlayer extends AbstractCoreProfile {
         out.writeUTF(server);
 
         player.sendPluginMessage(INSTANCE, "BungeeCord", out.toByteArray());
+    }
+
+    public void sendPacket(AbstractPacket packet) {
+        packet.sendPacket(player);
     }
 
     /**

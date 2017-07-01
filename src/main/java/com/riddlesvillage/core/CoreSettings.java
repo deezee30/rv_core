@@ -170,7 +170,7 @@ public final class CoreSettings {
     }
 
     public String get(final String path) {
-        return get(getDefaultLocale(), path);
+        return get(defaultLocale, path);
     }
 
     public String get(final String locale,
