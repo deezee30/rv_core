@@ -24,8 +24,8 @@ final class PvPPlayer extends AbstractCoreProfile {
     private static final MongoCollection<Document> COLLECTION = Database.database.getCollection("pvp");
 
     // make field names in database with default values 0
-    private static final StatType KILL_STAT = StatType.create("kills", 0);
-    private static final StatType DEATH_STAT = StatType.create("death", 0);
+    private static final StatType KILL_STAT     = StatType.create("kills", 0);
+    private static final StatType DEATH_STAT    = StatType.create("death", 0);
 
     // reference to core player is handy
     private final CorePlayer player;
