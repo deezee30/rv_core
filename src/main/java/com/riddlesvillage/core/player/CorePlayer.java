@@ -91,6 +91,7 @@ public class CorePlayer extends AbstractCoreProfile {
             searchQuery     = new Document();
 
     private transient boolean
+            newcomer        = true,
             vanished        = false,
             premium         = false,
             commandsBlocked = false,
@@ -120,11 +121,11 @@ public class CorePlayer extends AbstractCoreProfile {
 
     @Override
     public void onLoad(final Optional<Document> document) {
-        boolean present = document.isPresent();
+        newcomer = document.isPresent();
 
         // perform update and insert tasks asynchronously
         Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
-            if (present) {
+            if (newcomer) {
                 // player has played before - get document
                 Document stats = document.get();
 
@@ -233,7 +234,7 @@ public class CorePlayer extends AbstractCoreProfile {
                     player.setDisplayName(getRank().getColor() + player.getName());
 
                     CorePlayerPostLoadEvent event = new CorePlayerPostLoadEvent(
-                            CorePlayer.this, present);
+                            CorePlayer.this, newcomer);
 
                     INSTANCE.getServer().getPluginManager().callEvent(event);
 
@@ -267,6 +268,14 @@ public class CorePlayer extends AbstractCoreProfile {
      */
     public Player getPlayer() {
         return player;
+    }
+
+    /**
+     * @return  Whether or not this is the first time the
+     *          player is playing this server.
+     */
+    public boolean isNewcomer() {
+        return newcomer;
     }
 
     /**
