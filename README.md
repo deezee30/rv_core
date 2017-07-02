@@ -1,5 +1,5 @@
 # RiddlesCore v0.1
-Core engine for RiddlesVillage
+Core engine for RiddlesVillage Spigot server
 
 ---
 
