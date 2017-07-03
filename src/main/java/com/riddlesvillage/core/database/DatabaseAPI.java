@@ -34,11 +34,21 @@ public class DatabaseAPI {
         collection.bulkWrite(operations, doAfterOptional);
     }
 
+    @Deprecated
     public static void update(final MongoCollection<Document> collection,
                               final UUID uuid,
                               final DataOperator operator,
                               final StatType variable,
                               final Object object,
+                              final SingleResultCallback<UpdateResult> doAfterOptional) {
+        update(collection, uuid, variable, object, operator, doAfterOptional);
+    }
+
+    public static void update(final MongoCollection<Document> collection,
+                              final UUID uuid,
+                              final StatType variable,
+                              final Object object,
+                              final DataOperator operator,
                               final SingleResultCallback<UpdateResult> doAfterOptional) {
         Validate.notNull(collection);
         Validate.notNull(uuid);
@@ -54,11 +64,13 @@ public class DatabaseAPI {
         );
     }
 
+    @Deprecated
     public static void retrieveCoreDataFromUuid(final UUID uuid,
                                                 final SingleResultCallback<Document> doAfter) {
         retrieveDocument(Database.getMainCollection(), DataInfo.UUID, Validate.notNull(uuid), doAfter);
     }
 
+    @Deprecated
     public static void retrieveCoreDataFromName(final String username,
                                                 final SingleResultCallback<Document> doAfter) {
         retrieveDocument(Database.getMainCollection(), DataInfo.NAME, Validate.notNull(username), doAfter);
