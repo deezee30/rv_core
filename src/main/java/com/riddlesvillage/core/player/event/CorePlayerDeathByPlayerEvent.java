@@ -22,7 +22,9 @@ public class CorePlayerDeathByPlayerEvent extends CorePlayerEvent {
     public CorePlayerDeathByPlayerEvent(final PlayerDeathEvent event) {
         super(CorePlayerManager.getInstance().get(event));
         killer = CorePlayerManager.getInstance().get(getProfile().getPlayer().getKiller().getName());
-        event.setDeathMessage(ChatColor.translateAlternateColorCodes('&', event.getDeathMessage()));
+        String deathMsg = event.getDeathMessage();
+        if (deathMsg != null)
+            event.setDeathMessage(ChatColor.translateAlternateColorCodes('&', deathMsg));
         Validate.notNull(killer, "Killer doesn't exist!");
     }
 
