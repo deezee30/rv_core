@@ -4,25 +4,29 @@ import java.util.*;
 
 public final class GlickoCalculator {
 
+    private static final int MAX_RATING = 2950;
+    private static final int MIN_RATING = 50;
+    private static final int MAX_DEVIATION = 350;
+    private static final int MIN_DEVIATION = 50;
     private static final double q = Math.log(10) / 1200;
 
     // disable initialization
     private GlickoCalculator() {}
 
     public static int getNewRating(final GlickoProfile profile) {
-        return getNewRating(
+        return Math.min(MAX_RATING, Math.max(MIN_RATING, getNewRating(
                 profile.getCompetitor().getRating(),            // Current rating
                 profile.getCompetitor().getRatingDeviation(),   // Current rating deviation
                 profile.getMatches()                            // All past matches with outcomes
-        );
+        )));
     }
 
     public static double getNewRatingDeviation(final GlickoProfile profile) {
-        return getNewRatingDeviation(
+        return Math.min(MAX_DEVIATION, Math.max(MIN_DEVIATION, getNewRatingDeviation(
                 profile.getCompetitor().getRating(),            // Current rating
                 profile.getCompetitor().getRatingDeviation(),   // Current rating deviation
                 profile.getOpponents()                          // Opponents in current match
-        );
+        )));
     }
 
     private static double dSquared(final int rating,
