@@ -38,7 +38,7 @@ public interface StatType {
      */
     default Map<String, Object> append(final Map<String, Object> map) {
         Validate.notNull(map);
-        return append(map, getDefault().isPresent() ? getDefault() : null);
+        return append(map, getDefault().isPresent() ? getDefault().get() : null);
     }
 
     /**
