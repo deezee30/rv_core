@@ -10,6 +10,7 @@ import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.CoreException;
 import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.DatabaseAPI;
+import com.riddlesvillage.core.database.Identity;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
@@ -57,7 +58,9 @@ import java.util.concurrent.TimeUnit;
  * @see CorePlayer
  * @see OfflineCorePlayer
  */
-public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHolder, CoinsHolder, TokensHolder, RankedPlayer {
+public abstract class AbstractCoreProfile implements
+        CoreProfile, Identity, StatisticHolder, PremiumHolder,
+        CoinsHolder, TokensHolder, RankedPlayer {
 
     /*
      * In case the player is offline and the UUID or name has
@@ -172,8 +175,8 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
                     this.name = document.getString(DataInfo.NAME.getStat());
                     this.uuid = UUIDUtil.fromString(document.getString(DataInfo.UUID.getStat()));
 
-                    Optional<MongoCollection<Document>> col = getCollection();
-                    if (!col.isPresent() || col.get().equals(Database.getMainCollection())) {
+                    MongoCollection col = getCollection();
+                    if (Database.getMainCollection().equals(col)) {
                         // Apply already downloaded stats
                         finishLoading(downloadedDoc);
                     } else {
@@ -235,10 +238,10 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
      */
     protected void refreshStats() {
         // Async download custom stats from database
-        DatabaseAPI.retrieveDocument(getCollection().get(), DataInfo.UUID, uuid, ((result, t) -> {
+        retrieveDocument((result, t) -> {
             Core.logIf(t != null, "Error loading '%s' ('%s'): %s", name, uuid, t);
             finishLoading(Optional.ofNullable(result));
-        }));
+        });
     }
 
     @Override
@@ -274,7 +277,12 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
 
     // == Defaults ====================================================== //
 
-    @Override
+    /**
+     * Gets the "friendly" name to display of this profile.
+     * This may include color.
+     *
+     * @return The friendly name
+     */
     public String getDisplayName() {
         CorePlayer player = toCorePlayer();
         if (player == null) {
@@ -287,7 +295,6 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
         }
     }
 
-    @Override
     public String getIp() {
         CorePlayer player = toCorePlayer();
         if (player == null) {
@@ -300,7 +307,6 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
         }
     }
 
-    @Override
     public List<String> getIpHistory() {
         CorePlayer player = toCorePlayer();
         if (player == null) {
@@ -313,7 +319,6 @@ public abstract class AbstractCoreProfile implements StatisticHolder, PremiumHol
         }
     }
 
-    @Override
     public List<String> getNameHistory() {
         CorePlayer player = toCorePlayer();
         if (player == null) {

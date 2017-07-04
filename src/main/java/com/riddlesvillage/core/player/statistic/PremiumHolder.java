@@ -4,11 +4,8 @@
 
 package com.riddlesvillage.core.player.statistic;
 
-import com.riddlesvillage.core.Core;
-import com.riddlesvillage.core.database.Database;
-import com.riddlesvillage.core.database.DatabaseAPI;
+import com.riddlesvillage.core.database.Identity;
 import com.riddlesvillage.core.database.data.DataInfo;
-import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
 import com.riddlesvillage.core.player.event.PremiumStatusModificationEvent;
@@ -22,7 +19,7 @@ import org.bukkit.Bukkit;
  * @see CoreProfile
  * @see com.riddlesvillage.core.database.data.DataInfo#PREMIUM
  */
-public interface PremiumHolder extends CoreProfile {
+public interface PremiumHolder extends CoreProfile, Identity {
 
 
     /**
@@ -77,20 +74,7 @@ public interface PremiumHolder extends CoreProfile {
         if (!event.isCancelled()) {
             _setPremium(premium);
 
-            DatabaseAPI.update(
-                    Database.getMainCollection(),
-                    getUuid(),
-                    DataOperator.$SET,
-                    DataInfo.PREMIUM,
-                    premium,
-                    (updateResult, throwable) -> Core.logIf(
-                            !updateResult.wasAcknowledged(),
-                            "Failed updating %s's premium status to %s: %s",
-                            getName(),
-                            premium,
-                            throwable
-                    )
-            );
+            update(DataInfo.PREMIUM, premium);
         }
     }
 }

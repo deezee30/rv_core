@@ -6,11 +6,9 @@
 
 package com.riddlesvillage.core.player.statistic;
 
-import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.database.Database;
-import com.riddlesvillage.core.database.DatabaseAPI;
+import com.riddlesvillage.core.database.Identity;
 import com.riddlesvillage.core.database.data.DataInfo;
-import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
 import com.riddlesvillage.core.player.Rank;
@@ -20,7 +18,7 @@ import com.riddlesvillage.core.player.profile.CoreProfile;
  * Represents any profile that can hold and modify a {@link Rank}.
  * @see Rank
  */
-public interface RankedPlayer extends CoreProfile {
+public interface RankedPlayer extends CoreProfile, Identity {
 
     /**
      * @return the holder's current cached rank
@@ -64,20 +62,7 @@ public interface RankedPlayer extends CoreProfile {
     default void setRank(final Rank rank) {
         _setRank(rank);
 
-        DatabaseAPI.update(
-                Database.getMainCollection(),
-                getUuid(),
-                DataOperator.$SET,
-                DataInfo.RANK,
-                rank,
-                (updateResult, throwable) -> Core.logIf(
-                        !updateResult.wasAcknowledged(),
-                        "%s's rank update to %s was unacknowledged: %s",
-                        getName(),
-                        rank.getDisplayName(),
-                        throwable
-                )
-        );
+        update(DataInfo.RANK, rank);
     }
 
     /**

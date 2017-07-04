@@ -85,8 +85,8 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
     }
 
     @Override
-    public Optional<MongoCollection<Document>> getCollection() {
-        return Optional.of(Database.getMainCollection());
+    public MongoCollection<Document> getCollection() {
+        return Database.getMainCollection();
     }
 
     @Override

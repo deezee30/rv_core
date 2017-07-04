@@ -19,6 +19,10 @@ public final class Value<O> implements Cloneable, Serializable {
     private final O value;
     private final ValueType type;
 
+    public Value(final O value) {
+        this(value, ValueType.SET);
+    }
+
     public Value(final O value,
                  final ValueType type) {
         this.value = value;

@@ -4,22 +4,19 @@
 
 package com.riddlesvillage.core.player;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.mongodb.async.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.UpdateOneModel;
-import com.mongodb.client.model.WriteModel;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.CoreSettings;
 import com.riddlesvillage.core.Logger;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.database.Database;
-import com.riddlesvillage.core.database.DatabaseAPI;
+import com.riddlesvillage.core.database.StatType;
 import com.riddlesvillage.core.database.data.DataInfo;
-import com.riddlesvillage.core.database.data.DataOperator;
+import com.riddlesvillage.core.database.value.Value;
 import com.riddlesvillage.core.internal.config.MainConfig;
 import com.riddlesvillage.core.inventory.item.CoreItemStackList;
 import com.riddlesvillage.core.inventory.item.IndexedItem;
@@ -35,7 +32,6 @@ import com.riddlesvillage.core.util.Firework;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.Validate;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -87,9 +83,6 @@ public class CorePlayer extends AbstractCoreProfile {
     private transient Rank
             rank            = Rank.DEFAULT;
 
-    private transient Bson
-            searchQuery     = new Document();
-
     private transient boolean
             newcomer        = true,
             vanished        = false,
@@ -114,7 +107,6 @@ public class CorePlayer extends AbstractCoreProfile {
 
         this.player = player;
 
-        searchQuery = Filters.eq(DataInfo.UUID.getStat(), getUuid().toString());
         nameHistory.add(player.getName());
         ipHistory.add(assumedHostName);
     }
@@ -139,43 +131,15 @@ public class CorePlayer extends AbstractCoreProfile {
                 ((List<String>) stats.get(DataInfo.IP_HISTORY.getStat()))
                         .forEach(s -> ipHistory.addIf(!ipHistory.contains(s), s));
 
-                List<WriteModel<Document>> operations = Lists.newArrayList();
+                // submit bulk update
+                update(new ImmutableMap.Builder<StatType, Value>()
+                        .put(DataInfo.NAME,         new Value<>(getName()))
+                        .put(DataInfo.NAME_HISTORY, new Value<>(nameHistory))
+                        .put(DataInfo.IP_HISTORY,   new Value<>(ipHistory))
+                        .put(DataInfo.PLAYING,      new Value<>(true))
+                        .put(DataInfo.LAST_LOGIN,   new Value<>(System.currentTimeMillis() / 1000l))
+                        .build());
 
-                // update name
-                operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                        DataOperator.$SET.getOperator(),
-                        new Document(DataInfo.NAME.getStat(), getName()))));
-
-                // update name history
-                operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                        DataOperator.$SET.getOperator(),
-                        new Document(DataInfo.NAME_HISTORY.getStat(), nameHistory))));
-
-                // update IP history
-                operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                        DataOperator.$SET.getOperator(),
-                        new Document(DataInfo.IP_HISTORY.getStat(), ipHistory))));
-
-                // update playing
-                operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                        DataOperator.$SET.getOperator(),
-                        new Document(DataInfo.PLAYING.getStat(), true))));
-
-                // update last login time
-                operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                        DataOperator.$SET.getOperator(),
-                        new Document(DataInfo.LAST_LOGIN.getStat(), System.currentTimeMillis() / 1000))));
-
-                // submit bulk update and await for result
-                DatabaseAPI.bulkWrite(
-                        COLLECTION,
-                        operations,
-                        (bulkWriteResult, throwable) -> Core.logIf(
-                                throwable != null,
-                                "Bulk update failed for '%s' (login): %s",
-                                getName(),
-                                throwable
-                        ));
             } else {
                 // player never played before
                 Map<String, Object> doc = Maps.newHashMap();
@@ -194,17 +158,14 @@ public class CorePlayer extends AbstractCoreProfile {
                 DataInfo.PREMIUM.append(doc);
                 DataInfo.LOCALE.append(doc);
 
-                DatabaseAPI.insertNew(
-                        COLLECTION, doc,
-                        (result, t1) -> {
+                insertNew(doc, (result, t1) -> {
                             if (t1 != null) {
                                 Core.debug("Failed to insert '%s' into db: %s", getName(), t1);
                                 t1.printStackTrace();
                             } else {
                                 Core.debug("New player '%s' successfully created", CorePlayer.this.getName());
                             }
-                        }
-                );
+                        });
             }
         });
 
@@ -254,10 +215,6 @@ public class CorePlayer extends AbstractCoreProfile {
         }.runTask(INSTANCE);
     }
 
-    private Bson searchQuery() {
-        return new Document(DataInfo.UUID.getStat(), getUuid());
-    }
-
     // == Native ====================================================== //
 
 
@@ -279,15 +236,6 @@ public class CorePlayer extends AbstractCoreProfile {
     }
 
     /**
-     * Gets search query.
-     *
-     * @return the search query
-     */
-    public Bson getSearchQuery() {
-        return searchQuery;
-    }
-
-    /**
      * Gets the current {@link Location} of the player.
      *
      * @return  A new copy of {@code Location} containing the position of this entity.
@@ -303,8 +251,8 @@ public class CorePlayer extends AbstractCoreProfile {
     }
 
     @Override
-    public Optional<MongoCollection<Document>> getCollection() {
-        return Optional.of(Database.getMainCollection());
+    public MongoCollection<Document> getCollection() {
+        return COLLECTION;
     }
 
     @Override
@@ -327,30 +275,12 @@ public class CorePlayer extends AbstractCoreProfile {
      * Terminates the this player's accessibility with the server.
      */
     public void destroy() {
-        List<WriteModel<Document>> operations = Lists.newArrayList();
 
-        // update last logout
-        operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                DataOperator.$SET.getOperator(),
-                new Document(DataInfo.LAST_LOGOUT.getStat(),
-                        System.currentTimeMillis() / 1000))));
-
-        // update playing
-        operations.add(new UpdateOneModel<>(searchQuery, new Document(
-                DataOperator.$SET.getOperator(),
-                new Document(DataInfo.PLAYING.getStat(), false))));
-
-        // send bulk update and await result
-        DatabaseAPI.bulkWrite(
-                COLLECTION,
-                operations,
-                (bulkWriteResult, throwable) -> Core.logIf(
-                        throwable != null,
-                        "Bulk update failed for %s (destroy): %s",
-                        getName(),
-                        throwable
-                )
-        );
+        // send bulk update
+        update(new ImmutableMap.Builder<StatType, Value>()
+                .put(DataInfo.LAST_LOGOUT, new Value<>(System.currentTimeMillis() / 1000l))
+                .put(DataInfo.PLAYING, new Value<>(false))
+                .build());
 
         // destroy violation managers to prevent memory leaks
         violations.destroy();
@@ -869,20 +799,7 @@ public class CorePlayer extends AbstractCoreProfile {
     public String setLocale(final String locale,
                             final boolean refreshLoginItems) {
         this.locale = Validate.notNull(locale);
-        DatabaseAPI.update(
-                COLLECTION,
-                getUuid(),
-                DataOperator.$SET,
-                DataInfo.LOCALE,
-                locale,
-                (updateResult, throwable) -> Core.logIf(
-                        !updateResult.wasAcknowledged(),
-                        "%s's locale (%s) update was unacknowledged: ",
-                        getName(),
-                        locale,
-                        throwable
-                )
-        );
+        update(DataInfo.LOCALE, locale);
 
         if (refreshLoginItems)
             giveLoginItems();

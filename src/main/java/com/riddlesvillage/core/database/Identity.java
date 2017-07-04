@@ -30,20 +30,42 @@ import java.util.stream.Collectors;
 
 public interface Identity {
 
-    UUID getIdentifier();
+    /**
+     * @return the unique identifier of this identity that
+     * will be used as a primary key in the database
+     */
+    UUID getUuid();
 
+    /**
+     * Returns the default {@link MongoCollection<Document>}
+     * that represents the collection that the profile is stored
+     * within inside the database.
+     *
+     * <p>The collection must either have a primary key set to
+     * {@code _id} which should represent the profile's
+     * {@code UUID}, <b>OR</b> override the default method
+     * {@link #getStatType()}.</p>
+     *
+     * @return the profile's general database collection
+     */
     MongoCollection<Document> getCollection();
 
+    /**
+     * @return the default stat type for {@link #getUuid()}
+     */
     default StatType getStatType() {
         return DataInfo.UUID;
     }
 
+    /**
+     * @return the search query used to look up the identity data
+     */
     default Bson getSearchQuery() {
-        return Filters.eq(getStatType().getStat(), getIdentifier());
+        return Filters.eq(getStatType().getStat(), getUuid());
     }
 
     default void retrieveDocument(final SingleResultCallback<Document> doAfter) {
-        DatabaseAPI.retrieveDocument(getCollection(), getStatType(), getIdentifier(), doAfter);
+        DatabaseAPI.retrieveDocument(getCollection(), getStatType(), getUuid(), doAfter);
     }
 
     default void insertNew(final Map<String, Object> map) {
@@ -61,7 +83,12 @@ public interface Identity {
     }
 
     default void update(final StatType stat,
-                        final Value<Object> value) {
+                        final Object value) {
+        update(stat, new Value<>(value));
+    }
+
+    default void update(final StatType stat,
+                        final Value value) {
         update(stat, value, (result, t) -> {
             if (Core.logIf(t != null,
                     "Could not update `%s` data with value `%s:%s`:",
@@ -71,7 +98,13 @@ public interface Identity {
     }
 
     default void update(final StatType stat,
-                        final Value<Object> value,
+                        final Object value,
+                        final SingleResultCallback<UpdateResult> doAfter) {
+        update(stat, new Value<>(value), doAfter);
+    }
+
+    default void update(final StatType stat,
+                        final Value value,
                         final SingleResultCallback<UpdateResult> doAfter) {
         Validate.notNull(stat);
         Validate.notNull(value);
@@ -85,7 +118,7 @@ public interface Identity {
             obj = i;
         }
 
-        DatabaseAPI.update(getCollection(), getIdentifier(), stat, obj, operator, doAfter);
+        update(stat, obj, operator, doAfter);
     }
 
     default void update(final StatType stat,
@@ -103,7 +136,7 @@ public interface Identity {
                         final Object obj,
                         final DataOperator operator,
                         final SingleResultCallback<UpdateResult> doAfter) {
-        DatabaseAPI.update(getCollection(), getIdentifier(), stat, obj, operator, doAfter);
+        DatabaseAPI.update(getCollection(), getUuid(), stat, obj, operator, doAfter);
     }
 
     default void update(final Map<StatType, Value> operations) {

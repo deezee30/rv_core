@@ -4,13 +4,9 @@
 
 package com.riddlesvillage.core.player.profile;
 
-import com.mongodb.async.client.MongoCollection;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
-import org.bson.Document;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -45,39 +41,12 @@ public interface CoreProfile {
 
 
     /**
-     * Gets the "friendly" name to display of this profile.
-     * This may include color.
-     *
-     * @return The friendly name
-     */
-    String getDisplayName();
-
-
-    /**
      * Returns the universal unique identifier ({@link UUID}) of
      * the profile.
      *
      * @return The profile's identifier
      */
     UUID getUuid();
-
-
-    /**
-     * @return The last known IP address the player has used or current one
-     */
-    String getIp();
-
-
-    /**
-     * @return A {@link List} of previously connected with IP addresses
-     */
-    List<String> getIpHistory();
-
-
-    /**
-     * @return A {@link List} of previously connected with usernames
-     */
-    List<String> getNameHistory();
 
 
     /**
@@ -114,21 +83,4 @@ public interface CoreProfile {
     default CorePlayer toCorePlayer() {
         return PLAYER_MANAGER.get(getUuid());
     }
-
-
-    /**
-     * Returns the default {@link MongoCollection<Document>}
-     * that represents the collection that the profile is stored
-     * within inside the database.
-     *
-     * <p>The collection must have a primary key set to {@code _id}
-     * which should represent the profile's {@code UUID}.</p>
-     *
-     * <p>If the profile doesn't have a general collection,
-     * or is not supposed to be stored in the database,
-     * {@link Optional#empty()} may be returned.</p>
-     *
-     * @return the profile's general database collection
-     */
-    Optional<MongoCollection<Document>> getCollection();
 }

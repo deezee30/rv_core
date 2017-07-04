@@ -4,11 +4,8 @@
 
 package com.riddlesvillage.core.player.statistic;
 
-import com.riddlesvillage.core.Core;
-import com.riddlesvillage.core.database.Database;
-import com.riddlesvillage.core.database.DatabaseAPI;
+import com.riddlesvillage.core.database.Identity;
 import com.riddlesvillage.core.database.data.DataInfo;
-import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.database.value.Value;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.OfflineCorePlayer;
@@ -20,7 +17,7 @@ import org.bukkit.Bukkit;
 /**
  * Represents any user that is of value in terms of token amount.
  */
-public interface TokensHolder extends CoreProfile {
+public interface TokensHolder extends CoreProfile, Identity {
 
 
     /**
@@ -86,20 +83,7 @@ public interface TokensHolder extends CoreProfile {
 
             _setTokens(newTokens);
 
-            DatabaseAPI.update(
-                    Database.getMainCollection(),
-                    getUuid(),
-                    DataOperator.$SET,
-                    DataInfo.TOKENS,
-                    newTokens,
-                    (updateResult, throwable) -> Core.logIf(
-                            !updateResult.wasAcknowledged(),
-                            "Failed updating %s's token value to %s: %s",
-                            getName(),
-                            newTokens,
-                            throwable
-                    )
-            );
+            update(DataInfo.TOKENS, newTokens);
         }
     }
 }

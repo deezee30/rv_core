@@ -9,9 +9,9 @@ package example;
 import com.mongodb.async.client.MongoCollection;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.database.Database;
-import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.StatType;
-import com.riddlesvillage.core.database.data.DataOperator;
+import com.riddlesvillage.core.database.value.Value;
+import com.riddlesvillage.core.database.value.ValueType;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
 import com.riddlesvillage.core.util.MathUtil;
@@ -58,9 +58,9 @@ final class PvPPlayer extends AbstractCoreProfile {
     }
 
     @Override
-    public Optional<MongoCollection<Document>> getCollection() {
+    public MongoCollection<Document> getCollection() {
         // return a custom collection or null if none
-        return Optional.of(COLLECTION);
+        return COLLECTION;
     }
 
     @Override
@@ -71,19 +71,7 @@ final class PvPPlayer extends AbstractCoreProfile {
     public void addKill() {
         kills++;
 
-        DatabaseAPI.update(
-                COLLECTION,
-                getUuid(),
-                DataOperator.$INC,
-                KILL_STAT,
-                1,
-                (updateResult, throwable) -> Core.logIf(
-                        !updateResult.wasAcknowledged(),
-                        "Failed incrementing %s's kills: %s",
-                        getName(),
-                        throwable
-                )
-        );
+        update(KILL_STAT,  new Value<>(1, ValueType.GIVE));
     }
 
     public int getKills() {
@@ -93,19 +81,7 @@ final class PvPPlayer extends AbstractCoreProfile {
     public void addDeath() {
         deaths++;
 
-        DatabaseAPI.update(
-                COLLECTION,
-                getUuid(),
-                DataOperator.$INC,
-                DEATH_STAT,
-                1,
-                (updateResult, throwable) -> Core.logIf(
-                        !updateResult.wasAcknowledged(),
-                        "Failed incrementing %s's deaths: %s",
-                        getName(),
-                        throwable
-                )
-        );
+        update(DEATH_STAT, new Value<>(1, ValueType.GIVE));
     }
 
     public int getDeaths() {

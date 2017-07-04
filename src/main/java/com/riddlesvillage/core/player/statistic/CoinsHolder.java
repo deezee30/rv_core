@@ -6,11 +6,8 @@
 
 package com.riddlesvillage.core.player.statistic;
 
-import com.riddlesvillage.core.Core;
-import com.riddlesvillage.core.database.Database;
-import com.riddlesvillage.core.database.DatabaseAPI;
+import com.riddlesvillage.core.database.Identity;
 import com.riddlesvillage.core.database.data.DataInfo;
-import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.database.value.Value;
 import com.riddlesvillage.core.database.value.ValueType;
 import com.riddlesvillage.core.player.CorePlayer;
@@ -24,7 +21,7 @@ import org.bukkit.Bukkit;
 /**
  * Represents any user that is of value in terms of coin amount.
  */
-public interface CoinsHolder extends CoreProfile {
+public interface CoinsHolder extends CoreProfile, Identity {
 
 
     /**
@@ -133,20 +130,7 @@ public interface CoinsHolder extends CoreProfile {
 
             _setCoins(newCoins);
 
-            DatabaseAPI.update(
-                    Database.getMainCollection(),
-                    getUuid(),
-                    DataOperator.$SET,
-                    DataInfo.COINS,
-                    newCoins,
-                    (updateResult, throwable) -> Core.logIf(
-                            !updateResult.wasAcknowledged(),
-                            "Failed updating %s's coin value to %s: %s",
-                            getName(),
-                            newCoins,
-                            throwable
-                    )
-            );
+            update(DataInfo.COINS, newCoins);
         }
     }
 
