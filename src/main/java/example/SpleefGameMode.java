@@ -1,13 +1,13 @@
 package example;
 
-import com.riddlesvillage.core.game.GameMode;
-import com.riddlesvillage.core.game.stage.GameModeStage;
+import com.riddlesvillage.core.pgm.Game;
+import com.riddlesvillage.core.pgm.stage.GameStage;
 import com.riddlesvillage.core.world.region.flag.Flag;
 
 /**
  * Created by Matthew E on 7/5/2017.
  */
-public class SpleefGameMode extends GameMode {
+public class SpleefGameMode extends Game {
     public static final String LOBBY_STAGE = "lobby";
     public static final String COUNT_DOWN_STAGE = "countdown";
     public static final String INGAME_STAGE = "ingame";
@@ -32,7 +32,7 @@ public class SpleefGameMode extends GameMode {
         this.options.add(Flag.VEHICLE_PLACE);
         this.options.add(Flag.POTION_SPLASH);
 
-        this.stages.add(new GameModeStage(LOBBY_STAGE, this) {
+        this.stages.add(new GameStage(LOBBY_STAGE, this) {
 
             private static final int LOBBY_COUNT_DOWN_TIME = 30;
             private double lobbyCountDownTime;
@@ -72,7 +72,7 @@ public class SpleefGameMode extends GameMode {
             }
         });
 
-        this.stages.add(new GameModeStage(COUNT_DOWN_STAGE, this) {
+        this.stages.add(new GameStage(COUNT_DOWN_STAGE, this) {
 
             private static final int COUNT_DOWN_TIME = 30;
             private double countDownTime;

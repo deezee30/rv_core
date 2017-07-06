@@ -68,7 +68,7 @@ public interface Identity {
         DatabaseAPI.retrieveDocument(getCollection(), getStatType(), getUuid(), doAfter);
     }
 
-    default void insertNew(final Map<String, Object> map) {
+    default void insertNew(final Map<StatType, Object> map) {
         insertNew(map, (result, t) -> {
             if (Core.logIf(t != null,
                     "Could not insert new `%s` data with entries `%s`:",
@@ -77,7 +77,7 @@ public interface Identity {
         });
     }
 
-    default void insertNew(final Map<String, Object> map,
+    default void insertNew(final Map<StatType, Object> map,
                            final SingleResultCallback<Void> doAfter) {
         DatabaseAPI.insertNew(getCollection(), map, doAfter);
     }

@@ -1,4 +1,4 @@
-package com.riddlesvillage.core.game.stage;
+package com.riddlesvillage.core.pgm.stage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,31 +8,31 @@ import java.util.Map;
 /**
  * Created by Matthew E on 7/5/2017.
  */
-public class GameModeStages {
-    private Map<String, GameModeStage> gameModeStageMap;
+public class GameStages {
+    private Map<String, GameStage> gameModeStageMap;
     private String currentStageName;
 
-    public GameModeStages() {
+    public GameStages() {
         this.gameModeStageMap = new HashMap<>();
     }
 
-    public void add(GameModeStage gameModeStage) {
+    public void add(GameStage gameModeStage) {
         if (!gameModeStageMap.containsKey(gameModeStage.getName())) {
             gameModeStageMap.put(gameModeStage.getName(), gameModeStage);
         }
     }
 
-    public void remove(GameModeStage gameModeStage) {
+    public void remove(GameStage gameModeStage) {
         if (gameModeStageMap.containsKey(gameModeStage.getName())) {
             gameModeStageMap.remove(gameModeStage.getName());
         }
     }
 
-    public List<GameModeStage> getGameModeStageList() {
+    public List<GameStage> getGameModeStageList() {
         return new ArrayList<>(gameModeStageMap.values());
     }
 
-    public GameModeStage getCurrentStage() {
+    public GameStage getCurrentStage() {
         return gameModeStageMap.get(currentStageName);
     }
 
@@ -40,7 +40,7 @@ public class GameModeStages {
         return currentStageName;
     }
 
-    public GameModeStages setCurrentStageName(String currentStageName) {
+    public GameStages setCurrentStageName(String currentStageName) {
         this.currentStageName = currentStageName;
         getCurrentStage().start();
         return this;

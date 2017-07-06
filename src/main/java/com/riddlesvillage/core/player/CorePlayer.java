@@ -142,7 +142,7 @@ public class CorePlayer extends AbstractCoreProfile {
 
             } else {
                 // player never played before
-                Map<String, Object> doc = Maps.newHashMap();
+                Map<StatType, Object> doc = Maps.newHashMap();
 
                 DataInfo.UUID.append(doc, getUuid());
                 DataInfo.NAME.append(doc, getName());

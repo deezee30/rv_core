@@ -1,20 +1,20 @@
-package com.riddlesvillage.core.game.stage;
+package com.riddlesvillage.core.pgm.stage;
 
 import com.riddlesvillage.core.Core;
-import com.riddlesvillage.core.game.GameMode;
-import com.riddlesvillage.core.game.event.GameModeStageEndEvent;
-import com.riddlesvillage.core.game.event.GameModeStageStartEvent;
+import com.riddlesvillage.core.pgm.Game;
+import com.riddlesvillage.core.pgm.event.GameStageEndEvent;
+import com.riddlesvillage.core.pgm.event.GameStageStartEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Created by Matthew E on 7/5/2017.
  */
-public abstract class GameModeStage extends BukkitRunnable {
+public abstract class GameStage extends BukkitRunnable {
     private String name;
-    private GameMode gameMode;
+    private Game gameMode;
 
-    public GameModeStage(String name, GameMode gameMode) {
+    public GameStage(String name, Game gameMode) {
         this.name = name;
         this.gameMode = gameMode;
     }
@@ -39,7 +39,7 @@ public abstract class GameModeStage extends BukkitRunnable {
     public void start() {
         onStart();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(Core.get(), this, 5L, 5L);
-        GameModeStageStartEvent stageStartEvent = new GameModeStageStartEvent(gameMode, this);
+        GameStageStartEvent stageStartEvent = new GameStageStartEvent(gameMode, this);
         Bukkit.getPluginManager().callEvent(stageStartEvent);
     }
 
@@ -48,7 +48,7 @@ public abstract class GameModeStage extends BukkitRunnable {
         if (Bukkit.getScheduler().isCurrentlyRunning(getTaskId())) {
             Bukkit.getScheduler().cancelTask(getTaskId());
         }
-        GameModeStageEndEvent stageEndEvent = new GameModeStageEndEvent(gameMode, this);
+        GameStageEndEvent stageEndEvent = new GameStageEndEvent(gameMode, this);
         Bukkit.getPluginManager().callEvent(stageEndEvent);
     }
 

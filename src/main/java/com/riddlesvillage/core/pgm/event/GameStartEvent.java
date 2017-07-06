@@ -2,19 +2,19 @@
  * RiddlesCore
  */
 
-package com.riddlesvillage.core.game.event;
+package com.riddlesvillage.core.pgm.event;
 
-import com.riddlesvillage.core.game.GameMode;
+import com.riddlesvillage.core.pgm.Game;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 
-public class GameModeInitEvent extends Event {
+public class GameStartEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
-    private final GameMode gameMode;
+    private final Game gameMode;
 
-    public GameModeInitEvent(GameMode gameMode) {
+    public GameStartEvent(Game gameMode) {
         this.gameMode = Validate.notNull(gameMode);
     }
 
@@ -27,7 +27,7 @@ public class GameModeInitEvent extends Event {
         return handlers;
     }
 
-    public GameMode getGameMode() {
+    public Game getGameMode() {
         return gameMode;
     }
 }

@@ -2,26 +2,26 @@
  * RiddlesCore
  */
 
-package com.riddlesvillage.core.game.event;
+package com.riddlesvillage.core.pgm.event;
 
-import com.riddlesvillage.core.game.GameMode;
-import com.riddlesvillage.core.game.stage.GameModeStage;
+import com.riddlesvillage.core.pgm.Game;
+import com.riddlesvillage.core.pgm.stage.GameStage;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 
-public class GameModeStageEndEvent extends Event {
+public class GameStageStartEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
-    private final GameMode gameMode;
-    private final GameModeStage stage;
+    private final Game gameMode;
+    private final GameStage stage;
 
-    public GameModeStageEndEvent(GameMode gameMode, GameModeStage stage) {
+    public GameStageStartEvent(Game gameMode, GameStage stage) {
         this.gameMode = Validate.notNull(gameMode);
         this.stage = Validate.notNull(stage);
     }
 
-    public GameModeStage getStage() {
+    public GameStage getStage() {
         return stage;
     }
 
@@ -34,7 +34,7 @@ public class GameModeStageEndEvent extends Event {
         return handlers;
     }
 
-    public GameMode getGameMode() {
+    public Game getGameMode() {
         return gameMode;
     }
 }

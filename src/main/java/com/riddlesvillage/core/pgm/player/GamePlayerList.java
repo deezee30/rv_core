@@ -1,4 +1,4 @@
-package com.riddlesvillage.core.game.player;
+package com.riddlesvillage.core.pgm.player;
 
 import com.riddlesvillage.core.collect.EnhancedList;
 

@@ -1,10 +1,7 @@
 package com.riddlesvillage.core.internal.command;
 
 import com.riddlesvillage.core.Core;
-import com.riddlesvillage.core.database.Database;
-import com.riddlesvillage.core.database.DatabaseAPI;
 import com.riddlesvillage.core.database.data.DataInfo;
-import com.riddlesvillage.core.database.data.DataOperator;
 import com.riddlesvillage.core.database.value.Value;
 import com.riddlesvillage.core.database.value.ValueType;
 import com.riddlesvillage.core.player.CorePlayer;
@@ -153,20 +150,7 @@ public final class TokensCommand implements CommandExecutor {
 
                     if (offlinePlayer.hasPlayed()) {
                         int newTokens = value.appendTo(offlinePlayer.getTokens());
-                        DatabaseAPI.update(
-                                Database.getMainCollection(),
-                                offlinePlayer.getUuid(),
-                                DataOperator.$SET,
-                                DataInfo.TOKENS,
-                                newTokens,
-                                (updateResult, throwable) -> Core.logIf(
-                                        !updateResult.wasAcknowledged(),
-                                        "Failed updating %s's token value to %s: %s",
-                                        offlinePlayer.getName(),
-                                        newTokens,
-                                        throwable
-                                )
-                        );
+                        offlinePlayer.update(DataInfo.TOKENS, newTokens);
                     } else {
                         if (isPlayer)
                             CoreProfile.PLAYER_MANAGER.get(sender.getName()).sendMessage(

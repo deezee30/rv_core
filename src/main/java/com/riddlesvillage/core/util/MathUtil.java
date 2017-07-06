@@ -133,6 +133,16 @@ public class MathUtil {
         return min + RANDOM.nextInt(max - min);
     }
 
+    public static double average(int... nums) {
+        double sum = 0d;
+
+        for (int n : nums) {
+            sum += n;
+        }
+
+        return sum / (double) nums.length;
+    }
+
     public static int toInt(Object object) {
         if (object instanceof Number) {
             return ((Number) object).intValue();

@@ -34,16 +34,6 @@ public class DatabaseAPI {
         collection.bulkWrite(operations, doAfterOptional);
     }
 
-    @Deprecated
-    public static void update(final MongoCollection<Document> collection,
-                              final UUID uuid,
-                              final DataOperator operator,
-                              final StatType variable,
-                              final Object object,
-                              final SingleResultCallback<UpdateResult> doAfterOptional) {
-        update(collection, uuid, variable, object, operator, doAfterOptional);
-    }
-
     public static void update(final MongoCollection<Document> collection,
                               final UUID uuid,
                               final StatType variable,
@@ -64,18 +54,6 @@ public class DatabaseAPI {
         );
     }
 
-    @Deprecated
-    public static void retrieveCoreDataFromUuid(final UUID uuid,
-                                                final SingleResultCallback<Document> doAfter) {
-        retrieveDocument(Database.getMainCollection(), DataInfo.UUID, Validate.notNull(uuid), doAfter);
-    }
-
-    @Deprecated
-    public static void retrieveCoreDataFromName(final String username,
-                                                final SingleResultCallback<Document> doAfter) {
-        retrieveDocument(Database.getMainCollection(), DataInfo.NAME, Validate.notNull(username), doAfter);
-    }
-
     public static void retrieveDocument(final MongoCollection<Document> collection,
                                         final StatType stat,
                                         final Object value,
@@ -87,20 +65,20 @@ public class DatabaseAPI {
     }
 
     public static void insertNew(final MongoCollection<Document> collection,
-                                 final Map<String, Object> map,
+                                 final Map<StatType, Object> map,
                                  final SingleResultCallback<Void> callback) {
         Validate.notNull(collection);
         Validate.notNull(map);
 
         Document insert = new Document();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            insert.append(entry.getKey(), checkForCodec(entry.getValue()));
+        for (Map.Entry<StatType, Object> entry : map.entrySet()) {
+            insert.append(entry.getKey().getStat(), checkForCodec(entry.getValue()));
         }
 
         collection.insertOne(insert, callback);
     }
 
-    private static Object checkForCodec(final Object obj) {
+    public static Object checkForCodec(final Object obj) {
         if (obj == null) return null;
 
         // we don't want mongodb driver to convert uuid to binary 0x03

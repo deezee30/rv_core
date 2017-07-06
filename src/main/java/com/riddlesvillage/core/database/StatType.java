@@ -36,7 +36,7 @@ public interface StatType {
      * @param map the map
      * @return the map
      */
-    default Map<String, Object> append(final Map<String, Object> map) {
+    default Map<StatType, Object> append(final Map<StatType, Object> map) {
         Validate.notNull(map);
         return append(map, getDefault().isPresent() ? getDefault().get() : null);
     }
@@ -48,11 +48,11 @@ public interface StatType {
      * @param def the def
      * @return the map
      */
-    default Map<String, Object> append(final Map<String, Object> map,
-                                       final Object def) {
+    default Map<StatType, Object> append(final Map<StatType, Object> map,
+                                         final Object def) {
         Validate.notNull(map);
 
-        map.put(getStat(), def);
+        map.put(this, def);
         return map;
     }
 

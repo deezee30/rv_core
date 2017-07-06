@@ -1,4 +1,4 @@
-package com.riddlesvillage.core.game.option;
+package com.riddlesvillage.core.pgm.option;
 
 import com.riddlesvillage.core.world.region.flag.Flag;
 
@@ -10,10 +10,10 @@ import java.util.Map;
 /**
  * Created by Matthew E on 7/5/2017.
  */
-public class GameModeOptions {
+public class GameOptions {
     private Map<String, Flag> flagMap;
 
-    public GameModeOptions() {
+    public GameOptions() {
         this.flagMap = new HashMap<>();
     }
 
