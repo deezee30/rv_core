@@ -1,9 +1,11 @@
 package example.spleef;
 
 import com.riddlesvillage.core.pgm.Game;
+import com.riddlesvillage.core.pgm.kit.KitList;
 import com.riddlesvillage.core.pgm.stage.GameStage;
 import com.riddlesvillage.core.pgm.team.TeamList;
 import com.riddlesvillage.core.world.region.flag.Flag;
+import example.spleef.kit.BasicKit;
 import example.spleef.team.BlueTeam;
 import example.spleef.team.RedTeam;
 
@@ -15,6 +17,7 @@ public class TeamSpleefGame extends Game {
     public static final String COUNT_DOWN_STAGE = "countdown";
     public static final String INGAME_STAGE = "ingame";
     private TeamList teamList;
+    private KitList kitList;
 
 
     public TeamSpleefGame() {
@@ -40,6 +43,9 @@ public class TeamSpleefGame extends Game {
         this.teamList = new TeamList();
         this.teamList.add(new BlueTeam());
         this.teamList.add(new RedTeam());
+
+        this.kitList = new KitList();
+        this.kitList.add(new BasicKit());
 
         this.stages.add(new GameStage(LOBBY_STAGE, this) {
 
