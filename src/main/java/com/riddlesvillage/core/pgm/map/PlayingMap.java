@@ -77,4 +77,8 @@ public abstract class PlayingMap {
 
         Core.debug("Validation for map %s successful", name);
     }
+
+    public List<MapObjective> getObjectives() {
+        return objectives;
+    }
 }

@@ -6,6 +6,6 @@
 
 package com.riddlesvillage.core.pgm.matchmaking;
 
-public class MatchMaking {
-
+public interface MatchMaking<K, V> {
+    boolean matches(K k, V v);
 }

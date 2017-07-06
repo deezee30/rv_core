@@ -21,6 +21,8 @@ public interface IKit extends
 
     String getName();
 
+    String getDescription();
+
     Color getColor();
 
     int getHealth();

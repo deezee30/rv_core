@@ -61,6 +61,7 @@
                                 </includes>
                             </artifactSet>
                             <finalName>RiddlesCore</finalName>
+                            <outputFile>C:\Users\matt1\Desktop\SaucedMcBungee\hub\plugins\RiddlesCore.jar</outputFile>
                             <!--<outputFile>${user.home}/Desktop/server/plugins/RiddlesCore.jar</outputFile>-->
                         </configuration>
                     </execution>
