@@ -31,7 +31,7 @@ public class TeamSpleefGame extends Game {
         this.options.add(Flag.BLOCK_SPREAD);
         this.options.add(Flag.ANIMAL_SPAWN);
         this.options.add(Flag.BLOCK_BURN);
-        this.options.add(Flag.BREAK);
+
         this.options.add(Flag.BUILD);
         this.options.add(Flag.EXP_SPAWN);
         this.options.add(Flag.MONSTER_SPAWN);
@@ -127,9 +127,5 @@ public class TeamSpleefGame extends Game {
             }
         });
         this.stages.setCurrentStageName(LOBBY_STAGE);
-    }
-
-    public TeamList getTeamList() {
-        return teamList;
     }
 }

@@ -59,7 +59,7 @@ public class Flag<E extends Event & Cancellable> implements EventExecutor {
     protected String flagName;
     protected transient IFlag<E> flag;
 
-    private Flag(final IFlag<E> flag) {
+    protected Flag(final IFlag<E> flag) {
         this.flag = flag;
         ALL_FLAGS.add(this);
         Bukkit.getPluginManager().registerEvent(
