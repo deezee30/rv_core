@@ -31,13 +31,15 @@ remain the same as provided.
 However, when a player's credentials are known, `AbstractCoreProfile(UUID, String)`
 should be called. The player's statistics will be downloaded from
 which ever `MongoCollection<Document>` is provided from the sub
-class's `#getCollection()` via the primary key, AKA the player's 
+class's `getCollection()` via the primary key, AKA the player's 
 `UUID`. Every player-related collection must contain a `UUID` field
-to be used as a primary key. If the sub class does not have an
-associated collection in the database, `null` can be returned and
-a further statistic lookup won't be performed.
+to be used as a primary key. If the provided collection does not use
+a `UUID` as a primary key, then the `getStatType` should be overriden
+and return the used primary key data type accordingly. If the sub class
+does not have an associated collection in the database, `null` can be
+returned and a further statistic lookup won't be performed.
 
-Once the lookup is made, `#onLoad(Optional<Document> stats)` will be
+Once the lookup is made, `onLoad(Optional<Document> stats)` will be
 called, where the argument contains all fields found in the player's
 collection. This is called directly after all database lookups have
 been performed. Those can be extracted and set as local variables.
@@ -117,7 +119,7 @@ estimated currency exchange would be `1 token = 1000 coins`.
 ##### Managing currency
 
 The most simplistic way to change a player's coin count is via
-`profile#setCoins(Value)`, where `profile` is the online or offline
+`profile.setCoins(Value)`, where `profile` is the online or offline
 player instance - for example `CorePlayer`. `Value` is a simple
 class that stores an `int` and whether the value is supposed to
 **increase**, **decrease** or **set** the player's new coin count
@@ -137,7 +139,7 @@ player.sendMessage("You now have a total of %s tokens", player.getTokens());
 The coin multiplier is a personal factor `double` that accelerates earning
 coins. This can be enabled for a single player or the full server temporarily.
 This factor is only applied when the coin value increases, and an additional
-`boolean` parameter is also passed through `#setCoins()`.
+`boolean` parameter is also passed through `setCoins()`.
 
 Calling `setCoins(value)` by default will not apply the coin multiplier. This
 is for use such as manual adding of coins via prizes, commands, etc. In
@@ -223,7 +225,7 @@ public void onPostLoad(CorePlayerPostLoadEvent event) {
 | Lead Dev | `10`    | Gold       | Access to non-public areas of plugins |
 | Admin    | `99999` | Blue       | Access to backend server commands and utilities |
 
-Obtainable via `AbstractCoreProfile#getRank()`
+Obtainable via `AbstractCoreProfile.getRank()`
 
 `CorePlayer` provides helpful methods to distinguish between ranks.
 For example, to check if a player is a moderator, one can simply
@@ -243,7 +245,70 @@ call `player.isMod()`.
 
 ### Database
 
-...
+Any object that can be stored in a Mongo database that has a primary
+key (for example, a `UUID`) can implement the `Identity` interface.
+
+The developer will have to override `getCollection` to return the
+specified Mongo collection that the custom database identity will
+be held in.
+
+> *Note:* By default, the `UUID` is used as a primary key in every database identity
+
+It's now very simple to interact with the database, since the collection, 
+data type and primary key are now constant throughout each call.
+
+Due to the fact that the processing is done asynchronously, a callback
+must be provided so that it runs as soon as the query processes and returns
+the document. For all queries, a callback must be provided so that
+the API knows what to do after the query has been completed. For all
+updates, a call back is not required but strongly recommended to use
+due to the fact that it also contains a possible error and solution
+as to why the update could have failed.
+
+To get the whole document, simply call `identity.retrieveDocument(SingleResultCallBack<Document>)`.
+
+To insert a new document, call `identity.insertNew(Map<StatType, Object>)`,
+where the parameter is a `Map` resembling a **key-value pair**.
+
+Updating the database is as simple as `identity.update(StatType, Object)`,
+where the parameters are a simple **key-value pair**. If the provided object
+to update requires an appendable process instead of a simple **set**,
+`Value` or a combination of `Object` and `DataOperator` can be used to, for
+example, append a value on top of the existing value.
+
+Here's an example of a simple update, where a player's coin value is increased:
+
+```java
+CorePlayer player = ... // suppose we already have a player instance
+player.update(DataInfo.COINS, new Value<>(20, ValueType.GIVE)); // give 20 coins to player
+```
+
+Simple bulk updates are also supported, via `identity.update(Map<StatType, Value>)`.
+
+Here's an example how to update a player's economy. We're going to simultaneously
+increase a player's coin count and decrease his token count, as if he bought those
+coins with some tokens. We are also going to expect a callback to make sure everything
+was processed successfully:
+
+```java
+CorePlayer player = ... // suppose we already have a player instance
+player.update(new ImmutableMap.Builder<StatType, Value>()
+
+        // each update goes in here
+        .put(DataInfo.COINS, new Value<>(20, ValueType.GIVE)) // give 20 coins
+        .put(DataInfo.TOKENS, new Value<>(4, ValueType.TAKE)) // take 4 tokens
+
+        // build update map and expect result
+        .build(), (result, throwable) -> {
+            if (throwable == null) {
+                // handle throwable appropriately...
+                Core.log("An error occured while bulk updating %s's coins:", player.getName());
+                throwable.printStackTrace();
+            } else {
+                Core.debug("Bulk update successful");
+            }
+        });
+```
 
 ### Regions
 
