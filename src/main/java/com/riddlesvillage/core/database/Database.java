@@ -8,7 +8,8 @@ import com.mongodb.connection.ClusterSettings;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.CoreException;
 import com.riddlesvillage.core.database.data.Credentials;
-import com.riddlesvillage.core.database.data.RankCodec;
+import com.riddlesvillage.core.database.data.codec.RankCodec;
+import com.riddlesvillage.core.database.data.codec.Vector3DCodec;
 import org.apache.commons.lang3.Validate;
 import org.bson.Document;
 import org.bson.codecs.Codec;
@@ -29,7 +30,8 @@ public final class Database implements Closeable {
     private static Database INSTANCE = new Database();
 
     private static final Codec<?>[] CODECS = new Codec[] {
-            new RankCodec()
+            new RankCodec(),
+            new Vector3DCodec()
     };
 
     private static final CodecRegistry REGISTRY = CodecRegistries.fromRegistries(

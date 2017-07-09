@@ -4,7 +4,7 @@
  * Created on 08 June 2017 at 11:30 PM.
  */
 
-package com.riddlesvillage.core.database.data;
+package com.riddlesvillage.core.database.data.codec;
 
 import com.riddlesvillage.core.player.Rank;
 import org.bson.BsonReader;
