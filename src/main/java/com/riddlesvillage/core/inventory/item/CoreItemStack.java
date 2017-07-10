@@ -4,9 +4,9 @@
 
 package com.riddlesvillage.core.inventory.item;
 
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-import com.riddlesvillage.core.collect.EnhancedList;
-import com.riddlesvillage.core.collect.EnhancedMap;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -20,57 +20,56 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.json.simple.JSONAware;
 
-import java.util.HashMap;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class CoreItemStack implements JSONAware {
 
-    private final Material material;
-    private final int quantity;
-    private final String displayName;
-    private final EnhancedList<String> lore = new EnhancedList<>();
-    private final EnhancedMap<Enchantment, Integer> enchantments = new EnhancedMap<>();
-    private final int color;
+    private static final Gson GSON = new GsonBuilder()
+            .disableHtmlEscaping()
+            .create();
+
+    private Material material = Material.AIR;
+    private int quantity = 1;
+
+    private Optional<String> displayName = Optional.empty();
+    private Optional<List<String>> lore = Optional.empty();
+    private Optional<Map<Enchantment, Integer>> enchantments = Optional.empty();
+    private Optional<Integer> color = Optional.empty();
 
     public CoreItemStack(final ItemStack item) {
-        if (item == null) {
-            material = Material.AIR;
-            quantity = 1;
-            displayName = null;
-            color = 0;
-        } else {
+        if (item != null) {
             material = item.getType();
             quantity = item.getAmount();
 
             if (item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
-                color = meta instanceof LeatherArmorMeta ? ((LeatherArmorMeta) meta).getColor().asRGB() : 0;
-                displayName = meta.hasDisplayName() ? meta.getDisplayName() : null;
-                if (meta.hasLore()) lore.addAll(meta.getLore());
-            } else {
-                color = 0;
-                displayName = null;
+                if (meta instanceof LeatherArmorMeta) {
+                    color = Optional.of(((LeatherArmorMeta) meta).getColor().asRGB());
+                }
+                displayName = Optional.ofNullable(meta.getDisplayName());
+                lore = Optional.ofNullable(meta.getLore());
             }
 
-            enchantments.putAll(item.getEnchantments());
+            enchantments = Optional.of(item.getEnchantments());
         }
     }
 
-    public CoreItemStack(final ItemStackContainer item) {
+    public CoreItemStack(final Container item) {
         Validate.notNull(item);
         this.material = Material.getMaterial(item.material);
         this.quantity = item.quantity;
-        this.displayName = item.title;
-        this.color = item.color;
-        this.lore.addAll(item.lore);
-        for (Map.Entry<String, Integer> entry : item.enchantments.entrySet()) {
-            this.enchantments.put(EnchantmentWrapper.getByName(entry.getKey()), entry.getValue());
+        this.displayName = Optional.ofNullable(item.title);
+        this.color = Optional.ofNullable(item.color);
+        this.lore = Optional.ofNullable(item.lore);
+        if (item.enchantments != null) {
+            Map<Enchantment, Integer> map = Maps.newHashMapWithExpectedSize(item.enchantments.size());
+            for (Map.Entry<String, Integer> entry : item.enchantments.entrySet()) {
+                map.put(EnchantmentWrapper.getByName(entry.getKey()), entry.getValue());
+            }
         }
-    }
-
-    public boolean hasColor() {
-        return color != 0;
     }
 
     public Material getMaterial() {
@@ -81,46 +80,55 @@ public class CoreItemStack implements JSONAware {
         return quantity;
     }
 
-    public String getDisplayName() {
+    public Optional<String> getDisplayName() {
         return displayName;
     }
 
-    public EnhancedList<String> getLore() {
+    public Optional<List<String>> getLore() {
         return lore;
     }
 
-    public EnhancedMap<Enchantment, Integer> getEnchantments() {
+    public Optional<Map<Enchantment, Integer>> getEnchantments() {
         return enchantments;
     }
 
-    public Color getColor() {
-        if (!hasColor()) return null;
-        return Color.fromRGB(color);
+    public Optional<Color> getColor() {
+        return color.isPresent() ? Optional.of(Color.fromRGB(color.get())) : Optional.empty();
     }
 
     public ItemStack getItemStack() {
         return new ItemBuilder(material, quantity) {{
-            setTitle(displayName);
-            if (hasColor()) setColor(getColor());
-            addLores(lore);
-            enchantments.entrySet().stream().forEach(entry -> addEnchantment(entry.getKey(), entry.getValue()));
+            if (displayName.isPresent())
+                setTitle(displayName.get());
+            if (color.isPresent())
+                setColor(CoreItemStack.this.getColor().get());
+            if (lore.isPresent())
+                addLores(lore.get());
+            if (enchantments.isPresent())
+                enchantments.get()
+                        .entrySet()
+                        .stream()
+                        .forEach(entry -> addEnchantment(entry.getKey(), entry.getValue()));
         }}.build();
     }
 
     @Override
     public String toJSONString() {
-        Map<String, Integer> map = new HashMap<>(enchantments.size());
-        for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-            map.put(entry.getKey().getName(), entry.getValue());
+        Map<String, Integer> enchantments = null;
+        if (this.enchantments.isPresent()) {
+            enchantments = Maps.newHashMapWithExpectedSize(this.enchantments.get().size());
+            for (Map.Entry<Enchantment, Integer> entry : this.enchantments.get().entrySet()) {
+                enchantments.put(entry.getKey().getName(), entry.getValue());
+            }
         }
 
-        return new Gson().toJson(new ItemStackContainer(
+        return GSON.toJson(new Container(
                 material.name(),
                 quantity,
-                displayName,
-                color,
-                lore,
-                map
+                displayName.orElse(null),
+                color.orElse(null),
+                lore.orElse(null),
+                enchantments
         ));
     }
 
@@ -167,30 +175,41 @@ public class CoreItemStack implements JSONAware {
     }
 
     public static CoreItemStack fromJSONString(String json) {
-        return new CoreItemStack(new Gson().fromJson(json, ItemStackContainer.class));
+        return new CoreItemStack(GSON.fromJson(json, Container.class));
     }
 
-    public static final class ItemStackContainer {
+    public static final class Container {
 
         private final String material;
         private final int quantity;
-        private final String title;
-        private final int color;
-        private final List<String> lore;
-        private final Map<String, Integer> enchantments;
 
-        public ItemStackContainer(final String material,
-                                  final int quantity,
-                                  final String title,
-                                  final int color,
-                                  final List<String> lore,
-                                  final Map<String, Integer> enchantments) {
+        @Nullable private String title;
+        @Nullable private Integer color;
+        @Nullable private List<String> lore;
+        @Nullable private Map<String, Integer> enchantments;
+
+        public Container(final String material) {
+            this(material, 1);
+        }
+
+        public Container(final String material,
+                         final int quantity) {
+            this(material, quantity, null, null, null, null);
+        }
+
+        public Container(final String material,
+                         final int quantity,
+                         final String title,
+                         final Integer color,
+                         final List<String> lore,
+                         final Map<String, Integer> enchantments) {
             this.material = Validate.notNull(material);
             this.quantity = Validate.notNull(quantity);
-            this.title = Validate.notNull(title);
-            this.color = Validate.notNull(color);
-            this.lore = Validate.notNull(lore);
-            this.enchantments = Validate.notNull(enchantments);
+
+            this.title = title;
+            this.color = color;
+            this.lore = lore;
+            this.enchantments = enchantments;
         }
 
         public int getQuantity() {
@@ -201,7 +220,7 @@ public class CoreItemStack implements JSONAware {
             return title;
         }
 
-        public int getColor() {
+        public Integer getColor() {
             return color;
         }
 
@@ -236,7 +255,7 @@ public class CoreItemStack implements JSONAware {
 
             if (o == null || getClass() != o.getClass()) return false;
 
-            ItemStackContainer that = (ItemStackContainer) o;
+            Container that = (Container) o;
 
             return new EqualsBuilder()
                     .append(quantity, that.quantity)
