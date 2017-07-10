@@ -61,7 +61,6 @@
                                 </includes>
                             </artifactSet>
                             <finalName>RiddlesCore</finalName>
-                            <outputFile>C:\Users\matt1\Desktop\SaucedMcBungee\hub\plugins\RiddlesCore.jar</outputFile>
                             <!--<outputFile>${user.home}/Desktop/server/plugins/RiddlesCore.jar</outputFile>-->
                         </configuration>
                     </execution>
@@ -133,11 +132,11 @@
             <version>3.4.2</version>
         </dependency>
 
-        <!--Jedis Client-->
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>2.9.0</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.13.Final</version>
+            <scope>compile</scope>
         </dependency>
 
         <!--MongoDB Core Driver-->
