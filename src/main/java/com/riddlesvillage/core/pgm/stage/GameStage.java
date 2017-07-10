@@ -38,7 +38,7 @@ public abstract class GameStage extends BukkitRunnable {
 
     public void start() {
         onStart();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(Core.get(), this, 5L, 5L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Core.get(), this, 20L, 20L);
         GameStageStartEvent stageStartEvent = new GameStageStartEvent(gameMode, this);
         Bukkit.getPluginManager().callEvent(stageStartEvent);
     }
