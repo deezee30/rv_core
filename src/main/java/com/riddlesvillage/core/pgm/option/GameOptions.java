@@ -1,35 +1,54 @@
 package com.riddlesvillage.core.pgm.option;
 
-import com.riddlesvillage.core.world.region.flag.Flag;
+import com.riddlesvillage.core.collect.EnhancedList;
+import com.riddlesvillage.core.pgm.SpawnReason;
+import com.riddlesvillage.core.pgm.player.GamePlayer;
+import org.bukkit.Location;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
-/**
- * Created by Matthew E on 7/5/2017.
- */
 public class GameOptions {
-    private Map<String, Flag> flagMap;
 
-    public GameOptions() {
-        this.flagMap = new HashMap<>();
+    private SpawnStrategy spawnStrategy = new DefaultRandomSpawnStrategy();
+    private boolean useRatings = false;
+    private Integer maxPlayers = null;
+
+    public GameOptions setSpawnStrategy(final SpawnStrategy spawnStrategy) {
+        this.spawnStrategy = spawnStrategy;
+        return this;
     }
 
-    public void add(Flag flag) {
-        if (!flagMap.containsKey(flag.getName())) {
-            flagMap.put(flag.getName(), flag);
+    public SpawnStrategy getSpawnStrategy() {
+        return spawnStrategy;
+    }
+
+    public GameOptions setUseRatings(boolean useRatings) {
+        this.useRatings = useRatings;
+        return this;
+    }
+
+    public boolean useRatings() {
+        return useRatings;
+    }
+
+    public GameOptions setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+        return this;
+    }
+
+    public Optional<Integer> getMaxPlayers() {
+        return Optional.ofNullable(maxPlayers);
+    }
+
+    public static class DefaultRandomSpawnStrategy implements SpawnStrategy {
+
+        private DefaultRandomSpawnStrategy() {}
+
+        @Override
+        public Location findSpawn(final GamePlayer player,
+                                  final EnhancedList<Location> possibleSpawns,
+                                  final SpawnReason reason) {
+            return possibleSpawns.getRandomElement();
         }
-    }
-
-    public void remove(Flag flag) {
-        if (flagMap.containsKey(flag.getName())) {
-            flagMap.remove(flag.getName());
-        }
-    }
-
-    public List<Flag> getFlagList() {
-        return new ArrayList<>(flagMap.values());
     }
 }

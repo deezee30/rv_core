@@ -10,7 +10,7 @@ import com.riddlesvillage.core.collect.EnhancedList;
 
 import java.util.Collection;
 
-public class TeamList extends EnhancedList<ITeam> {
+public class TeamList extends EnhancedList<Team> {
 
     public TeamList() {}
 
@@ -18,11 +18,11 @@ public class TeamList extends EnhancedList<ITeam> {
         super(initialCapacity);
     }
 
-    public TeamList(ITeam... elements) {
+    public TeamList(Team... elements) {
         super(elements);
     }
 
-    public TeamList(Collection<? extends ITeam> c) {
+    public TeamList(Collection<? extends Team> c) {
         super(c);
     }
 }

@@ -7,9 +7,6 @@ import com.riddlesvillage.core.pgm.event.GameStageStartEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
-/**
- * Created by Matthew E on 7/5/2017.
- */
 public abstract class GameStage extends BukkitRunnable {
     private String name;
     private Game gameMode;
@@ -28,10 +25,6 @@ public abstract class GameStage extends BukkitRunnable {
             this.end();
             return;
         }
-    }
-
-    public void sendMessage(String message) {
-        gameMode.sendMessage(message);
     }
 
     public abstract void onStart();

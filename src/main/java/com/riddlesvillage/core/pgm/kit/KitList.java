@@ -10,7 +10,7 @@ import com.riddlesvillage.core.collect.EnhancedList;
 
 import java.util.Collection;
 
-public class KitList extends EnhancedList<IKit> {
+public class KitList extends EnhancedList<Kit> {
 
     public KitList() {}
 
@@ -18,11 +18,11 @@ public class KitList extends EnhancedList<IKit> {
         super(initialCapacity);
     }
 
-    public KitList(IKit... elements) {
+    public KitList(Kit... elements) {
         super(elements);
     }
 
-    public KitList(Collection<? extends IKit> c) {
+    public KitList(Collection<? extends Kit> c) {
         super(c);
     }
 }

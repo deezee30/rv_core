@@ -14,9 +14,9 @@ import java.util.Optional;
 
 public interface KitHolder extends CoreProfile {
 
-    Optional<IKit> getCurrentKit();
+    Optional<Kit> getCurrentKit();
 
-    void equipKit(IKit kit);
+    void equipKit(Kit kit);
 
     Collection<ItemStack> getInventory();
 

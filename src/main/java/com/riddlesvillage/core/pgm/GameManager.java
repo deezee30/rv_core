@@ -33,7 +33,7 @@ public final class GameManager implements Iterable<Game> {
         return true;
     }
 
-    public boolean unRegister(final Game game) {
+    public boolean unregister(final Game game) {
         return Core.logIf(games.removeIf(game != null, game), "Unhooked `%s`", game.name);
     }
 

@@ -14,14 +14,15 @@ import org.json.simple.JSONAware;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Optional;
 
-public interface IKit extends
+public interface Kit extends
         Cloneable, Serializable, JSONAware,
         Iterable<ItemStack>, ConfigurationSerializable {
 
     String getName();
 
-    String getDescription();
+    Optional<String> getDescription();
 
     Color getColor();
 

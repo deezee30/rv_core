@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Matthew E on 7/5/2017.
- */
 public class GameStages {
     private Map<String, GameStage> gameModeStageMap;
     private String currentStageName;

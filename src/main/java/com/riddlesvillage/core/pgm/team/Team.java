@@ -12,7 +12,7 @@ import org.bukkit.ChatColor;
 
 import java.util.Iterator;
 
-public interface ITeam extends Iterable<GamePlayer> {
+public interface Team extends Iterable<GamePlayer> {
 
     String getName();
 
