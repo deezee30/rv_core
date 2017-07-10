@@ -5,7 +5,10 @@
 package com.riddlesvillage.core.internal.listener.player;
 
 import com.riddlesvillage.core.player.CorePlayer;
-import org.bukkit.entity.Player;
+import com.riddlesvillage.core.sign.SignHandler;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,9 +19,19 @@ final class PlayerConstruct implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
-        Player bPlayer = event.getPlayer();
-        if (!CorePlayer.createIfAbsent(bPlayer).isConstructable()) {
+        CorePlayer player = CorePlayer.createIfAbsent(event.getPlayer());
+        if (!player.isConstructable()) {
             event.setCancelled(true);
+        } else {
+            // add support for color coding signs if premium or mod or higher
+            Block block = event.getBlock();
+            if (SignHandler.isSign(block) && player.isPremium()) {
+                Sign sign = (Sign) block;
+                String[] lines = sign.getLines();
+                for (int x = 0; x < lines.length; x++) {
+                    sign.setLine(x, ChatColor.translateAlternateColorCodes('&', lines[x]));
+                }
+            }
         }
     }
 
