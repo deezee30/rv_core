@@ -13,6 +13,7 @@ import org.apache.commons.lang3.Validate;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecConfigurationException;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,6 +53,14 @@ public class DatabaseAPI {
                         checkForCodec(object)
                 )), doAfterOptional
         );
+    }
+
+    public static void retrieve(final MongoCollection<Document> collection,
+                                final SingleResultCallback<List<Document>> callback) {
+        Validate.notNull(collection);
+        Validate.notNull(callback);
+
+        collection.find().into(new LinkedList<>(), callback);
     }
 
     public static void retrieveDocument(final MongoCollection<Document> collection,
