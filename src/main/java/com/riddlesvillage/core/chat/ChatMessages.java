@@ -7,6 +7,8 @@
 package com.riddlesvillage.core.chat;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.riddlesvillage.core.Core;
@@ -24,6 +26,7 @@ import java.util.List;
 public final class ChatMessages {
 
     private static final ChatMessages INSTANCE = new ChatMessages();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private List<ChatMessage> chatMessageList = Collections.synchronizedList(Lists.newArrayList());
 
@@ -43,7 +46,7 @@ public final class ChatMessages {
         jsonObject.add("messages", jsonElements);
 
         try {
-            URL paste = Paster.hastebin(jsonObject.toString()).paste();
+            URL paste = Paster.hastebin(gson.toJson(jsonObject)).paste();
             Core.log("Saved chat messages to %s", paste.toString());
         } catch (PasteException e) {
             Core.log("Could not paste saved chat messages: " + e);
