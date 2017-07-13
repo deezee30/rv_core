@@ -1,7 +1,6 @@
 package com.riddlesvillage.core.database;
 
 import com.mongodb.async.SingleResultCallback;
-import com.mongodb.async.client.MongoClients;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.model.Filters;
@@ -95,7 +94,7 @@ public class DatabaseAPI {
 
         try {
             // check if there is a codec for object
-            MongoClients.getDefaultCodecRegistry().get(obj.getClass());
+            Database.client.getSettings().getCodecRegistry().get(obj.getClass());
         } catch (CodecConfigurationException ignored) {
             // if not, simply return as String
             return String.valueOf(obj);
