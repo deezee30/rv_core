@@ -1,4 +1,10 @@
-package com.riddlesvillage.core.util;
+/*
+ * rv_core
+ * 
+ * Created on 11 July 2017 at 11:47 PM.
+ */
+
+package com.riddlesvillage.core.security;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
@@ -10,10 +16,29 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 
-public final class HashUtil {
+public final class B64 {
 
-    public static String toBase64(ItemStack[] items) {
+    private static final String DEFAULT_ENCODING = "UTF-8";
+
+    /* Disable initialization */
+    private B64() {}
+
+    public static String toBase64(Object obj) {
+        try {
+            return Base64.getEncoder().encodeToString(obj.toString().getBytes(DEFAULT_ENCODING));
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+    }
+
+    public static byte[] fromBase64(Object obj) {
+        return Base64.getDecoder().decode(obj.toString());
+    }
+
+    public static String toItemsBase64(ItemStack[] items) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
@@ -34,7 +59,7 @@ public final class HashUtil {
         }
     }
 
-    public static String toBase64(Inventory inv) {
+    public static String toInventoryBase64(Inventory inv) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
@@ -72,7 +97,7 @@ public final class HashUtil {
         }
     }
 
-    public static Inventory fromBase64(String data, String title) throws IOException {
+    public static Inventory fromInventoryBase64(String data, String title) throws IOException {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
@@ -89,7 +114,7 @@ public final class HashUtil {
         }
     }
 
-    public static Inventory fromBase64(String data) throws IOException {
+    public static Inventory fromInventoryBase64(String data) throws IOException {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
