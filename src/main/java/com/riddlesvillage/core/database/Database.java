@@ -36,7 +36,7 @@ public final class Database implements Closeable {
             new Vector3DCodec()
     };
 
-    private static final CodecRegistry REGISTRY = CodecRegistries.fromRegistries(
+    public static final CodecRegistry REGISTRY = CodecRegistries.fromRegistries(
             MongoClients.getDefaultCodecRegistry(),
             CodecRegistries.fromCodecs(CODECS)
     );
