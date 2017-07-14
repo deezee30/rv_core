@@ -441,10 +441,10 @@ public abstract class Region implements
     public synchronized void showEdges(final Material material,
                                        final long delay,
                                        final CorePlayer... players) {
-        Bukkit.getScheduler().runTask(Core.get(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
             // send visible update
             sendBlockUpdates(material, 0, players);
-            Bukkit.getScheduler().runTaskLater(Core.get(), () -> {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(Core.get(), () -> {
                 // send remove update
                 sendBlockUpdates(null, 0, players);
             }, delay);
@@ -455,10 +455,10 @@ public abstract class Region implements
                                        final byte data,
                                        final long delay,
                                        final CorePlayer... players) {
-        Bukkit.getScheduler().runTask(Core.get(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
             // send visible update
             sendBlockUpdates(material, data, players);
-            Bukkit.getScheduler().runTaskLater(Core.get(), () -> {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(Core.get(), () -> {
                 // send remove update
                 sendBlockUpdates(null, data, players);
             }, delay);
