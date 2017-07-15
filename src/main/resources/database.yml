@@ -18,13 +18,13 @@
 # +----------------------------------------------------+ #
 ##########################################################
 
-address: localhost
+address: CHANGE_ME
 
-database: riddlesvillage
+database: CHANGE_ME
 
-username: matthew
+username: CHANGE_ME
 
-password: password
+password: CHANGE_ME
 
 ##########################################################
 # +----------------------------------------------------+ #

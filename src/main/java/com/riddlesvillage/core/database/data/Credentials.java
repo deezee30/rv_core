@@ -17,10 +17,13 @@ import java.util.Map;
 
 public final class Credentials implements ConfigurationSerializable {
 
+    private static final String CHANGE_ME = "CHANGE_ME";
+
     private final String address;
     private final String database;
     private final String user;
     private final String pass;
+    private boolean set = false;
 
     public Credentials(final String address,
                        final String database,
@@ -30,6 +33,11 @@ public final class Credentials implements ConfigurationSerializable {
         this.database = Validate.notNull(database);
         this.user = Validate.notNull(user);
         this.pass = Validate.notNull(pass);
+
+        set = !address.equals(CHANGE_ME)
+                && !database.equals(CHANGE_ME)
+                && !user.equals(CHANGE_ME)
+                && !pass.equals(CHANGE_ME);
     }
 
     public Credentials(final Map<String, Object> data) {
@@ -55,6 +63,10 @@ public final class Credentials implements ConfigurationSerializable {
 
     public String getPass() {
         return pass;
+    }
+
+    public boolean isSet() {
+        return set;
     }
 
     @Override

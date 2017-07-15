@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.riddlesvillage.core.chat.ChatMessages;
 import com.riddlesvillage.core.database.Database;
+import com.riddlesvillage.core.database.data.Credentials;
 import com.riddlesvillage.core.internal.command.*;
 import com.riddlesvillage.core.internal.config.DatabaseConfig;
 import com.riddlesvillage.core.internal.config.MainConfig;
@@ -109,8 +110,17 @@ public final class Core extends JavaPlugin {
 
             getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-            // Initialize database connection and setup management
-            database.init(DatabaseConfig.getCredentials());
+            // Initialize database connection and setup management if credentials are set
+            Credentials cr = DatabaseConfig.getCredentials();
+            if (!cr.isSet()) {
+                log("~&4Default credentials have been generated");
+                log("~&4in file 'plugins/RiddlesCore/database.yml'");
+                log("~&4Please change them to actual credentials");
+                Bukkit.shutdown();
+                return;
+            }
+
+            database.init(cr);
 
             PluginDescriptionFile desc = getDescription();
 
