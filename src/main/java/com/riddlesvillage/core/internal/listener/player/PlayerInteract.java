@@ -7,6 +7,7 @@
 package com.riddlesvillage.core.internal.listener.player;
 
 import com.riddlesvillage.core.sign.SignHandler;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,6 +22,7 @@ final class PlayerInteract implements Listener {
         Action action = event.getAction();
 
         // check for sign listeners
+        if (block == null || (block.getType() == Material.AIR)) return;
         if (SignHandler.isSign(block)
                 && (action.equals(Action.LEFT_CLICK_BLOCK)
                 || action.equals(Action.RIGHT_CLICK_BLOCK))) {
