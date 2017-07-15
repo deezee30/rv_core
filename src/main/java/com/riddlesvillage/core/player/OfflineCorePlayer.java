@@ -8,7 +8,6 @@ import com.google.common.base.Strings;
 import com.mongodb.async.client.MongoCollection;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
-import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.player.profile.AbstractCoreProfile;
 import org.bson.Document;
 import org.bukkit.ChatColor;
@@ -86,7 +85,7 @@ public class OfflineCorePlayer extends AbstractCoreProfile {
 
     @Override
     public MongoCollection<Document> getCollection() {
-        return Database.getMainCollection();
+        return MAIN_PLAYER_COLL;
     }
 
     @Override

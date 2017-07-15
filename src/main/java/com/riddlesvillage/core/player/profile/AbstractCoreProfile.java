@@ -62,6 +62,9 @@ public abstract class AbstractCoreProfile implements
         CoreProfile, Identity, StatisticHolder, PremiumHolder,
         CoinsHolder, TokensHolder, RankedPlayer {
 
+    protected static final MongoCollection<Document> MAIN_PLAYER_COLL
+            = Database.getMainPlayerCollection();
+
     /*
      * In case the player is offline and the UUID or name has
      * not been found in the general database, either the UUID
@@ -156,8 +159,7 @@ public abstract class AbstractCoreProfile implements
                 value = this.name;
             }
 
-            DatabaseAPI.retrieveDocument(
-                    Database.getMainCollection(),
+            DatabaseAPI.retrieveDocument(MAIN_PLAYER_COLL,
                     data, value, (document, throwable) -> {
 
                 Core.logIf(
@@ -176,7 +178,7 @@ public abstract class AbstractCoreProfile implements
                     this.uuid = UUIDUtil.fromString(document.getString(DataInfo.UUID.getStat()));
 
                     MongoCollection col = getCollection();
-                    if (Database.getMainCollection().equals(col)) {
+                    if (MAIN_PLAYER_COLL.equals(col)) {
                         // Apply already downloaded stats
                         finishLoading(downloadedDoc);
                     } else {
@@ -217,7 +219,7 @@ public abstract class AbstractCoreProfile implements
      *
      * <p>If the collection isn't provided by the sub class
      * <b>OR</b> the collection is the default collection
-     * found at {@link Database#getMainCollection()}, then
+     * found at {@link Database#getMainPlayerCollection()}, then
      * the default collection statistics will be passed
      * in the arguments, in case the profile needs them to
      * finish loading, eg: {@link CorePlayer}.</p>

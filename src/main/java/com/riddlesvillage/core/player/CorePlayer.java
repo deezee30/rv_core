@@ -13,7 +13,6 @@ import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.CoreSettings;
 import com.riddlesvillage.core.Logger;
 import com.riddlesvillage.core.collect.EnhancedList;
-import com.riddlesvillage.core.database.Database;
 import com.riddlesvillage.core.database.StatType;
 import com.riddlesvillage.core.database.data.DataInfo;
 import com.riddlesvillage.core.database.value.Value;
@@ -61,8 +60,6 @@ public class CorePlayer extends AbstractCoreProfile {
             INSTANCE        = Core.get();
     private static final CoreSettings
             SETTINGS        = Core.getSettings();
-    private static final MongoCollection<Document>
-            COLLECTION      = Database.getMainCollection();
 
     private transient final Player
             player;
@@ -141,7 +138,7 @@ public class CorePlayer extends AbstractCoreProfile {
                         .build());
 
             } else {
-                // player never played before
+                // player never played before - insert new document
                 Map<StatType, Object> doc = Maps.newHashMap();
 
                 DataInfo.UUID.append(doc, getUuid());
@@ -252,7 +249,7 @@ public class CorePlayer extends AbstractCoreProfile {
 
     @Override
     public MongoCollection<Document> getCollection() {
-        return COLLECTION;
+        return MAIN_PLAYER_COLL;
     }
 
     @Override

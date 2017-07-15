@@ -53,7 +53,7 @@ public interface RankedPlayer extends CoreProfile, Identity {
 
     /**
      * Sets the holder's {@link Rank} to the specified parameter
-     * in cache and also updates the {@link Database#getMainCollection()}
+     * in cache and also updates the {@link Database#getMainPlayerCollection()}
      * in the database.
      *
      * @param   rank the rank to update to

@@ -38,7 +38,7 @@ public final class Core extends JavaPlugin {
 
     private static final CoreSettings settings = new CoreSettings();
     private static Core instance;
-    private final Database database = Database.getInstance();
+    private final Database database = Database.get();
     private final Timer loadTimer = new Timer();
     private final Logger logger = new Logger();
 

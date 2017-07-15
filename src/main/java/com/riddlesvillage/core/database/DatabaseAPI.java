@@ -94,7 +94,7 @@ public class DatabaseAPI {
 
         try {
             // check if there is a codec for object
-            Database.client.getSettings().getCodecRegistry().get(obj.getClass());
+            Database.getClient().getSettings().getCodecRegistry().get(obj.getClass());
         } catch (CodecConfigurationException ignored) {
             // if not, simply return as String
             return String.valueOf(obj);

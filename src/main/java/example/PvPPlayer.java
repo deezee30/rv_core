@@ -21,7 +21,7 @@ import java.util.Optional;
 
 final class PvPPlayer extends AbstractCoreProfile {
 
-    private static final MongoCollection<Document> COLLECTION = Database.database.getCollection("pvp");
+    private static final MongoCollection<Document> COLLECTION = Database.getCollection("pvp");
 
     // make field names in database with default values 0
     private static final StatType KILL_STAT     = StatType.create("kills", 0);
