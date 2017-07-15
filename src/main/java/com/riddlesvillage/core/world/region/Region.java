@@ -432,25 +432,31 @@ public abstract class Region implements
      *
      * <p>The packets per-block are sent asynchronously.</p>
      *
-     * @param material The material to use to display the corners.
-     * @param delay   The time in seconds to show this region.
-     * @param players The players to show this to.
-     * @see org.bukkit.entity.Player#sendBlockChange(Location,
-     * org.bukkit.Material, byte)
+     * @param material  The material to use to display the corners.
+     * @param delay     The time in seconds to show this region.
+     * @param players   The players to show this to.
+     * @see             org.bukkit.entity.Player#sendBlockChange(
+     *                  Location, Material, byte)
      */
     public synchronized void showEdges(final Material material,
                                        final long delay,
                                        final CorePlayer... players) {
-        Bukkit.getScheduler().runTaskAsynchronously(Core.get(), () -> {
-            // send visible update
-            sendBlockUpdates(material, 0, players);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(Core.get(), () -> {
-                // send remove update
-                sendBlockUpdates(null, 0, players);
-            }, delay);
-        });
+        showEdges(material, (byte) 0, delay, players);
     }
 
+    /**
+     * Show the region to specific {@link CorePlayer}s using
+     * fake packets to update the blocks client side.
+     *
+     * <p>The packets per-block are sent asynchronously.</p>
+     *
+     * @param material  The material to use to display the corners.
+     * @param data      The block data to use for the packet
+     * @param delay     The time in seconds to show this region.
+     * @param players   The players to show this to.
+     * @see             org.bukkit.entity.Player#sendBlockChange(
+     *                  Location, Material, byte)
+     */
     public synchronized void showEdges(final Material material,
                                        final byte data,
                                        final long delay,
