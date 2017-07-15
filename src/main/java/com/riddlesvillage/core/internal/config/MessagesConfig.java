@@ -34,6 +34,7 @@ public final class MessagesConfig {
         SETTINGS.findAndRegisterLocales(PLUGIN_INSTANCE);
 
         Logger logger = Core.getCoreLogger();
+        logger.setDebugPrefix("Core [Debug] -> ");
         logger.setNoPrefixChar((char) 126);
         logger.setPrefix(
                 ChatColor.translateAlternateColorCodes('&', SETTINGS.get("chat.prefix"))

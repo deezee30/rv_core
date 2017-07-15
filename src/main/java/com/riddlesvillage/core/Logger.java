@@ -7,8 +7,10 @@
 package com.riddlesvillage.core;
 
 import com.riddlesvillage.core.util.StringUtil;
+import org.apache.commons.lang3.Validate;
 
 import java.io.Console;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
 
@@ -19,23 +21,72 @@ import static org.apache.commons.lang3.Validate.notNull;
  * order to output them, modify them for use in messages and etc.
  *
  * @author	Maulss
- * @see		StringUtil
- * @see		Console
- * @see		java.util.Formatter
- * @see		PrintStream
+ * @see     StringUtil
+ * @see     Console
+ * @see     java.util.Formatter
+ * @see     PrintStream
  */
-public final class Logger {
+public class Logger {
 
     /**
      * Used for separating large amounts of texts to simplify reading
      */
     public static final String BORDER = "---------------------------------------";
 
+    /**
+     * Used for suppressing output where a logger is required
+     */
+    public static final Logger SUPPRESSED_LOGGER = new Logger(new PrintStream(new OutputStream() {
+        @Override
+        public void write(int dummy) {}
+    }));
+
     private boolean     debug           = false;
-    private String      prefix          = "Core -> ";
-    private String      debugPrefix     = "Core [DEBUG] -> ";
+    private String      prefix          = "-> ";
+    private String      debugPrefix     = "[DEBUG] -> ";
     private char        noPrefixChar    = 126; // char "~"
     private PrintStream output          = System.out;
+
+
+    /**
+     * Sets up logger with default configurations.
+     */
+    public Logger() {}
+
+
+    /**
+     * Sets up logger with prefix before every message.
+     *
+     * @param prefix The prefix to use before each outputting message
+     */
+    public Logger(final String prefix) {
+        this.prefix = Validate.notNull(prefix);
+    }
+
+
+    /**
+     * Sets up logger with prefix before every message and the output
+     * where the stream should be sent.
+     *
+     * @param prefix The prefix to use before each outputting message
+     * @param output Where the stream should be outputted
+     */
+    public Logger(final String prefix,
+                  final PrintStream output) {
+        this.prefix = Validate.notNull(prefix);
+        this.output = Validate.notNull(output);
+    }
+
+
+    /**
+     * Sets up logger with the output where the stream should be sent.
+     *
+     * @param output Where the stream should be outputted
+     */
+    public Logger(final PrintStream output) {
+        this.output = Validate.notNull(output);
+    }
+
 
     /**
      * Logs a message to the console if it's present using
