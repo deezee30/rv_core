@@ -6,20 +6,40 @@
 
 package com.riddlesvillage.core.net.communication.netty;
 
-import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.net.communication.AbstractServerMessenger;
 import com.riddlesvillage.core.net.communication.CoreServer;
+import com.riddlesvillage.core.net.communication.CoreServerRegistry;
+import com.riddlesvillage.core.net.communication.ServerMessengerException;
+import com.riddlesvillage.core.net.communication.command.CommandRegistry;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.apache.commons.lang3.Validate;
+
+import javax.net.ssl.SSLException;
 
 public class NettyServerMessenger extends AbstractServerMessenger {
 
-    private static final NettyServerMessenger instance = new NettyServerMessenger(Core.get().getName());
+    private static NettyServerMessenger instance;
 
-    protected NettyServerMessenger(final String name) {
-        super(name);
+    private final SslContext sslCtx;
+    private final CommandRegistry cmdReg;
+
+    private NettyServerMessenger(final String name,
+                                 final CoreServerRegistry svrReg,
+                                 final CommandRegistry cmdReg) throws SSLException {
+        super(name, svrReg);
+        this.cmdReg = Validate.notNull(cmdReg);
+
+        // Configure SSL
+        sslCtx = SslContextBuilder.forClient()
+                .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                .build();
     }
 
     @Override
-    public String receive(final CoreServer from) {
+    public String receive(final CoreServer from,
+                          final String command) {
         return null;
     }
 
@@ -29,7 +49,32 @@ public class NettyServerMessenger extends AbstractServerMessenger {
 
     }
 
-    public static NettyServerMessenger setup() {
+    public SslContext getSslContext() {
+        return sslCtx;
+    }
+
+
+    public CommandRegistry getCommandRegistry() {
+        return cmdReg;
+    }
+
+    public static NettyServerMessenger setup(final CoreServerRegistry svrReg,
+                                             final CommandRegistry cmdReg)
+            throws ServerMessengerException, SSLException {
+        return setup("Netty", svrReg, cmdReg);
+    }
+
+    public static NettyServerMessenger setup(final String name,
+                                             final CoreServerRegistry svrReg,
+                                             final CommandRegistry cmdReg)
+            throws ServerMessengerException, SSLException {
+        if (instance != null)
+            throw new ServerMessengerException("Netty server messanges has already been set up");
+
+        return instance = new NettyServerMessenger(name, svrReg, cmdReg);
+    }
+
+    public static NettyServerMessenger getInstance() {
         return instance;
     }
 }

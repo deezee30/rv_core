@@ -18,26 +18,24 @@ public class CoreServer implements Serializable {
 
     private static final long serialVersionUID = -2400216533348037042L;
 
+    // TODO
+    public static CoreServer THIS;
+
     private final String internalName;
     private final String address;
     private final int port;
-    private final long init = System.currentTimeMillis();
-    private final String command;
 
     public CoreServer(final String internalName,
-                      final String address,
-                      final String command) {
-        this(internalName, address, 25565, command);
+                      final String address) {
+        this(internalName, address, 25565);
     }
 
     public CoreServer(final String internalName,
                       final String address,
-                      final int port,
-                      final String command) {
+                      final int port) {
         this.internalName = Validate.notNull(internalName);
         this.address = Validate.notNull(address);
         this.port = port;
-        this.command = Validate.notNull(command);
     }
 
     public String getInternalName() {
@@ -56,14 +54,6 @@ public class CoreServer implements Serializable {
         return port;
     }
 
-    public long getTimeReceived() {
-        return init;
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,10 +64,8 @@ public class CoreServer implements Serializable {
 
         return new EqualsBuilder()
                 .append(port, that.port)
-                .append(init, that.init)
                 .append(internalName, that.internalName)
                 .append(address, that.address)
-                .append(command, that.command)
                 .isEquals();
     }
 
@@ -87,8 +75,6 @@ public class CoreServer implements Serializable {
                 .append(internalName)
                 .append(address)
                 .append(port)
-                .append(init)
-                .append(command)
                 .toHashCode();
     }
 
@@ -98,8 +84,6 @@ public class CoreServer implements Serializable {
                 .append("internalName", internalName)
                 .append("address", address)
                 .append("port", port)
-                .append("init", init)
-                .append("command", command)
                 .toString();
     }
 }

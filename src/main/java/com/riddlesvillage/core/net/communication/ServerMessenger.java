@@ -12,7 +12,11 @@ public interface ServerMessenger {
 
     Logger getLogger();
 
-    String receive(final CoreServer from);
+    String receive(final CoreServer from,
+                   final String command);
 
-    void send(final CoreServer to, final String command);
+    void send(final CoreServer to,
+              final String command);
+
+    CoreServerRegistry getServerRegistry();
 }

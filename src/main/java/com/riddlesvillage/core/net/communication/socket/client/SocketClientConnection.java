@@ -142,7 +142,7 @@ public class SocketClientConnection implements SocketRunnable {
                                             handshaked = true;
                                             client.getApp().onHandshake(client);
                                         }
-                                    } else client.getApp().onJSON(client, map);
+                                    } else client.getApp().onJson(client, map);
                                 }
                                 message = "";
                             }

@@ -1,22 +1,26 @@
 /*
  * rv_core
  * 
- * Created on 10 July 2017 at 11:15 PM.
+ * Created on 14 July 2017 at 12:40 AM.
  */
 
 package com.riddlesvillage.core.net.communication.netty;
 
 import com.riddlesvillage.core.Core;
+import com.riddlesvillage.core.net.communication.CoreServer;
+import com.riddlesvillage.core.net.communication.command.CommandRegistry;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
+import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.ssl.SslContext;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import io.netty.util.concurrent.GlobalEventExecutor;
+import org.apache.commons.lang3.Validate;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -25,40 +29,46 @@ public class NettyServer implements Closeable {
 
     private final EventLoopGroup bossGroup = new NioEventLoopGroup();
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
-    private final ChannelFuture cf;
+    private Channel channel;
+    private final CoreServer server;
+    private final ChannelGroup channels;
+    private final CommandRegistry cmdReg;
+    private final SslContext sslCtx;
 
-    private final int port;
-
-    public NettyServer(int port) throws Exception {
-        this.port = port;
-
-        ServerBootstrap b = new ServerBootstrap();
-        b.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new NettyChannelInboundAdapter());
-                    }
-                })
-                .option(ChannelOption.SO_BACKLOG, 128)
-                .childOption(ChannelOption.SO_KEEPALIVE, true);
-
-        // Bind and start to accept incoming connections.
-        cf = b.bind(port).sync();
-
-        Core.log("Opened netty server on port %s", port);
+    public NettyServer(final CoreServer server,
+                       final CommandRegistry cmdReg,
+                       final SslContext sslCtx) {
+        this(server, cmdReg, sslCtx, new DefaultChannelGroup(GlobalEventExecutor.INSTANCE));
     }
 
-    public int getPort() {
-        return port;
+    public NettyServer(final CoreServer server,
+                       final CommandRegistry cmdReg,
+                       final SslContext sslCtx,
+                       final ChannelGroup channels) {
+        this.server = Validate.notNull(server);
+        this.channels = Validate.notNull(channels);
+        this.cmdReg = Validate.notNull(cmdReg);
+        this.sslCtx = Validate.notNull(sslCtx);
+    }
+
+    public void run() throws Exception {
+        try {
+            ServerBootstrap bootstrap = new ServerBootstrap()
+                    .group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new NettyServerInitializer(sslCtx, channels, cmdReg));
+
+            channel = bootstrap.bind(server.getPort()).sync().channel();
+        } finally {
+            close();
+        }
     }
 
     @Override
     public void close() throws IOException {
         // Wait until the server socket is closed.
         try {
-            cf.channel().closeFuture().sync();
+            channel.closeFuture().sync();
         } catch (InterruptedException e) {
             throw new IOException(e);
         }
@@ -67,6 +77,6 @@ public class NettyServer implements Closeable {
         Future<?> f = workerGroup.shutdownGracefully();
 
         f.addListener((GenericFutureListener) future ->
-                Core.log("Closed netty server on port %s", port));
+                Core.log("Closed netty server `%s` on port '%s'", server.getPort()));
     }
 }

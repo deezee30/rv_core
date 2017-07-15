@@ -12,11 +12,12 @@ import java.util.Map;
 
 public interface SocketClientApp extends SocketApp {
 
-    void onConnect(SocketClient client);
+    void onConnect(final SocketClient client);
 
-    void onDisconnect(SocketClient client);
+    void onDisconnect(final SocketClient client);
 
-    void onHandshake(SocketClient client);
+    void onHandshake(final SocketClient client);
 
-    void onJSON(SocketClient client, Map<String, String> map);
+    void onJson(final SocketClient client,
+                final Map<String, String> map);
 }

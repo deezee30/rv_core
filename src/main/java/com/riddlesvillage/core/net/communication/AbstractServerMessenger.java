@@ -13,9 +13,16 @@ public abstract class AbstractServerMessenger implements ServerMessenger {
 
     private final String name;
     private final Logger logger;
+    private final CoreServerRegistry serverRegistry;
 
-    protected AbstractServerMessenger(final String name) {
+    protected AbstractServerMessenger(final CoreServerRegistry registry) {
+        this("Core", registry);
+    }
+
+    protected AbstractServerMessenger(final String name,
+                                      final CoreServerRegistry serverRegistry) {
         this.name = Validate.notNull(name);
+        this.serverRegistry = Validate.notNull(serverRegistry);
         logger = new Logger();
         logger.setPrefix("[" + name + " pipeline]");
     }
@@ -27,5 +34,10 @@ public abstract class AbstractServerMessenger implements ServerMessenger {
 
     public final String getName() {
         return name;
+    }
+
+    @Override
+    public final CoreServerRegistry getServerRegistry() {
+        return serverRegistry;
     }
 }

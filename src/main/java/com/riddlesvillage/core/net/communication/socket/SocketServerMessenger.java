@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.riddlesvillage.core.net.communication.AbstractServerMessenger;
 import com.riddlesvillage.core.net.communication.CoreServer;
+import com.riddlesvillage.core.net.communication.CoreServerRegistry;
 
 import java.lang.reflect.Type;
 
@@ -17,17 +18,20 @@ public class SocketServerMessenger extends AbstractServerMessenger {
 
     private static final Gson gson = new GsonBuilder().create();
 
-    public SocketServerMessenger(final String name) {
-        super(name);
+    public SocketServerMessenger(final String name,
+                                 final CoreServerRegistry registry) {
+        super(name, registry);
     }
 
     @Override
-    public String receive(CoreServer from) {
+    public String receive(final CoreServer from,
+                          final String command) {
         return null;
     }
 
     @Override
-    public void send(CoreServer to, String command) {
+    public void send(final CoreServer to,
+                     final String command) {
 
     }
 
