@@ -19,7 +19,7 @@
 ##########################################################
 
 # Please keep this option false until told to change it.
-debug: true
+debug: false
 
 # The default language to be used for players until they change it.
 default-locale: english
