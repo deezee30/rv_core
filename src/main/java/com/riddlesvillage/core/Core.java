@@ -115,12 +115,12 @@ public final class Core extends JavaPlugin {
             if (!cr.isSet()) {
                 log("~&4Default credentials have been generated");
                 log("~&4in file 'plugins/RiddlesCore/database.yml'");
-                log("~&4Please change them to actual credentials");
+                log("~&4Please change them to actual credentials...");
                 Bukkit.shutdown();
                 return;
             }
 
-            database.init(cr);
+            database.init(logger, cr);
 
             PluginDescriptionFile desc = getDescription();
 
@@ -130,6 +130,7 @@ public final class Core extends JavaPlugin {
             log("~&3=> Loaded in &e%sms", loadTimer.forceStop().getTime(TimeUnit.MILLISECONDS));
             log("~&3===================================");
         } catch (Exception e) {
+            log("~&4A startup error has occurred - shutting down");
             e.printStackTrace();
             Bukkit.shutdown();
         }
