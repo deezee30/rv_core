@@ -19,6 +19,7 @@ public final class MainConfig extends CoreConfigFile {
     public int maxMessages;
     public int chatSpamViolationsPermitted;
     public int chatViolationCooldown;
+    public boolean efficientWorldManagement;
     public List<String> allowedCmds;
 
     private MainConfig() {
@@ -41,6 +42,8 @@ public final class MainConfig extends CoreConfigFile {
                 "chat.max-messages" ,
                 "chat.spam-violations-permitted",
                 "chat.violation-cooldown",
+
+                "efficient-world-management",
 
                 "allowed-commands-when-disabled"
         };
@@ -72,6 +75,10 @@ public final class MainConfig extends CoreConfigFile {
 
     public static int getChatViolationCooldown() {
         return INSTANCE.chatViolationCooldown;
+    }
+
+    public static boolean isEfficientWorldManagement() {
+        return INSTANCE.efficientWorldManagement;
     }
 
     public static List<String> getAllowedCommands() {

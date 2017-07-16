@@ -40,6 +40,11 @@ chat:
   # Number of seconds for violation cooldowns (0 to disable)
   violation-cooldown: 300
 
+# For specific servers where the world isn't
+# vanilla survival based, this setting can be turned
+# to true to increase performance.
+efficient-world-management: false
+
 # The commands that any player can execute while in game.
 allowed-commands-when-disabled:
 - "hub"
