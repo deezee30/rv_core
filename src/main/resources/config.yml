@@ -22,7 +22,7 @@
 debug: false
 
 # The default language to be used for players until they change it.
-default-locale: english
+default-locale: "english"
 
 chat:
   # Whether or not to rely on the core to set the chat format
@@ -42,31 +42,31 @@ chat:
 
 # The commands that any player can execute while in game.
 allowed-commands-when-disabled:
-- hub
-- leave
-- l
-- quit
-- q
-- spectate
-- spec
-- sp
-- class
-- kits
-- kit
-- k
-- experience
-- points
-- exp
-- xp
-- player
-- stats
-- st
-- arena
-- a
-- teleport
-- tp
-- report
-- rep
+- "hub"
+- "leave"
+- "l"
+- "quit"
+- "q"
+- "spectate"
+- "spec"
+- "sp"
+- "class"
+- "kits"
+- "kit"
+- "k"
+- "experience"
+- "points"
+- "exp"
+- "xp"
+- "player"
+- "stats"
+- "st"
+- "arena"
+- "a"
+- "teleport"
+- "tp"
+- "report"
+- "rep"
 
 ##########################################################
 # +----------------------------------------------------+ #

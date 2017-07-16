@@ -18,13 +18,13 @@
 # +----------------------------------------------------+ #
 ##########################################################
 
-address: CHANGE_ME
+address: "CHANGE_ME"
 
-database: CHANGE_ME
+database: "CHANGE_ME"
 
-username: CHANGE_ME
+username: "CHANGE_ME"
 
-password: CHANGE_ME
+password: "CHANGE_ME"
 
 ##########################################################
 # +----------------------------------------------------+ #
