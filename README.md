@@ -67,11 +67,11 @@ depend: [RiddlesCore]
 ---
 
 ### TO DO
-- OOP Command API for managing CommandSender and Permissible properly
-- OOP Title API revolving around CorePlayer
-- OOP Hologram API
+- Possible command API (with injectors)
 - Item glow
-- boss bar management
-- tab list
-- ping
-- OOP Mongo API revolving around CorePlayer
+- Boss bar management
+- Guns
+- Tab List
+- PGM
+- Server networking (Netty, Bungee and Sockets)
+- Remove NMS, OBC and Reflection code and replace with ProtocolLib
