@@ -16,6 +16,7 @@ import com.riddlesvillage.core.internal.listener.player.PlayerListeners;
 import com.riddlesvillage.core.player.CorePlayer;
 import com.riddlesvillage.core.player.manager.CorePlayerManager;
 import com.riddlesvillage.core.service.timer.Timer;
+import com.riddlesvillage.core.world.CoreWorldManager;
 import com.riddlesvillage.core.world.Vector3D;
 import com.riddlesvillage.core.world.region.Region;
 import com.riddlesvillage.core.world.region.Regions;
@@ -74,6 +75,7 @@ public final class Core extends JavaPlugin {
 
             // Internal event listeners
             settings.registerListeners(this, PlayerListeners.get());
+            settings.registerListeners(this, CoreWorldManager.getInstance());
 
             // Register default RiddlesCore commands
             settings.registerCommands(this, new ImmutableMap.Builder<String, CommandExecutor>()
