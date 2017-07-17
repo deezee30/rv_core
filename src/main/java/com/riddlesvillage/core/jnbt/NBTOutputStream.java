@@ -2,10 +2,7 @@ package com.riddlesvillage.core.jnbt;
 
 import com.riddlesvillage.core.jnbt.tag.*;
 
-import java.io.Closeable;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
@@ -53,7 +50,7 @@ import java.util.zip.GZIPOutputStream;
  * @author Graham Edgecombe
  *
  */
-public final class NBTOutputStream implements Closeable {
+public final class NBTOutputStream implements AutoCloseable, Flushable {
 	
 	/**
 	 * The output stream.
@@ -256,4 +253,8 @@ public final class NBTOutputStream implements Closeable {
 		os.close();
 	}
 
+	@Override
+	public void flush() throws IOException {
+		os.flush();
+	}
 }

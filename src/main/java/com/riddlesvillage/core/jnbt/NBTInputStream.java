@@ -35,10 +35,7 @@ package com.riddlesvillage.core.jnbt;
 
 import com.riddlesvillage.core.jnbt.tag.*;
 
-import java.io.Closeable;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +53,7 @@ import java.util.zip.GZIPInputStream;
  * @author Graham Edgecombe
  *
  */
-public final class NBTInputStream implements Closeable {
+public final class NBTInputStream implements AutoCloseable {
 	
 	/**
 	 * The data input stream.
@@ -177,5 +174,4 @@ public final class NBTInputStream implements Closeable {
 	public void close() throws IOException {
 		is.close();
 	}
-
 }
