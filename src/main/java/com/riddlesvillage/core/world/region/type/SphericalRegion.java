@@ -41,7 +41,7 @@ public class SphericalRegion extends Region {
         this.center = Validate.notNull(center, "The center point can not be null").floor();
         this.radius = Math.abs(radius);
 
-        init();
+        calculate();
     }
 
     @Override

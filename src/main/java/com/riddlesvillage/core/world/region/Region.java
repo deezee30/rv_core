@@ -101,40 +101,6 @@ public abstract class Region implements
 
     public abstract void calculate();
 
-    public void init() {
-        calculate();
-
-        minX = Math.min(
-                getMin().getFloorX(),
-                getMax().getFloorX()
-        );
-
-        minY = Math.min(
-                getMin().getFloorY(),
-                getMax().getFloorY()
-        );
-
-        minZ = Math.min(
-                getMin().getFloorZ(),
-                getMax().getFloorZ()
-        );
-
-        maxX = Math.max(
-                getMin().getFloorX(),
-                getMax().getFloorX()
-        );
-
-        maxY = Math.max(
-                getMin().getFloorY(),
-                getMax().getFloorY()
-        );
-
-        maxZ = Math.max(
-                getMin().getFloorZ(),
-                getMax().getFloorZ()
-        );
-    }
-
     /**
      * @return The volume of the region in {@code int} units squared form.
      */
@@ -157,27 +123,45 @@ public abstract class Region implements
     public abstract Vector3D getMax();
 
     public int getMinX() {
-        return minX;
+        return Math.min(
+                getMin().getFloorX(),
+                getMax().getFloorX()
+        );
     }
 
     public int getMinY() {
-        return minY;
+        return Math.min(
+                getMin().getFloorY(),
+                getMax().getFloorY()
+        );
     }
 
     public int getMinZ() {
-        return minZ;
+        return Math.min(
+                getMin().getFloorZ(),
+                getMax().getFloorZ()
+        );
     }
 
     public int getMaxX() {
-        return maxX;
+        return Math.max(
+                getMin().getFloorX(),
+                getMax().getFloorX()
+        );
     }
 
     public int getMaxY() {
-        return maxY;
+        return Math.max(
+                getMin().getFloorY(),
+                getMax().getFloorY()
+        );
     }
 
     public int getMaxZ() {
-        return maxZ;
+        return Math.max(
+                getMin().getFloorZ(),
+                getMax().getFloorZ()
+        );
     }
 
     /**

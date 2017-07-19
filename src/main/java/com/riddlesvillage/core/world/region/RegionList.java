@@ -34,7 +34,7 @@ public class RegionList extends EnhancedList<Region> {
 
     public static RegionList fromJson(final String json) {
         RegionList list = Regions.REGION_GSON.fromJson(json, RegionList.class);
-        list.forEach(Region::init);
+        list.forEach(Region::calculate);
         return list;
     }
 }

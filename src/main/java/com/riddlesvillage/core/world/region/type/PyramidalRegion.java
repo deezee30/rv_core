@@ -39,7 +39,7 @@ public class PyramidalRegion extends Region {
         super(world);
         this.base = Validate.notNull(base, "The base point can not be null").floor();
 
-        init();
+        calculate();
     }
 
     protected PyramidalRegion(String world,
@@ -48,7 +48,7 @@ public class PyramidalRegion extends Region {
         super(world);
         this.base = Validate.notNull(base, "The base point can not be null").floor();
 
-        init();
+        calculate();
     }
 
     @Override

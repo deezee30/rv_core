@@ -16,7 +16,14 @@ import com.riddlesvillage.core.world.Vector3DList;
 import com.riddlesvillage.core.world.region.Region;
 import com.riddlesvillage.core.world.region.RegionBoundsException;
 import com.riddlesvillage.core.world.region.Regions;
+import com.riddlesvillage.core.world.schematic.CuboidSchematic;
+import com.riddlesvillage.core.world.schematic.Schematic;
+import com.riddlesvillage.core.world.schematic.SchematicData;
+import com.riddlesvillage.core.world.schematic.SchematicType;
 import org.apache.commons.lang3.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 
 import java.util.Map;
 
@@ -28,7 +35,7 @@ public class CuboidRegion extends Region {
 
     // do not serialize these
     private transient Vector3DList points;
-    private transient int volume, width, height, depth;
+    private transient int volume, length, width, height;
 
     public CuboidRegion(final String world,
                         final Vector3D min,
@@ -38,7 +45,7 @@ public class CuboidRegion extends Region {
 		this.min = Validate.notNull(min, "The min point can not be null").floor();
 		this.max = Validate.notNull(max, "The max point can not be null").floor();
 
-        init();
+        calculate();
     }
 
     @Override
@@ -46,16 +53,16 @@ public class CuboidRegion extends Region {
         points = new Vector3DList();
 
         // find points in region
-        for (int x = (int) Math.min(min.getX(), max.getX()); x <= Math.max(min.getX(), max.getX()); x++)
-            for (int y = (int) Math.min(min.getY(), max.getY()); y <= Math.max(min.getY(), max.getY()); y++)
-                for (int z = (int) Math.min(min.getZ(), max.getZ()); z <= Math.max(min.getZ(), max.getZ()); z++)
+        for (int x = getMinX(); x <= getMaxX(); x++)
+            for (int y = getMinY(); y <= getMaxY(); y++)
+                for (int z = getMinZ(); z <= getMaxZ(); z++)
                     points.add(new Vector3D(x, y, z));
 
         // calculate dimensions
-        width	= MathUtil.floor(max.getX() - min.getX() + 1);
-        height	= MathUtil.floor(max.getY() - min.getY() + 1);
-        depth	= MathUtil.floor(max.getZ() - min.getZ() + 1);
-        volume	= width * height * depth;
+        length  = MathUtil.floor(getMaxX() - getMinX() + 1);
+        height  = MathUtil.floor(getMaxY() - getMinY() + 1);
+        width   = MathUtil.floor(getMaxZ() - getMinZ() + 1);
+        volume  = width * height * length;
 
         Core.debug("CUBOID: Measured volume: %s; Calculated volume: %s", points.size(), volume);
     }
@@ -75,6 +82,10 @@ public class CuboidRegion extends Region {
         return volume;
     }
 
+    public int getLength() {
+        return length;
+    }
+
     public int getWidth() {
         return width;
     }
@@ -83,8 +94,43 @@ public class CuboidRegion extends Region {
         return height;
     }
 
+    /**
+     * @deprecated Use {@link #getLength()}
+     */
+    @Deprecated
     public int getDepth() {
-        return depth;
+        return length;
+    }
+
+    public Schematic toSchematic(final String name,
+                                 final SchematicType schemType) {
+        World world = Bukkit.getWorld(this.world);
+        Validate.notNull(world, "World " + this.world + " hasn't been loaded");
+        Validate.notNull(name);
+        Validate.notNull(schemType);
+
+        short[] blocks = new short[points.size()];
+        byte[] blockData = new byte[points.size()];
+        int x = 0;
+        for (Vector3D point : points) {
+            Block block = world.getBlockAt(
+                    point.getFloorX(),
+                    point.getFloorY(),
+                    point.getFloorZ()
+            );
+
+            blocks[x] = (byte) block.getTypeId();
+            blockData[x] = block.getData();
+            x++;
+        }
+
+        SchematicData data = new SchematicData(
+                blocks,
+                blockData,
+                new Vector3D(width, length, height)
+        );
+
+        return new CuboidSchematic(name, schemType, data);
     }
 
     @Override

@@ -43,7 +43,7 @@ public class CylindricalRegion extends Region {
         this.radius = Math.abs(radius);
         this.height = Math.abs(height);
 
-        init();
+        calculate();
     }
 
     @Override

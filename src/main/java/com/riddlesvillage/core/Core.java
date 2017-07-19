@@ -22,6 +22,7 @@ import com.riddlesvillage.core.world.region.Region;
 import com.riddlesvillage.core.world.region.Regions;
 import com.riddlesvillage.core.world.region.flag.Flag;
 import com.riddlesvillage.core.world.region.flag.FlagMap;
+import com.riddlesvillage.core.world.schematic.Schematics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -106,11 +107,13 @@ public final class Core extends JavaPlugin {
             ConfigurationSerialization.registerClass(FlagMap.class);
             ConfigurationSerialization.registerClass(Region.class);
 
+            getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
             Flag.init();
             // init region manager and load default regions
             Regions.getManager().init();
-
-            getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            // init schematics
+            Schematics.init(false);
 
             // Initialize database connection and setup management if credentials are set
             Credentials cr = DatabaseConfig.getCredentials();

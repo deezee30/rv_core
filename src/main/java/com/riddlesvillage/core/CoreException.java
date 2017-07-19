@@ -6,8 +6,6 @@
 
 package com.riddlesvillage.core;
 
-import org.apache.commons.lang3.Validate;
-
 import java.net.URL;
 import java.util.Optional;
 
@@ -17,30 +15,29 @@ public class CoreException extends Exception {
 
     private final Optional<URL> pasteLink = Optional.empty();
 
-    public CoreException(String message,
-                         Object... components) {
-        super(Logger.buildMessage(Validate.notNull(message), components));
+    public CoreException() {
+        this("Unhandled exception");
     }
 
-    public CoreException(String message,
-                         Throwable cause) {
-        super(Validate.notNull(message), Validate.notNull(cause));
+    public CoreException(final String message,
+                         final Object... components) {
+        super(Logger.buildMessage(message, components));
     }
 
-    public CoreException(Throwable cause) {
-        super(Validate.notNull(cause));
+    public CoreException(final String message,
+                         final Throwable cause) {
+        super(message, cause);
     }
 
-    public CoreException(String message,
-                         Throwable cause,
-                         boolean enableSuppression,
-                         boolean writableStackTrace) {
-        super(
-                Validate.notNull(message),
-                Validate.notNull(cause),
-                enableSuppression,
-                writableStackTrace
-        );
+    public CoreException(final Throwable cause) {
+        super(cause);
+    }
+
+    public CoreException(final String message,
+                         final Throwable cause,
+                         final boolean enableSuppression,
+                         final boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 
     /*

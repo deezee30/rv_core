@@ -88,7 +88,7 @@ public final class Regions {
     @Beta
     public static synchronized Region fromJson(String json) {
         Region reg = REGION_GSON.fromJson(json, Region.type());
-        reg.init();
+        reg.calculate();
         return reg;
     }
 
