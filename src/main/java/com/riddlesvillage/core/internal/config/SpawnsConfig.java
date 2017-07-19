@@ -7,6 +7,7 @@ package com.riddlesvillage.core.internal.config;
 import com.riddlesvillage.core.Core;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
+import com.riddlesvillage.core.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -54,7 +55,14 @@ public final class SpawnsConfig extends CoreConfigFile {
                 ));
             }
 
-            Core.log("Loaded &e%s spawns&r: &e%s", spawns.size(), new EnhancedList<>(spawns.keySet()).toReadableList("&r, &e", true));
+            int count = spawns.size();
+            Core.logIf(
+                    count > 0,
+                    "Loaded &e%s spawn%s&r: &e%s",
+                    count,
+                    StringUtil.checkPlural("", "s", count),
+                    new EnhancedList<>(spawns.keySet()).toReadableList("&r, &e", true)
+            );
         }, 0L);
     }
 
