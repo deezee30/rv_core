@@ -7,13 +7,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class Game {
 
-    protected String name;
-    protected GameOptions options = new GameOptions();
-    protected GameStages stages = new GameStages();
+    protected final String name;
+    protected final GameOptions options;
+    protected final GameStages stages;
     JavaPlugin plugin;
 
-    Game(final String name) {
+    public Game(final String name,
+                final GameOptions options,
+                final GameStages stages) {
         this.name = Validate.notNull(name);
+        this.options = Validate.notNull(options);
+        this.stages = Validate.notNull(stages);
     }
 
     public String getName() {
