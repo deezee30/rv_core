@@ -11,6 +11,7 @@ import com.riddlesvillage.core.chat.filter.ChatBlockFilter;
 import com.riddlesvillage.core.chat.filter.ChatFilters;
 import com.riddlesvillage.core.collect.EnhancedList;
 import com.riddlesvillage.core.collect.EnhancedMap;
+import com.riddlesvillage.core.file.ConfigFile;
 import com.riddlesvillage.core.inventory.CoreInventoryClickEvent;
 import com.riddlesvillage.core.inventory.item.IndexedItem;
 import com.riddlesvillage.core.net.paster.PasteException;
@@ -32,6 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -136,10 +138,21 @@ public final class CoreSettings {
 
     public void findAndRegisterLocales(final JavaPlugin plugin) {
         Validate.notNull(plugin);
-        findAndRegisterLocales(new File(plugin.getDataFolder().getPath()
-                + File.separator
-                + "locale"
+        InputStream resource = plugin.getResource("locale/" + defaultLocale + ".yml");
+        File localeDir = new File(String.format(
+                "%s%slocale",
+                plugin.getDataFolder().getParent(),
+                File.separator
         ));
+
+        if (resource != null) {
+           ConfigFile.check(
+                   new File(localeDir, defaultLocale + ".yml"),
+                   resource // locale/english.yml
+            );
+        }
+
+        findAndRegisterLocales(localeDir);
     }
 
     public void findAndRegisterLocales(final File directory) {
