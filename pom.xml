@@ -18,12 +18,12 @@
     <distributionManagement>
         <snapshotRepository>
             <id>snapshots-private</id>
-            <url>https://nrm.riddlesvillage.com/content/repositories/snapshots</url>
+            <url>https://nrm.riddlesvillage.com/content/repositories/snapshots-private</url>
         </snapshotRepository>
 
         <repository>
             <id>releases-private</id>
-            <url>https://nrm.riddlesvillage.com/content/repositories/releases</url>
+            <url>https://nrm.riddlesvillage.com/content/repositories/releases-private</url>
         </repository>
     </distributionManagement>
 
