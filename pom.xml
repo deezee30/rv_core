@@ -100,12 +100,11 @@
 
     <dependencies>
 
-        <!-- Spigot API, Bukkit API, CraftBukkit and NMS -->
+        <!-- Spigot API and Bukkit API -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.12-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
 
             <!-- Exclude old commons-lang -->
             <exclusions>
@@ -150,6 +149,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.3.2</version>
         </dependency>
     </dependencies>
 </project>

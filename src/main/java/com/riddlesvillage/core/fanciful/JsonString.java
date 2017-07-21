@@ -4,7 +4,6 @@ import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,6 @@ import java.util.Map;
  * Writes by this object will not write name values nor begin/end objects in the JSON stream.
  * All writes merely write the represented string value.
  */
-@Immutable
 final class JsonString implements JsonRepresentedObject, ConfigurationSerializable {
 
     private final String value;

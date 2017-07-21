@@ -20,7 +20,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.json.simple.JSONAware;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -183,10 +182,10 @@ public class CoreItemStack implements JSONAware {
         private final String material;
         private final int quantity;
 
-        @Nullable private String title;
-        @Nullable private Integer color;
-        @Nullable private List<String> lore;
-        @Nullable private Map<String, Integer> enchantments;
+        private String title;
+        private Integer color;
+        private List<String> lore;
+        private Map<String, Integer> enchantments;
 
         public Container(final String material) {
             this(material, 1);

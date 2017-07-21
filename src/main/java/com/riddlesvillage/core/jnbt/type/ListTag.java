@@ -3,7 +3,6 @@ package com.riddlesvillage.core.jnbt.type;
 import com.riddlesvillage.core.jnbt.NBTUtils;
 import com.riddlesvillage.core.jnbt.Tag;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -61,7 +60,6 @@ public final class ListTag extends Tag {
      * @param index the index
      * @return the tag or null
      */
-    @Nullable
     public Tag getIfExists(int index) {
         try {
             return value.get(index);
