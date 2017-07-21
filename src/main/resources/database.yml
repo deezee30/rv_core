@@ -20,6 +20,8 @@
 
 address: "CHANGE_ME"
 
+port: 27017
+
 database: "CHANGE_ME"
 
 username: "CHANGE_ME"

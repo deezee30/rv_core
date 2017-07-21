@@ -65,8 +65,10 @@ public final class Database implements Closeable {
         client = MongoClients.create(MongoClientSettings.builder()
                 .codecRegistry(REGISTRY)
                 .clusterSettings(ClusterSettings.builder()
-                        .hosts(Collections.singletonList(new ServerAddress(credentials.getAddress())))
-                        .mode(ClusterConnectionMode.SINGLE)
+                        .hosts(Collections.singletonList(new ServerAddress(
+                                credentials.getAddress(),
+                                credentials.getPort()
+                        ))).mode(ClusterConnectionMode.SINGLE)
                         .serverSelectionTimeout(3, TimeUnit.SECONDS)
                         .description("RiddlesVillage general database")
                         .build()
