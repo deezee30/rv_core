@@ -11,6 +11,7 @@ public final class DatabaseConfig extends CoreConfigFile {
     private static final DatabaseConfig INSTANCE = new DatabaseConfig();
 
     public String address;
+    public int port;
     public String database;
     public String username;
     public String password;
@@ -26,6 +27,7 @@ public final class DatabaseConfig extends CoreConfigFile {
     protected String[] getPaths() {
         return new String[] {
                 "address",
+                "port",
                 "database",
                 "username",
                 "password"
@@ -35,6 +37,7 @@ public final class DatabaseConfig extends CoreConfigFile {
     public static Credentials getCredentials() {
         return new Credentials(
                 INSTANCE.address,
+                INSTANCE.port,
                 INSTANCE.database,
                 INSTANCE.username,
                 INSTANCE.password
