@@ -1,8 +1,6 @@
 package com.riddlesvillage.core.gun;
 
 import com.riddlesvillage.core.gun.events.PlayerRightClickItemEvent;
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,6 +36,8 @@ public class GunManager implements Listener {
     public void onPlayerRightClickItem(PlayerRightClickItemEvent event) {
         Player player = event.getPlayer();
         ItemStack itemStack = event.getItem();
+        // TODO: Temporary removal for prioritised compilation
+        /*
         net.minecraft.server.v1_11_R1.ItemStack stack = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tagCompound = (stack.hasTag()) ? stack.getTag() : new NBTTagCompound();
         if (tagCompound.hasKey("gun")) {
@@ -47,6 +47,6 @@ public class GunManager implements Listener {
                 gunMap.get(gunName).fire(player);
                 return;
             }
-        }
+        }*/
     }
 }
