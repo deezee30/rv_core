@@ -232,6 +232,7 @@ For example, to check if a player is a moderator, one can simply
 call `player.isMod()`.
 
 #### Premium
+Found by  `AbstractCoreProfile.isPremium()`
 
 ...
 
